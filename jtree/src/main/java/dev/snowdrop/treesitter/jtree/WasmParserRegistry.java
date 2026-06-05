@@ -1,5 +1,6 @@
 package dev.snowdrop.treesitter.jtree;
 
+import com.dylibso.chicory.runtime.ByteArrayMemory;
 import com.dylibso.chicory.runtime.ImportMemory;
 import com.dylibso.chicory.runtime.ImportValues;
 import com.dylibso.chicory.runtime.Instance;
@@ -7,6 +8,7 @@ import com.dylibso.chicory.wasm.Parser;
 import com.dylibso.chicory.wasm.WasmModule;
 import com.dylibso.chicory.wasi.WasiOptions;
 import com.dylibso.chicory.wasi.WasiPreview1;
+import com.dylibso.chicory.wasm.types.MemoryLimits;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -30,7 +32,7 @@ public class WasmParserRegistry {
         this.treeSitterCoreInstance = Instance.builder(coreModule)
                 .withImportValues(ImportValues.builder()
                         .addFunction(wasi.toHostFunctions())
-                        .addMemory()
+                        .addMemory(new ImportMemory("env", "memory", new ByteArrayMemory(MemoryLimits.defaultLimits())))
                         .build())
                 .build();
     }
