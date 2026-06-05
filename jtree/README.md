@@ -1,9 +1,10 @@
 # Instructions
 
-Install the tree-sitter lib and client using brew
+Install the wasm, tree-sitter lib and client using brew
 ```shell
 brew install tree-sitter-cli
 brew install tree-sitter
+brew install binaryen
 ```
 
 ## Using dylib
@@ -23,7 +24,11 @@ cp ./lib/wasm_dylib_output/*.dylib ~/Library/Java/Extensions
 cp ./lib/wasm_dylib_output/*.wasm ~/Library/Java/Extensions
 ```
 
-- As we cannot build the `tree-sitter` project like the languages, then we will use a skill:
+## Build tree-sitter wasm 
+
+**Remark**: The tree-sitter core lib has been installed using the brew command !
+
+As we cannot build the `tree-sitter` project like the languages, then we can build/install it using a skill:
 ```shell
 git clone https://github.com/tree-sitter/tree-sitter.git "lib/tree-sitter"
 cd "lib/tree-sitter/lib"
@@ -36,7 +41,12 @@ claude "Build this tree-sitter project to wasm"
 # When done
 cp *.wasm ~/Library/Java/Extensions/
 ```
-**Remark**: The tree-sitter core lib has been installed using the brew command !
+OR
+
+using the following bash script
+```shell
+./scripts/build-tree-sitter-wasm.sh
+```
 
 - If you prefer to do it manually, following these instructions
 ```shell
