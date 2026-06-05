@@ -1,3 +1,4 @@
 .idea
 target/
 jtree/lib/
+.mvn
