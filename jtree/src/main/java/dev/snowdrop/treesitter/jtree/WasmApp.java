@@ -5,7 +5,7 @@ import java.nio.file.Path;
 public class WasmApp {
     public static void main(String[] args) throws Exception {
         // Core WebAssembly runtime module path
-        String rootWasmPath = "/Users/cmoullia/code/quarkus/rewrite-mtool/_others/treesitter/aesh-tree-sitter/lib/wasm_dylib_output/";
+        String rootWasmPath = System.getProperty("user.home") + "/Library/Java/Extensions/";
         Path coreEngine = Path.of(rootWasmPath,"tree-sitter.wasm");
 
         // Initialize our registry

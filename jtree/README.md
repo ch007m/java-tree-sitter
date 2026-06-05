@@ -1,6 +1,6 @@
 # Instructions
 
-Install the tree-sitter lib using brew:
+Install the tree-sitter lib and client using brew
 ```shell
 brew install tree-sitter-cli
 brew install tree-sitter
@@ -13,7 +13,7 @@ brew install tree-sitter
 ```shell
 ln -s /opt/homebrew/Cellar/tree-sitter/0.26.9/lib/libtree-sitter.0.26.dylib ~/Library/Java/Extensions/libtree-sitter.dylib
 ```
-- For the grammars/languages to be used on your machine, git clone and build the dylib
+- For the grammar/language to be used on your machine, git clone and build the dylib
 - Execute the following bash script able to git clone and build the needed grammars dylib and wasm
 ```shell
 ./scripts/build-grammar-lib.sh
@@ -23,15 +23,15 @@ cp ./lib/wasm_dylib_output/*.dylib ~/Library/Java/Extensions
 cp ./lib/wasm_dylib_output/*.wasm ~/Library/Java/Extensions
 ```
 
-- To build the "tree-sitter" wasm, execute the following command
+- As we cannot build the `tree-sitter` project like the languages, then we will use a skill:
 ```shell
 git clone https://github.com/tree-sitter/tree-sitter.git "lib/tree-sitter"
-cd "lib/tree-sitter"
+cd "lib/tree-sitter/lib"
 
 # To build the wasm file, we need the help of a skill
 git clone https://github.com/andreaTP/skill-compile-to-wasm.git
 cp -r skill-compile-to-wasm ~/.claude/skills/compile-to-wasm
-claude "compile the tree-sitter project to wasm"
+claude "Build this tree-sitter project to wasm"
 
 # When done
 cp *.wasm ~/Library/Java/Extensions/
