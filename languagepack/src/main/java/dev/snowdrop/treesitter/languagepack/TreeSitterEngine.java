@@ -45,6 +45,7 @@ public class TreeSitterEngine {
             return nodes;
         }
 
+        System.out.println("=============================");
         System.out.println("Language detected: " + language);
 
         String sourceContent = Files.readString(filePath);
@@ -56,7 +57,12 @@ public class TreeSitterEngine {
             case "java", "javascript" -> builder.withStructure(true).withImports(true);
             case "yaml", "json", "xml"  -> builder.withStructure(true).withImports(false);
             case "markdown", "html"     -> builder.withStructure(false).withImports(false);
-            case "properties"           -> builder.withDiagnostics(true).withDocstrings(true).withComments(true).withStructure(true).withImports(false);
+            case "properties"           -> builder
+                    .withDiagnostics(true)
+                    .withDocstrings(true)
+                    .withComments(true)
+                    .withStructure(true)
+                    .withImports(false);
         }
 
         ProcessConfig config = builder.build();
@@ -78,6 +84,9 @@ public class TreeSitterEngine {
 
         if (result.structure() != null) {
             collectStructureItems(result.structure(), nodes);
+            result.structure().forEach(s -> {
+                System.out.println("Structure: " + s.name());
+            });
         }
 
         if (result.imports() != null) {
@@ -88,6 +97,8 @@ public class TreeSitterEngine {
                         "import", imp.source(), (int) line, (int) endLine));
             });
         }
+
+        System.out.println("=============================");
 
         return nodes;
     }
