@@ -1,5 +1,6 @@
-package dev.snowdrop.treesitter.languagepack;
+package dev.snowdrop.treesitter.languagepack.command;
 
+import dev.snowdrop.treesitter.languagepack.PersistentStore;
 import org.aesh.command.Command;
 import org.aesh.command.CommandDefinition;
 import org.aesh.command.CommandResult;

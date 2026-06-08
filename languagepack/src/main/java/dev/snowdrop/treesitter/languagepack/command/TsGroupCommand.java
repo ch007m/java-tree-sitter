@@ -1,4 +1,4 @@
-package dev.snowdrop.treesitter.languagepack;
+package dev.snowdrop.treesitter.languagepack.command;
 
 import org.aesh.command.Command;
 import org.aesh.command.CommandResult;
@@ -8,7 +8,7 @@ import org.aesh.command.invocation.CommandInvocation;
 @GroupCommandDefinition(
         name = "ts",
         description = "Tree-sitter AST operations (Language Pack)",
-        groupCommands = {ParseAppCommand.class, QueryStoreCommand.class}
+        groupCommands = { ParseAppCommand.class, QueryStoreCommand.class}
 )
 public class TsGroupCommand implements Command<CommandInvocation> {
 

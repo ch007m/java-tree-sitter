@@ -27,21 +27,23 @@ Uses the **bonede tree-sitter-ng** JNI bindings which ship pre-built native libr
 
 **Requirements:**
 
-| Item     | Version / Details                                                        |
-|----------|--------------------------------------------------------------------------|
-| JDK      | 25+                                                                      |
+| Item     | Version / Details                                                                                    |
+|----------|------------------------------------------------------------------------------------------------------|
+| JDK      | 21+                                                                                                  |
 | Platform | macOS (aarch64/x86_64), Linux (x86_64/aarch64), Windows -- native libs bundled in the Maven artifact |
 
 ```bash
 # Build and run
-mvn clean package -pl bonede
-java -jar bonede/target/aesh-tree-sitter-bonede-1.0.0-SNAPSHOT.jar
+mvn clean install -pl bonede
+java -jar bonede/target/aesh-tree-sitter-bonede-1.0.0-SNAPSHOT-runner.jar
 ```
+Using jbang
+```
+jbang app install --force --name ng dev.snowdrop:aesh-tree-sitter-bonede:1.0.0-SNAPSHOT:runner
 
-```
-[ast]$ parse /path/to/java-project
-[ast]$ query classes
-[ast]$ query "(method_declaration name: (identifier) @name)"
+jbang app install --force --name lp dev.snowdrop:aesh-tree-sitter-languagepack:1.0.0-SNAPSHOT:runner
+ng query classes
+ng query "(method_declaration name: (identifier) @name)"
 ```
 
 **Predefined queries:** `classes`, `methods`, `constructors`, `imports`, `fields`, `interfaces`, `enums`, `annotations`, `packages`, `strings`, `method-calls`
@@ -55,7 +57,7 @@ java -jar bonede/target/aesh-tree-sitter-bonede-1.0.0-SNAPSHOT.jar
 
 ### languagepack
 
-Uses the **Kreuzberg tree-sitter-language-pack** which bundles grammars for many languages in a single dependency. Language detection is automatic based on file extension, and grammars are downloaded on first use.
+Uses the **Kreuzberg tree-sitter-language-pack** which bundles grammars for many languages in a single dependency with the help of JDK Panama. Language detection is automatic based on file extension, and grammars are downloaded on first use.
 
 - Polyglot: supports Java, YAML, JSON, XML, Properties, Markdown, HTML, JavaScript
 - Automatic language detection from file paths
@@ -69,8 +71,13 @@ Uses the **Kreuzberg tree-sitter-language-pack** which bundles grammars for many
 | Network  | Required on first run to download grammar native libraries          |
 
 ```bash
-mvn clean package -pl languagepack
+mvn clean install -pl languagepack
 java -jar languagepack/target/aesh-tree-sitter-languagepack-1.0.0-SNAPSHOT-runner.jar
+
+jbang app install --force --name lp dev.snowdrop:aesh-tree-sitter-languagepack:1.0.0-SNAPSHOT:runner
+
+lp parse /pat/to/project
+lp query annotation
 ```
 
 ### jtree

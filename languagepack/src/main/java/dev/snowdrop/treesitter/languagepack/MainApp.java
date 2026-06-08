@@ -1,5 +1,7 @@
 package dev.snowdrop.treesitter.languagepack;
 
+import dev.snowdrop.treesitter.languagepack.command.ParseAppCommand;
+import dev.snowdrop.treesitter.languagepack.command.QueryStoreCommand;
 import org.aesh.command.AeshCommandRuntimeBuilder;
 import org.aesh.command.CommandRuntime;
 import org.aesh.command.impl.registry.AeshCommandRegistryBuilder;

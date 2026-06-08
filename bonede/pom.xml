@@ -15,9 +15,20 @@
     <packaging>jar</packaging>
 
     <name>aesh-tree-sitter :: bonede</name>
-    <description>Tree-sitter AST operations using https://github.com/bonede/tree-sitter-ng Next Generation bindings</description>
+    <description>Tree-sitter AST operations using https://github.com/bonede/tree-sitter-ng Next Generation bindings
+    </description>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
+    </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.aesh</groupId>
             <artifactId>aesh</artifactId>
@@ -33,4 +44,29 @@
             <artifactId>tree-sitter-java</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <release>${maven.compiler.source}</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

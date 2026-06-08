@@ -15,9 +15,14 @@
     <packaging>jar</packaging>
 
     <name>aesh-tree-sitter :: languagepack</name>
-    <description>Polyglot tree-sitter AST operations using tree-sitter-language-pack - dev.kreuzberg.treesitterlanguagepack</description>
+    <description>Polyglot tree-sitter AST operations using tree-sitter-language-pack -
+        dev.kreuzberg.treesitterlanguagepack
+    </description>
 
     <properties>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
+
         <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
     </properties>
 
@@ -38,25 +43,20 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>quarkus</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.quarkus</groupId>
-                        <artifactId>quarkus-maven-plugin</artifactId>
-                        <extensions>true</extensions>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

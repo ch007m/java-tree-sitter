@@ -20,9 +20,6 @@
     </modules>
 
     <properties>
-        <java.version>25</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <quarkus.platform.version>3.22.3</quarkus.platform.version>
         <aesh.version>3.11</aesh.version>
         <jtreesitter.version>0.26.0</jtreesitter.version>
@@ -99,9 +96,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
-                    <configuration>
-                        <release>${java.version}</release>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
