@@ -41,7 +41,7 @@ Using jbang
 ```
 jbang app install --force --name ng dev.snowdrop:aesh-tree-sitter-bonede:1.0.0-SNAPSHOT:runner
 
-jbang app install --force --name lp dev.snowdrop:aesh-tree-sitter-languagepack:1.0.0-SNAPSHOT:runner
+ng parse /path/to/project
 ng query classes
 ng query "(method_declaration name: (identifier) @name)"
 ```
