@@ -16,8 +16,8 @@
     <modules>
         <module>bonede</module>
         <module>languagepack</module>
-        <module>jtree</module>
         <module>jtree/tree-sitter-wasm</module>
+        <module>jtree</module>
     </modules>
 
     <properties>
@@ -30,6 +30,8 @@
         <tree-sitter.version>0.26.3.1</tree-sitter.version>
         <tree-sitter-java.version>0.23.5</tree-sitter-java.version>
         <tree-sitter-language-pack.version>1.9.0-rc.18</tree-sitter-language-pack.version>
+
+        <chicory.version>1.7.5</chicory.version>
 
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
@@ -80,6 +82,18 @@
                 <artifactId>tree-sitter-language-pack</artifactId>
                 <version>${tree-sitter-language-pack.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.dylibso.chicory</groupId>
+                <artifactId>runtime</artifactId>
+                <version>${chicory.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.dylibso.chicory</groupId>
+                <artifactId>wasi</artifactId>
+                <version>${chicory.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -103,6 +117,11 @@
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-maven-plugin</artifactId>
                     <version>${quarkus.platform.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.dylibso.chicory</groupId>
+                    <artifactId>chicory-compiler-maven-plugin</artifactId>
+                    <version>${chicory.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
