@@ -7,7 +7,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-MAKEFILE_SRC="$PROJECT_ROOT/tree-sitter-asm/Makefile"
+MAKEFILE_SRC="$PROJECT_ROOT/scripts/Makefile"
 CLONE_DIR="$PROJECT_ROOT/lib/tree-sitter"
 BUILD_DIR="$CLONE_DIR/lib/wasm"
 

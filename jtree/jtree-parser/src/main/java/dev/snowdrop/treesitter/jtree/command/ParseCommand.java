@@ -9,11 +9,6 @@ import org.aesh.command.option.Argument;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
 
 @CommandDefinition(name = "parse", description = "Parse files from a directory and persist AST nodes as JSON")
 public class ParseCommand implements Command<CommandInvocation> {

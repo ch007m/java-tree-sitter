@@ -4,7 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>dev.snowdrop</groupId>
         <artifactId>aesh-tree-sitter</artifactId>
@@ -12,10 +11,10 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>tree-sitter-wasm</artifactId>
+    <artifactId>wasm</artifactId>
     <packaging>jar</packaging>
 
-    <name>aesh-tree-sitter :: tree-sitter-wasm</name>
+    <name>tree-sitter :: jtree :: wasm</name>
     <description>Pre-compiled tree-sitter core WASM module via Chicory AOT compiler</description>
 
     <dependencies>

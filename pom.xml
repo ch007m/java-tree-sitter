@@ -16,7 +16,6 @@
     <modules>
         <module>bonede</module>
         <module>languagepack</module>
-        <module>jtree/tree-sitter-wasm</module>
         <module>jtree</module>
     </modules>
 

@@ -4,7 +4,6 @@ import dev.snowdrop.treesitter.jtree.languages.TreeSitterJava;
 import io.github.treesitter.jtreesitter.Language;
 import io.github.treesitter.jtreesitter.Node;
 import io.github.treesitter.jtreesitter.Parser;
-import io.github.treesitter.jtreesitter.Tree;
 
 public class JTreeApp {
     public static void main(String[] args) {
