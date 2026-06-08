@@ -4,14 +4,10 @@ import java.nio.file.Path;
 
 public class WasmApp {
     public static void main(String[] args) throws Exception {
-        // Core WebAssembly runtime module path
         String rootWasmPath = System.getProperty("user.home") + "/Library/Java/Extensions/";
-        Path coreEngine = Path.of(rootWasmPath,"tree-sitter.wasm");
 
-        // Initialize our registry
-        WasmParserRegistry registry = new WasmParserRegistry(coreEngine);
+        WasmParserRegistry registry = new WasmParserRegistry();
 
-        // Map and register your distinct language definitions
         registry.registerLanguage("java",       Path.of(rootWasmPath,"tree-sitter-java.wasm"));
         registry.registerLanguage("yaml",       Path.of(rootWasmPath,"tree-sitter-yaml.wasm"));
         registry.registerLanguage("json",       Path.of(rootWasmPath,"tree-sitter-json.wasm"));
@@ -19,7 +15,6 @@ public class WasmApp {
         registry.registerLanguage("html",       Path.of(rootWasmPath,"tree-sitter-html.wasm"));
         registry.registerLanguage("javascript", Path.of(rootWasmPath,"tree-sitter-javascript.wasm"));
 
-        // Test multi-language parsing sequences sequentially!
         String javaCode = "public class App {}";
         registry.parse("java", javaCode);
 

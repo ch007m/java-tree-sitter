@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>dev.snowdrop</groupId>
+        <artifactId>aesh-tree-sitter</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>tree-sitter-wasm</artifactId>
+    <packaging>jar</packaging>
+
+    <name>aesh-tree-sitter :: tree-sitter-wasm</name>
+    <description>Pre-compiled tree-sitter core WASM module via Chicory AOT compiler</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.dylibso.chicory</groupId>
+            <artifactId>runtime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dylibso.chicory</groupId>
+            <artifactId>wasi</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.dylibso.chicory</groupId>
+                <artifactId>chicory-compiler-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>tree-sitter</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <name>dev.snowdrop.treesitter.wasm.TreeSitterModule</name>
+                            <wasmFile>../lib/tree-sitter/lib/wasm/target/tree-sitter-final.wasm</wasmFile>
+                            <moduleInterface>dev.snowdrop.treesitter.wasm.TreeSitter</moduleInterface>
+                            <interpreterFallback>WARN</interpreterFallback>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
