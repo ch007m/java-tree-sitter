@@ -56,11 +56,25 @@ public class TreeSitterEngine {
             case "java", "javascript" -> builder.withStructure(true).withImports(true);
             case "yaml", "json", "xml"  -> builder.withStructure(true).withImports(false);
             case "markdown", "html"     -> builder.withStructure(false).withImports(false);
-            case "properties"           -> builder.withStructure(true).withImports(false);
+            case "properties"           -> builder.withDiagnostics(true).withDocstrings(true).withComments(true).withStructure(true).withImports(false);
         }
 
         ProcessConfig config = builder.build();
         ProcessResult result = TreeSitterLanguagePack.process(sourceContent, config);
+
+        if (result.diagnostics() != null) {
+            result.diagnostics().forEach(d -> {System.out.println("Diagnostic : " + d);});
+        }
+
+        if (result.docstrings() != null) {
+            result.docstrings().forEach(d -> {System.out.println("Doc string: " + d);});
+        }
+
+        if (result.comments() != null) {
+            result.comments().forEach(c -> {
+                System.out.println("Comment: " + c);
+            });
+        }
 
         if (result.structure() != null) {
             collectStructureItems(result.structure(), nodes);
