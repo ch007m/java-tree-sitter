@@ -47,6 +47,14 @@
             </dependency>
 
             <dependency>
+                <groupId>com.dylibso.chicory</groupId>
+                <artifactId>bom</artifactId>
+                <version>${chicory.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>org.aesh</groupId>
                 <artifactId>aesh</artifactId>
                 <version>${aesh.version}</version>
@@ -80,17 +88,6 @@
                 <groupId>dev.kreuzberg.treesitterlanguagepack</groupId>
                 <artifactId>tree-sitter-language-pack</artifactId>
                 <version>${tree-sitter-language-pack.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.dylibso.chicory</groupId>
-                <artifactId>runtime</artifactId>
-                <version>${chicory.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.dylibso.chicory</groupId>
-                <artifactId>wasi</artifactId>
-                <version>${chicory.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
