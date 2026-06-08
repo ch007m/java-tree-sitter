@@ -11,10 +11,9 @@
     </parent>
 
     <artifactId>tree-sitter-jtree</artifactId>
-    <packaging>pom</packaging>
-
     <name>tree-sitter :: jtree :: parent</name>
-    <description>Java tree-sitter client. Pre-compiled tree-sitter core WASM module via Chicory AOT compiler</description>
+    <description>Java tree-sitter aesh/quarkus client parent project</description>
+    <packaging>pom</packaging>
 
     <modules>
         <module>wasm</module>

@@ -10,8 +10,8 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>aesh-tree-sitter</name>
-    <description>Interactive CLI for parsing source with tree-sitter and querying ASTs</description>
+    <name>aesh-tree-sitter :: parent</name>
+    <description>Interactive CLI for parsing source with tree-sitter using aesh/quarkus</description>
 
     <modules>
         <module>bonede</module>
@@ -87,7 +87,6 @@
                 <artifactId>runtime</artifactId>
                 <version>${chicory.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.dylibso.chicory</groupId>
                 <artifactId>wasi</artifactId>
