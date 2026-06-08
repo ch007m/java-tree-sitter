@@ -1,6 +1,6 @@
 package dev.snowdrop.treesitter.bonede.query;
 
-import dev.snowdrop.treesitter.bonede.store.ASTStore;
+import dev.snowdrop.treesitter.util.ASTStore;
 import dev.snowdrop.treesitter.bonede.store.ParsedFile;
 import org.aesh.command.invocation.CommandInvocation;
 import org.treesitter.TSNode;

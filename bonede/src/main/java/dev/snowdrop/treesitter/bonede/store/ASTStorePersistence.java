@@ -1,5 +1,6 @@
 package dev.snowdrop.treesitter.bonede.store;
 
+import dev.snowdrop.treesitter.util.ASTStore;
 import org.treesitter.TSParser;
 import org.treesitter.TSTree;
 import org.treesitter.TreeSitterJava;

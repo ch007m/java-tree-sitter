@@ -3,7 +3,7 @@ package dev.snowdrop.treesitter.bonede.command;
 import dev.snowdrop.treesitter.bonede.query.AnnotationNameFilter;
 import dev.snowdrop.treesitter.bonede.query.PredefinedQueries;
 import dev.snowdrop.treesitter.bonede.query.QueryResultPrinter;
-import dev.snowdrop.treesitter.bonede.store.ASTStore;
+import dev.snowdrop.treesitter.util.ASTStore;
 import dev.snowdrop.treesitter.bonede.store.ASTStorePersistence;
 import dev.snowdrop.treesitter.bonede.store.ParsedFile;
 import org.aesh.command.Command;

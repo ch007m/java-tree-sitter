@@ -1,4 +1,6 @@
-package dev.snowdrop.treesitter.bonede.store;
+package dev.snowdrop.treesitter.util;
+
+import dev.snowdrop.treesitter.bonede.store.ParsedFile;
 
 import java.nio.file.Path;
 import java.util.Collection;

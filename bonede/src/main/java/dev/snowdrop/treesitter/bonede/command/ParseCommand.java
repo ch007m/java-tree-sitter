@@ -1,6 +1,6 @@
 package dev.snowdrop.treesitter.bonede.command;
 
-import dev.snowdrop.treesitter.bonede.store.ASTStore;
+import dev.snowdrop.treesitter.util.ASTStore;
 import dev.snowdrop.treesitter.bonede.store.ASTStorePersistence;
 import dev.snowdrop.treesitter.bonede.store.ParsedFile;
 import dev.snowdrop.treesitter.util.JavaFileWalker;
