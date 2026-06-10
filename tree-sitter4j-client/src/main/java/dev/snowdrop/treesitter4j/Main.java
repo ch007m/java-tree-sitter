@@ -1,6 +1,6 @@
-package dev.snowdrop.treesitter.jtree;
+package dev.snowdrop.treesitter4j;
 
-import dev.snowdrop.treesitter.jtree.command.JtGroupCommand;
+import dev.snowdrop.treesitter4j.command.JtGroupCommand;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import org.aesh.AeshRuntimeRunner;

@@ -14,18 +14,20 @@
     <description>Interactive CLI for parsing source with tree-sitter using aesh/quarkus</description>
 
     <modules>
+        <module>tree-sitter4j-client</module>
         <module>bonede</module>
         <module>languagepack</module>
-        <module>jtree</module>
     </modules>
 
     <properties>
         <quarkus.platform.version>3.22.3</quarkus.platform.version>
+
         <aesh.version>3.11</aesh.version>
         <jtreesitter.version>0.26.0</jtreesitter.version>
         <tree-sitter.version>0.26.3.1</tree-sitter.version>
         <tree-sitter-java.version>0.23.5</tree-sitter-java.version>
         <tree-sitter-language-pack.version>1.9.0-rc.18</tree-sitter-language-pack.version>
+        <tree-sitter4j.version>999-SNAPSHOT</tree-sitter4j.version>
 
         <chicory.version>1.7.5</chicory.version>
 
@@ -85,6 +87,12 @@
                 <groupId>dev.kreuzberg.treesitterlanguagepack</groupId>
                 <artifactId>tree-sitter-language-pack</artifactId>
                 <version>${tree-sitter-language-pack.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.roastedroot</groupId>
+                <artifactId>tree-sitter4j</artifactId>
+                <version>${tree-sitter4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
