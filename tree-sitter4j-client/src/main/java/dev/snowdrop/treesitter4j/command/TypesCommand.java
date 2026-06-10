@@ -23,12 +23,12 @@ import java.util.stream.Stream;
 @CommandDefinition(name = "types", description = "List distinct AST node types, grouped by language")
 public class TypesCommand implements Command<CommandInvocation> {
 
-    private static final String STORE_DIR = ".ast-store";
+    private static final String STORE_DIR = ".ts4j";
 
     @Option(name = "language", shortName = 'L', description = "Filter by language (e.g., java, yaml, json)", hasValue = true)
     private String languageFilter;
 
-    @Option(name = "store", shortName = 's', description = "Path to the project root containing .ast-store/", hasValue = true)
+    @Option(name = "store", shortName = 's', description = "Path to the project root containing .ts4j/", hasValue = true)
     private String storePath;
 
     @Override

@@ -18,6 +18,7 @@ import org.aesh.command.option.Argument;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -25,16 +26,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 
-@CommandDefinition(name = "parse", description = "Parse files from a directory and persist AST nodes as JSON")
+@CommandDefinition(name = "parse", description = "Parse files from a directory and persist AST nodes as JSON files under the store")
 public class ParseCommand implements Command<CommandInvocation> {
 
-    private static final String STORE_DIR = ".ast-store";
+    private static final String STORE_DIR = ".ts4j";
 
     @Argument(description = "Path to the project directory to parse", required = true)
     private String projectPath;
@@ -106,10 +110,12 @@ public class ParseCommand implements Command<CommandInvocation> {
 
                         ASTTree ast = ASTExporter.export(tree, lang, source, relativize(rootDir, file));
 
-                        // Write JSON file mirroring the source path
-                        Path relPath = rootDir.relativize(file);
-                        Path jsonFile = storeDir.resolve(relPath + ".json");
-                        Files.createDirectories(jsonFile.getParent());
+                        // Store JSON grouped by language, named by SHA-256 of the relative path
+                        Path langDir = storeDir.resolve(lang.name().toLowerCase());
+                        Files.createDirectories(langDir);
+                        String relPath = rootDir.relativize(file).toString();
+                        String sha = sha256(relPath);
+                        Path jsonFile = langDir.resolve(sha + ".json");
                         ASTJsonSerializer.toJson(ast, jsonFile);
 
                         successCount++;
@@ -186,6 +192,16 @@ public class ParseCommand implements Command<CommandInvocation> {
             return root.relativize(file).toString();
         } catch (IllegalArgumentException e) {
             return file.toString();
+        }
+    }
+
+    private static String sha256(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 not available", e);
         }
     }
 }
