@@ -45,8 +45,9 @@ jbang app install --force --name ts4j dev.snowdrop:tree-sitter4j-client:1.0.0-SN
 
 ts4j parse /path/to/project
 ts4j query class_declaration --store /path/to/project
-ts4j query --list-types --store /path/to/project
 ts4j query import_declaration --file MyClass --store /path/to/project
+ts4j types
+ts4j types -L java
 ```
 
 | Option             | Short          | Description                              |
