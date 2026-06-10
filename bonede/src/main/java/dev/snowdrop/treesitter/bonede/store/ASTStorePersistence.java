@@ -22,7 +22,7 @@ import java.util.List;
  */
 public final class ASTStorePersistence {
 
-    private static final String STORE_FILE_NAME = ".ast-store.json";
+    private static final String STORE_FILE_NAME = ".ts4j.json";
     private static final Path LAST_PROJECT_FILE =
             Path.of(System.getProperty("user.home"), ".aesh-tree-sitter", "last-project");
 
@@ -36,7 +36,7 @@ public final class ASTStorePersistence {
     }
 
     /**
-     * Save the current store to {@code <rootPath>/.ast-store.json}.
+     * Save the current store to {@code <rootPath>/.ts4j.json}.
      *
      * @return the path to the written file
      */
@@ -71,7 +71,7 @@ public final class ASTStorePersistence {
     }
 
     /**
-     * Load a store from {@code <projectRoot>/.ast-store.json}.
+     * Load a store from {@code <projectRoot>/.ts4j.json}.
      *
      * <p>Re-reads source files from disk and re-parses them with tree-sitter.
      * Files that no longer exist or fail to parse are skipped.</p>

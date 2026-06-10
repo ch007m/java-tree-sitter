@@ -50,12 +50,12 @@ ts4j types
 ts4j types -L java
 ```
 
-| Option             | Short          | Description                              |
-|--------------------|----------------|------------------------------------------|
-| `--store <path>`   | `-s <path>`    | Path to the project root with .ast-store |
-| `--file <filter>`  | `-f <filter>`  | Filter by file path (substring)          |
-| `--text <text>`    | `-t <text>`    | Filter by node text (case-insensitive)   |
-| `--list-types`     | `-l`           | List all distinct node types             |
+| Option             | Short          | Description                                     |
+|--------------------|----------------|-------------------------------------------------|
+| `--store <path>`   | `-s <path>`    | Path of AST store. Default: `rootProject/.ts4j` |
+| `--file <filter>`  | `-f <filter>`  | Filter by file path (substring)                 |
+| `--text <text>`    | `-t <text>`    | Filter by node text (case-insensitive)          |
+| `--list-types`     | `-l`           | List all distinct node types                    |
 
 #### Excluding directories during parsing
 

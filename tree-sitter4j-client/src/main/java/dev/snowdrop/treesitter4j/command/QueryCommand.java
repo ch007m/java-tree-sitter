@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 @CommandDefinition(name = "query", description = "Query persisted AST nodes by type, file, or text")
 public class QueryCommand implements Command<CommandInvocation> {
 
-    private static final String STORE_DIR = ".ast-store";
+    private static final String STORE_DIR = ".ts4j";
 
     @Argument(description = "Node type to search for (e.g., class_declaration, method_declaration, import_declaration)", required = false)
     private String nodeType;
@@ -32,7 +32,7 @@ public class QueryCommand implements Command<CommandInvocation> {
     @Option(name = "text", shortName = 't', description = "Filter by node text (case-insensitive contains)", hasValue = true)
     private String textFilter;
 
-    @Option(name = "store", shortName = 's', description = "Path to the project root containing .ast-store/", hasValue = true)
+    @Option(name = "store", shortName = 's', description = "Path to the project root containing .ts4j/", hasValue = true)
     private String storePath;
 
     @Override

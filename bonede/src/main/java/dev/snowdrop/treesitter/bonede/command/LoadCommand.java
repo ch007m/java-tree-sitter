@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 public class LoadCommand implements Command<CommandInvocation> {
 
     @Argument(
-            description = "Path to Java project directory whose .ast-store.json should be loaded",
+            description = "Path to Java project directory whose .ts4j.json should be loaded",
             required = true
     )
     private String path;
