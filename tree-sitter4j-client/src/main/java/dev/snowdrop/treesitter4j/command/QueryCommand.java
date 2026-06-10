@@ -37,6 +37,8 @@ public class QueryCommand implements Command<CommandInvocation> {
 
     @Override
     public CommandResult execute(CommandInvocation invocation) {
+        long startTime = System.nanoTime();
+
         if (nodeType == null || nodeType.isBlank()) {
             invocation.println("Usage: ts4j query <node-type> [--file filter] [--text filter] [--store path]");
             return CommandResult.FAILURE;
@@ -64,6 +66,9 @@ public class QueryCommand implements Command<CommandInvocation> {
             invocation.println("AST store is empty.");
             return CommandResult.SUCCESS;
         }
+
+        long elapsedMs = (System.nanoTime() - startTime) / 1_000_000;
+        invocation.println("Elapsed Query time: " + elapsedMs + " ms");
 
         return queryNodes(invocation, trees);
     }
@@ -93,8 +98,6 @@ public class QueryCommand implements Command<CommandInvocation> {
                 totalMatches++;
             }
         }
-
-        invocation.println("\n" + totalMatches + " match(es) found across " + trees.size() + " file(s).");
         return CommandResult.SUCCESS;
     }
 

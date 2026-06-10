@@ -38,6 +38,8 @@ public class ParseCommand implements Command<CommandInvocation> {
 
     @Override
     public CommandResult execute(CommandInvocation invocation) {
+        long startTime = System.nanoTime();
+
         Path rootDir = Paths.get(projectPath).toAbsolutePath().normalize();
         if (!Files.isDirectory(rootDir)) {
             invocation.println("Error: '" + projectPath + "' is not a valid directory.");
@@ -117,8 +119,10 @@ public class ParseCommand implements Command<CommandInvocation> {
             }
         }
 
+        long elapsedMs = (System.nanoTime() - startTime) / 1_000_000;
         invocation.println("Parsing complete: " + successCount + " succeeded, " + errorCount + " failed.");
         invocation.println("AST store saved to " + storeDir);
+        invocation.println("Elapsed time: " + elapsedMs + " ms");
 
         return CommandResult.SUCCESS;
     }
