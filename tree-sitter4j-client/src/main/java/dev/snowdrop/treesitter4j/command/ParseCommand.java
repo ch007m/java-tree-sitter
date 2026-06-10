@@ -9,11 +9,13 @@ import io.roastedroot.treesitter.TreeSitterTree;
 import io.roastedroot.treesitter.ast.ASTExporter;
 import io.roastedroot.treesitter.ast.ASTJsonSerializer;
 import io.roastedroot.treesitter.ast.ASTTree;
+import jakarta.annotation.Nonnull;
 import org.aesh.command.Command;
 import org.aesh.command.CommandDefinition;
 import org.aesh.command.CommandResult;
 import org.aesh.command.invocation.CommandInvocation;
 import org.aesh.command.option.Argument;
+import org.eclipse.microprofile.config.ConfigProvider;
 
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
@@ -24,6 +26,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -128,14 +131,22 @@ public class ParseCommand implements Command<CommandInvocation> {
     }
 
     private List<Path> findSourceFiles(Path root) throws IOException {
+        List<String> excludePatterns = ConfigProvider.getConfig()
+                .getOptionalValue("ts4j.parser.exclude-dirs", String.class)
+                .map(s -> Arrays.stream(s.split(","))
+                        .map(String::trim)
+                        .filter(p -> !p.isEmpty())
+                        .toList())
+                .orElse(List.of());
+
         List<Path> files = new ArrayList<>();
         Files.walkFileTree(root, EnumSet.of(FileVisitOption.FOLLOW_LINKS),
                 Integer.MAX_VALUE, new SimpleFileVisitor<>() {
 
                     @Override
-                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                    public FileVisitResult preVisitDirectory(@Nonnull Path dir, @Nonnull BasicFileAttributes attrs) {
                         String name = dir.getFileName() != null ? dir.getFileName().toString() : "";
-                        if (name.startsWith(".") || name.equals("target") || name.equals("node_modules")) {
+                        if (shouldExclude(name, excludePatterns)) {
                             return FileVisitResult.SKIP_SUBTREE;
                         }
                         return FileVisitResult.CONTINUE;
@@ -155,6 +166,19 @@ public class ParseCommand implements Command<CommandInvocation> {
                     }
                 });
         return files;
+    }
+
+    private boolean shouldExclude(String name, List<String> patterns) {
+        for (String pattern : patterns) {
+            if (pattern.endsWith("*")) {
+                if (name.startsWith(pattern.substring(0, pattern.length() - 1))) {
+                    return true;
+                }
+            } else if (name.equals(pattern)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String relativize(Path root, Path file) {

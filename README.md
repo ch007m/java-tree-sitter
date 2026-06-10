@@ -57,6 +57,37 @@ ts4j types -L java
 | `--text <text>`    | `-t <text>`    | Filter by node text (case-insensitive)   |
 | `--list-types`     | `-l`           | List all distinct node types             |
 
+#### Excluding directories during parsing
+
+The `parse` command skips certain files/directories by default. This is controlled by the
+`ts4j.parser.exclude-dirs` configuration property, which accepts a comma-separated list
+of directory names or prefix patterns (using a trailing `*`).
+
+**Defaults** (defined in `application.properties`):
+
+```
+ts4j.parser.exclude-dirs=.*,target,node_modules
+```
+
+This skips hidden directories (names starting with `.`), `target`, and `node_modules`.
+
+To override the defaults, pass the property on the command line:
+
+```bash
+java -Dts4j.parser.exclude-dirs=".*,target,node_modules,build,dist" \
+     -jar tree-sitter4j-client/target/tree-sitter4j-client-1.0.0-SNAPSHOT-runner.jar
+
+# Or with jbang
+ts4j -Dts4j.parser.exclude-dirs=".*,build" parse /path/to/project
+```
+
+You can also set it via the `TS4J_PARSER_EXCLUDE_DIRS` environment variable (MicroProfile Config convention):
+
+```bash
+export TS4J_PARSER_EXCLUDE_DIRS=".*,target,node_modules,build"
+ts4j parse /path/to/project
+```
+
 ### bonede
 
 Uses the **bonede tree-sitter-ng** JNI bindings which ship pre-built native libraries for each platform. Each language grammar is a separate Maven artifact (e.g. `tree-sitter-java`).
