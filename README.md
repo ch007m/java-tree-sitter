@@ -44,18 +44,21 @@ Using jbang
 jbang app install --force --name ts4j dev.snowdrop:tree-sitter4j-client:1.0.0-SNAPSHOT:runner
 
 ts4j parse /path/to/project
-ts4j query class_declaration --store /path/to/project
-ts4j query import_declaration --file MyClass --store /path/to/project
+ts4j query class_declaration --app /path/to/project
+ts4j query import_declaration --file MyClass --app /path/to/project
+ts4j query import_declaration --file MyClass
+ts4j query class_declaration --app /path/to/project --reload
 ts4j types
 ts4j types -L java
 ```
 
-| Option             | Short          | Description                                     |
-|--------------------|----------------|-------------------------------------------------|
-| `--store <path>`   | `-s <path>`    | Path of AST store. Default: `rootProject/.ts4j` |
-| `--file <filter>`  | `-f <filter>`  | Filter by file path (substring)                 |
-| `--text <text>`    | `-t <text>`    | Filter by node text (case-insensitive)          |
-| `--list-types`     | `-l`           | List all distinct node types                    |
+| Option             | Short          | Applies to      | Description                                                      |
+|--------------------|----------------|-----------------|------------------------------------------------------------------|
+| `--app <path>`     | `-a <path>`    | `query`, `types` | Path to the application directory (defaults to current directory) |
+| `--file <filter>`  | `-f <filter>`  | `query`          | Filter results by file path (substring)                          |
+| `--text <text>`    | `-t <text>`    | `query`          | Filter by node text (case-insensitive)                           |
+| `--reload`         | `-r`           | `query`          | Force re-parse of source files before querying                   |
+| `--language <lang>`| `-L <lang>`    | `types`          | Filter node types by language (e.g., java, yaml, json)           |
 
 #### Excluding directories during parsing
 

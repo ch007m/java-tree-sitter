@@ -1,6 +1,6 @@
 package dev.snowdrop.treesitter4j.command;
 
-import io.roastedroot.treesitter.ast.ASTJsonSerializer;
+import dev.snowdrop.treesitter4j.util.ASTParserUtil;
 import io.roastedroot.treesitter.ast.ASTNode;
 import io.roastedroot.treesitter.ast.ASTTree;
 import org.aesh.command.Command;
@@ -13,15 +13,11 @@ import org.aesh.command.option.Option;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
-@CommandDefinition(name = "query", description = "Query persisted AST nodes by type, file, or text")
+@CommandDefinition(name = "query", description = "Query AST nodes by type, file, or text")
 public class QueryCommand implements Command<CommandInvocation> {
-
-    private static final String STORE_DIR = ".ts4j";
 
     @Argument(description = "Node type to search for (e.g., class_declaration, method_declaration, import_declaration)", required = false)
     private String nodeType;
@@ -32,38 +28,61 @@ public class QueryCommand implements Command<CommandInvocation> {
     @Option(name = "text", shortName = 't', description = "Filter by node text (case-insensitive contains)", hasValue = true)
     private String textFilter;
 
-    @Option(name = "store", shortName = 's', description = "Path to the project root containing .ts4j/", hasValue = true)
-    private String storePath;
+    @Option(name = "app", shortName = 'a', description = "Path to the application directory (full or relative, defaults to current directory)", hasValue = true)
+    private String appPath;
+
+    @Option(name = "reload", shortName = 'r', description = "Force re-parse of source files, save AST to the store, then query", hasValue = false)
+    private boolean reload;
 
     @Override
     public CommandResult execute(CommandInvocation invocation) {
         long startTime = System.nanoTime();
 
         if (nodeType == null || nodeType.isBlank()) {
-            invocation.println("Usage: ts4j query <node-type> [--file filter] [--text filter] [--store path]");
+            invocation.println("Usage: ts4j query <node-type> [--file filter] [--text filter] [--app path] [--reload]");
             return CommandResult.FAILURE;
         }
 
-        Path storeDir = resolveStoreDir();
-        if (storeDir == null || !Files.isDirectory(storeDir)) {
-            invocation.println("No AST store found. Run 'ts4j parse <path>' first.");
-            if (storeDir != null) {
-                invocation.println("Looked in: " + storeDir);
-            }
+        Path rootDir = ASTParserUtil.resolveAppDir(appPath);
+        if (!Files.isDirectory(rootDir)) {
+            invocation.println("Error: '" + (appPath != null ? appPath : rootDir) + "' is not a valid directory.");
             return CommandResult.FAILURE;
         }
 
-        // Load all JSON files from the store
         List<ASTTree> trees;
-        try {
-            trees = loadStore(storeDir);
-        } catch (IOException e) {
-            invocation.println("Error loading AST store: " + e.getMessage());
-            return CommandResult.FAILURE;
+
+        if (reload) {
+            // Force re-parse, save to store, then query
+            try {
+                trees = ASTParserUtil.parseDirectory(rootDir, invocation::println);
+                if (!trees.isEmpty()) {
+                    ASTParserUtil.saveToStore(trees, rootDir);
+                    invocation.println("AST store saved to " + rootDir.resolve(ASTParserUtil.STORE_DIR));
+                }
+            } catch (IOException e) {
+                invocation.println("Error during reload: " + e.getMessage());
+                return CommandResult.FAILURE;
+            }
+        } else if (ASTParserUtil.hasStore(rootDir)) {
+            // Existing store found — load from JSON
+            try {
+                trees = ASTParserUtil.loadStore(rootDir);
+            } catch (IOException e) {
+                invocation.println("Error loading AST store: " + e.getMessage());
+                return CommandResult.FAILURE;
+            }
+        } else {
+            // No store — parse on the fly, keep in memory only
+            try {
+                trees = ASTParserUtil.parseDirectory(rootDir, invocation::println);
+            } catch (IOException e) {
+                invocation.println("Error parsing application: " + e.getMessage());
+                return CommandResult.FAILURE;
+            }
         }
 
         if (trees.isEmpty()) {
-            invocation.println("AST store is empty.");
+            invocation.println("No AST trees available.");
             return CommandResult.SUCCESS;
         }
 
@@ -101,33 +120,6 @@ public class QueryCommand implements Command<CommandInvocation> {
         return CommandResult.SUCCESS;
     }
 
-    private Path resolveStoreDir() {
-        if (storePath != null && !storePath.isBlank()) {
-            return Paths.get(storePath).toAbsolutePath().normalize().resolve(STORE_DIR);
-        }
-        // Default: current directory
-        return Paths.get("").toAbsolutePath().resolve(STORE_DIR);
-    }
-
-    private List<ASTTree> loadStore(Path storeDir) throws IOException {
-        List<ASTTree> trees = new ArrayList<>();
-        try (Stream<Path> walk = Files.walk(storeDir)) {
-            List<Path> jsonFiles = walk
-                    .filter(p -> p.toString().endsWith(".json"))
-                    .filter(Files::isRegularFile)
-                    .toList();
-
-            for (Path jsonFile : jsonFiles) {
-                try {
-                    trees.add(ASTJsonSerializer.fromJson(jsonFile));
-                } catch (IOException e) {
-                    // Skip malformed files
-                }
-            }
-        }
-        return trees;
-    }
-
     private boolean matchesFileFilter(ASTTree tree) {
         String sourceFile = tree.getSourceFile();
         return sourceFile != null && sourceFile.contains(fileFilter);
@@ -142,7 +134,6 @@ public class QueryCommand implements Command<CommandInvocation> {
         if (node.getText() != null) {
             return node.getText();
         }
-        // For non-leaf nodes, collect text from children
         if (node.getChildren() != null) {
             StringBuilder sb = new StringBuilder();
             for (ASTNode child : node.getChildren()) {

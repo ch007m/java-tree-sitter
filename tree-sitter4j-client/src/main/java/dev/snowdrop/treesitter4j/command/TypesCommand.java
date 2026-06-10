@@ -1,6 +1,6 @@
 package dev.snowdrop.treesitter4j.command;
 
-import io.roastedroot.treesitter.ast.ASTJsonSerializer;
+import dev.snowdrop.treesitter4j.util.ASTParserUtil;
 import io.roastedroot.treesitter.ast.ASTNode;
 import io.roastedroot.treesitter.ast.ASTTree;
 import org.aesh.command.Command;
@@ -12,39 +12,32 @@ import org.aesh.command.option.Option;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.stream.Stream;
 
 @CommandDefinition(name = "types", description = "List distinct AST node types, grouped by language")
 public class TypesCommand implements Command<CommandInvocation> {
 
-    private static final String STORE_DIR = ".ts4j";
-
     @Option(name = "language", shortName = 'L', description = "Filter by language (e.g., java, yaml, json)", hasValue = true)
     private String languageFilter;
 
-    @Option(name = "store", shortName = 's', description = "Path to the project root containing .ts4j/", hasValue = true)
-    private String storePath;
+    @Option(name = "app", shortName = 'a', description = "Path to the application directory (full or relative, defaults to current directory)", hasValue = true)
+    private String appPath;
 
     @Override
     public CommandResult execute(CommandInvocation invocation) {
-        Path storeDir = resolveStoreDir();
-        if (storeDir == null || !Files.isDirectory(storeDir)) {
+        Path rootDir = ASTParserUtil.resolveAppDir(appPath);
+        if (!ASTParserUtil.hasStore(rootDir)) {
             invocation.println("No AST store found. Run 'ts4j parse <path>' first.");
-            if (storeDir != null) {
-                invocation.println("Looked in: " + storeDir);
-            }
+            invocation.println("Looked in: " + rootDir.resolve(ASTParserUtil.STORE_DIR));
             return CommandResult.FAILURE;
         }
 
         List<ASTTree> trees;
         try {
-            trees = loadStore(storeDir);
+            trees = ASTParserUtil.loadStore(rootDir);
         } catch (IOException e) {
             invocation.println("Error loading AST store: " + e.getMessage());
             return CommandResult.FAILURE;
@@ -83,32 +76,6 @@ public class TypesCommand implements Command<CommandInvocation> {
         }
 
         return CommandResult.SUCCESS;
-    }
-
-    private Path resolveStoreDir() {
-        if (storePath != null && !storePath.isBlank()) {
-            return Paths.get(storePath).toAbsolutePath().normalize().resolve(STORE_DIR);
-        }
-        return Paths.get("").toAbsolutePath().resolve(STORE_DIR);
-    }
-
-    private List<ASTTree> loadStore(Path storeDir) throws IOException {
-        List<ASTTree> trees = new ArrayList<>();
-        try (Stream<Path> walk = Files.walk(storeDir)) {
-            List<Path> jsonFiles = walk
-                    .filter(p -> p.toString().endsWith(".json"))
-                    .filter(Files::isRegularFile)
-                    .toList();
-
-            for (Path jsonFile : jsonFiles) {
-                try {
-                    trees.add(ASTJsonSerializer.fromJson(jsonFile));
-                } catch (IOException e) {
-                    // Skip malformed files
-                }
-            }
-        }
-        return trees;
     }
 
     private void collectTypes(ASTNode node, TreeSet<String> types) {
