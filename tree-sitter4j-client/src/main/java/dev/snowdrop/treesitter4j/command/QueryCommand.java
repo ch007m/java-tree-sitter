@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.stream.Stream;
 
 @CommandDefinition(name = "query", description = "Query persisted AST nodes by type, file, or text")
@@ -33,17 +32,13 @@ public class QueryCommand implements Command<CommandInvocation> {
     @Option(name = "text", shortName = 't', description = "Filter by node text (case-insensitive contains)", hasValue = true)
     private String textFilter;
 
-    @Option(name = "list-types", shortName = 'l', description = "List all distinct node types in the store", hasValue = false)
-    private boolean listTypes;
-
     @Option(name = "store", shortName = 's', description = "Path to the project root containing .ast-store/", hasValue = true)
     private String storePath;
 
     @Override
     public CommandResult execute(CommandInvocation invocation) {
-        if (!listTypes && (nodeType == null || nodeType.isBlank())) {
+        if (nodeType == null || nodeType.isBlank()) {
             invocation.println("Usage: ts4j query <node-type> [--file filter] [--text filter] [--store path]");
-            invocation.println("       ts4j query --list-types [--store path]");
             return CommandResult.FAILURE;
         }
 
@@ -70,27 +65,7 @@ public class QueryCommand implements Command<CommandInvocation> {
             return CommandResult.SUCCESS;
         }
 
-        if (listTypes) {
-            return listNodeTypes(invocation, trees);
-        }
-
         return queryNodes(invocation, trees);
-    }
-
-    private CommandResult listNodeTypes(CommandInvocation invocation, List<ASTTree> trees) {
-        TreeSet<String> types = new TreeSet<>();
-        for (ASTTree tree : trees) {
-            if (fileFilter != null && !matchesFileFilter(tree)) {
-                continue;
-            }
-            collectTypes(tree.getRoot(), types);
-        }
-
-        invocation.println("Distinct node types (" + types.size() + "):");
-        for (String type : types) {
-            invocation.println("  " + type);
-        }
-        return CommandResult.SUCCESS;
     }
 
     private CommandResult queryNodes(CommandInvocation invocation, List<ASTTree> trees) {
@@ -187,18 +162,6 @@ public class QueryCommand implements Command<CommandInvocation> {
         if (node.getChildren() != null) {
             for (ASTNode child : node.getChildren()) {
                 findNodes(child, type, results);
-            }
-        }
-    }
-
-    private void collectTypes(ASTNode node, TreeSet<String> types) {
-        if (node == null) return;
-        if (node.getType() != null && node.isNamed()) {
-            types.add(node.getType());
-        }
-        if (node.getChildren() != null) {
-            for (ASTNode child : node.getChildren()) {
-                collectTypes(child, types);
             }
         }
     }

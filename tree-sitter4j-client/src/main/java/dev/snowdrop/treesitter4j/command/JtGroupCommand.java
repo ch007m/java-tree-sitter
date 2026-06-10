@@ -8,7 +8,7 @@ import org.aesh.command.invocation.CommandInvocation;
 @GroupCommandDefinition(
         name = "ts4j",
         description = "Tree-sitter polyglot AST CLI (treesitter4j)",
-        groupCommands = { ParseCommand.class, QueryCommand.class}
+        groupCommands = { ParseCommand.class, QueryCommand.class, TypesCommand.class}
 )
 public class JtGroupCommand implements Command<CommandInvocation> {
 
@@ -18,6 +18,7 @@ public class JtGroupCommand implements Command<CommandInvocation> {
         invocation.println("Commands:");
         invocation.println("  parse   Parse files from an application and persist AST nodes as JSON");
         invocation.println("  query   Query persisted AST nodes");
+        invocation.println("  types   List distinct AST node types, grouped by language");
         return CommandResult.SUCCESS;
     }
 }
