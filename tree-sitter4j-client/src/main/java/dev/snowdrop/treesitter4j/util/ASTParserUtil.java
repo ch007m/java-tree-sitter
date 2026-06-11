@@ -281,21 +281,12 @@ public final class ASTParserUtil {
      */
     public static List<ASTTree> loadStore(Path rootDir) throws IOException {
         Path storeDir = rootDir.resolve(STORE_DIR);
-        List<Path> jsonFiles;
-        try (Stream<Path> walk = Files.walk(storeDir)) {
-            jsonFiles = walk
+        int poolSize = Runtime.getRuntime().availableProcessors();
+        try (Stream<Path> walk = Files.walk(storeDir);
+             ExecutorService executor = Executors.newFixedThreadPool(poolSize)) {
+            List<Future<ASTTree>> futures = walk
                     .filter(p -> p.toString().endsWith(".json"))
                     .filter(Files::isRegularFile)
-                    .toList();
-        }
-
-        if (jsonFiles.isEmpty()) {
-            return List.of();
-        }
-
-        int poolSize = Runtime.getRuntime().availableProcessors();
-        try (ExecutorService executor = Executors.newFixedThreadPool(poolSize)) {
-            List<Future<ASTTree>> futures = jsonFiles.stream()
                     .map(jsonFile -> executor.submit(() -> ASTJsonSerializer.fromJson(jsonFile)))
                     .toList();
 
