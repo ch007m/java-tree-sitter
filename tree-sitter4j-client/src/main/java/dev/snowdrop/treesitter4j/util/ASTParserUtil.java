@@ -28,6 +28,10 @@ import java.util.EnumSet;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -112,7 +116,12 @@ public final class ASTParserUtil {
     }
 
     /**
-     * Parse all supported source files under {@code rootDir} and return the resulting AST trees in memory.
+     * Parse all supported source files under {@code rootDir} in parallel using virtual threads,
+     * and return the resulting AST trees in memory.
+     * <p>
+     * Each file is parsed in its own virtual thread with a dedicated {@link TreeSitter} and
+     * {@link TreeSitterParser} instance, following the thread-safe pattern where no native
+     * resources are shared across threads.
      *
      * @param rootDir the project root directory
      * @param logger  callback for progress/warning messages (may be {@code null})
@@ -126,14 +135,12 @@ public final class ASTParserUtil {
             return List.of();
         }
 
-        if (logger != null) logger.accept("Found " + sourceFiles.size() + " source file(s). Parsing...");
+        if (logger != null) logger.accept("Found " + sourceFiles.size() + " source file(s). Parsing in parallel...");
 
-        List<ASTTree> trees = new ArrayList<>();
-        int errorCount = 0;
+        AtomicInteger errorCount = new AtomicInteger();
+        List<Future<ASTTree>> futures = new ArrayList<>();
 
-        TreeSitter ts = getTreeSitter();
-        try (TreeSitterParser parser = ts.newParser()) {
-
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
             for (Path file : sourceFiles) {
                 Optional<Language> langOpt = LanguageDetector.detect(file);
                 if (langOpt.isEmpty()) {
@@ -141,38 +148,51 @@ public final class ASTParserUtil {
                 }
                 Language lang = langOpt.get();
 
-                try {
-                    String source = Files.readString(file);
-
+                futures.add(executor.submit(() -> {
                     try {
-                        parser.setLanguage(lang);
+                        String source = Files.readString(file);
+
+                        try (TreeSitter ts = TreeSitter.create();
+                             TreeSitterParser parser = ts.newParser(lang);
+                             TreeSitterTree tree = parser.parseString(source)) {
+
+                            if (tree == null) {
+                                if (logger != null)
+                                    logger.accept("  WARN: failed to parse " + relativize(rootDir, file));
+                                errorCount.incrementAndGet();
+                                return null;
+                            }
+
+                            return ASTExporter.export(tree, lang, source, relativize(rootDir, file));
+                        }
                     } catch (TreeSitterException e) {
                         if (logger != null)
                             logger.accept("  WARN: language " + lang + " not supported at runtime, skipping " + relativize(rootDir, file));
-                        continue;
+                        return null;
+                    } catch (Exception e) {
+                        if (logger != null)
+                            logger.accept("  ERROR parsing " + relativize(rootDir, file) + ": " + e.getMessage());
+                        errorCount.incrementAndGet();
+                        return null;
                     }
-
-                    try (TreeSitterTree tree = parser.parseString(source)) {
-                        if (tree == null) {
-                            if (logger != null)
-                                logger.accept("  WARN: failed to parse " + relativize(rootDir, file));
-                            errorCount++;
-                            continue;
-                        }
-
-                        ASTTree ast = ASTExporter.export(tree, lang, source, relativize(rootDir, file));
-                        trees.add(ast);
-                    }
-                } catch (Exception e) {
-                    if (logger != null)
-                        logger.accept("  ERROR parsing " + relativize(rootDir, file) + ": " + e.getMessage());
-                    errorCount++;
-                }
+                }));
             }
         }
 
-        if (logger != null && errorCount > 0) {
-            logger.accept(errorCount + " file(s) failed to parse.");
+        List<ASTTree> trees = new ArrayList<>();
+        for (Future<ASTTree> future : futures) {
+            try {
+                ASTTree result = future.get();
+                if (result != null) {
+                    trees.add(result);
+                }
+            } catch (Exception e) {
+                errorCount.incrementAndGet();
+            }
+        }
+
+        if (logger != null && errorCount.get() > 0) {
+            logger.accept(errorCount.get() + " file(s) failed to parse.");
         }
 
         return trees;
