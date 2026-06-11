@@ -21,8 +21,7 @@
 
     <properties>
         <quarkus.platform.version>3.22.3</quarkus.platform.version>
-
-        <aesh.version>3.11</aesh.version>
+        <aesh.version>3.13</aesh.version>
         <jtreesitter.version>0.26.0</jtreesitter.version>
         <tree-sitter.version>0.26.3.1</tree-sitter.version>
         <tree-sitter-java.version>0.23.5</tree-sitter-java.version>

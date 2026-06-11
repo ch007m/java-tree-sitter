@@ -44,9 +44,11 @@ Using jbang
 jbang app install --force --name ts4j dev.snowdrop:tree-sitter4j-client:1.0.0-SNAPSHOT:runner
 
 ts4j parse /path/to/project
-ts4j query class_declaration --app /path/to/project
-ts4j query import_declaration --file MyClass --app /path/to/project
-ts4j query import_declaration --file MyClass
+ts4j query class --app /path/to/project
+ts4j query "class = Customer" --app /path/to/project
+ts4j query "method contains get" --app /path/to/project
+ts4j query "property = quarkus.datasource.*" --app /path/to/project
+ts4j query "pom-dependency = io.quarkus:*" --app /path/to/project
 ts4j query class_declaration --app /path/to/project --reload
 ts4j types
 ts4j types -L java
@@ -59,6 +61,71 @@ ts4j types -L java
 | `--text <text>`    | `-t <text>`    | `query`          | Filter by node text (case-insensitive)                           |
 | `--reload`         | `-r`           | `query`          | Force re-parse of source files before querying                   |
 | `--language <lang>`| `-L <lang>`    | `types`          | Filter node types by language (e.g., java, yaml, json)           |
+
+#### Query syntax
+
+The `query` command supports human-friendly aliases with optional operators. Raw tree-sitter node types (e.g. `class_declaration`) are also accepted.
+
+| Form | Description | Example |
+|------|-------------|---------|
+| `alias` | List all matches | `class` |
+| `alias = value` | Exact match | `class = Customer` |
+| `alias = glob*` | Wildcard match (`*` matches any characters) | `property = quarkus.datasource.*` |
+| `alias contains text` | Case-insensitive substring match | `method contains get` |
+
+#### Available aliases
+
+**Java:**
+
+| Alias | Captures |
+|-------|----------|
+| `class` | Class names |
+| `interface` | Interface names |
+| `enum` | Enum names |
+| `method` | Method names |
+| `constructor` | Constructor names |
+| `field` | Field names |
+| `annotation` | Annotation names |
+| `import` | Import declarations |
+| `package` | Package declarations |
+
+**Properties:**
+
+| Alias | Captures |
+|-------|----------|
+| `property` | Property keys |
+
+**XML:**
+
+| Alias | Captures |
+|-------|----------|
+| `element` | XML element tag names |
+| `attribute` | XML attribute names |
+
+**POM (Maven):**
+
+POM aliases compose GAV coordinates (`groupId:artifactId[:version]`) from child XML elements. The version component is included only when a `<version>` element is present.
+
+| Alias | Captures |
+|-------|----------|
+| `pom-dependency` | `<dependency>` GAV coordinates |
+| `pom-plugin` | `<plugin>` GAV coordinates |
+| `pom-parent` | `<parent>` GAV coordinates |
+| `pom-extension` | `<extension>` GAV coordinates |
+
+```bash
+# List all dependencies
+ts4j query pom-dependency --app /path/to/project
+
+# Find a specific dependency
+ts4j query "pom-dependency = io.quarkus:quarkus-rest" --app /path/to/project
+
+# Wildcard on groupId
+ts4j query "pom-dependency = io.quarkus:*" --app /path/to/project
+
+# Search by substring
+ts4j query "pom-dependency contains hibernate" --app /path/to/project
+```
 
 #### Excluding directories during parsing
 

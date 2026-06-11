@@ -1,26 +1,32 @@
 package dev.snowdrop.treesitter4j.command;
 
 import dev.snowdrop.treesitter4j.util.ASTParserUtil;
-import io.roastedroot.treesitter.ast.ASTNode;
+import dev.snowdrop.treesitter4j.util.ASTQueryUtil;
+import dev.snowdrop.treesitter4j.util.ASTQueryUtil.AliasInfo;
+import dev.snowdrop.treesitter4j.util.ASTQueryUtil.ParsedQuery;
+import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryMatch;
+import io.roastedroot.treesitter.Language;
 import io.roastedroot.treesitter.ast.ASTTree;
 import org.aesh.command.Command;
 import org.aesh.command.CommandDefinition;
 import org.aesh.command.CommandResult;
 import org.aesh.command.invocation.CommandInvocation;
-import org.aesh.command.option.Argument;
+import org.aesh.command.option.Arguments;
 import org.aesh.command.option.Option;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @CommandDefinition(name = "query", description = "Query AST nodes by type, file, or text")
 public class QueryCommand implements Command<CommandInvocation> {
 
-    @Argument(description = "Node type to search for (e.g., class_declaration, method_declaration, import_declaration)", required = false)
-    private String nodeType;
+    @Arguments(description = "Query expression: <type> [= | contains <value>]  (e.g., class, 'class = MyApp', 'annotation contains Entity')")
+    private List<String> queryArgs;
 
     @Option(name = "file", shortName = 'f', description = "Filter results by file path substring", hasValue = true)
     private String fileFilter;
@@ -31,16 +37,44 @@ public class QueryCommand implements Command<CommandInvocation> {
     @Option(name = "app", shortName = 'a', description = "Path to the application directory (full or relative, defaults to current directory)", hasValue = true)
     private String appPath;
 
+    @Option(name = "language", shortName = 'L',
+            description = "Filter by language (java, yaml, json, xml, html, properties, markdown) or 'all' to search every language. Default: auto-detect from query type.",
+            hasValue = true)
+    private String languageOption;
+
     @Option(name = "reload", shortName = 'r', description = "Force re-parse of source files, save AST to the store, then query", hasValue = false)
     private boolean reload;
 
     @Override
     public CommandResult execute(CommandInvocation invocation) {
-        long startTime = System.nanoTime();
-
-        if (nodeType == null || nodeType.isBlank()) {
-            invocation.println("Usage: ts4j query <node-type> [--file filter] [--text filter] [--app path] [--reload]");
+        if (queryArgs == null || queryArgs.isEmpty()) {
+            printUsage(invocation);
             return CommandResult.FAILURE;
+        }
+
+        // Parse query expression
+        String rawQuery = String.join(" ", queryArgs);
+        ParsedQuery parsed = ASTQueryUtil.parseQuery(rawQuery);
+
+        // Apply --text as a "contains" filter when the expression has no inline operator
+        if (textFilter != null && !textFilter.isBlank() && parsed.operator() == null) {
+            parsed = new ParsedQuery(parsed.alias(), "contains", textFilter, parsed.aliasInfo());
+        }
+
+        // Resolve language override
+        Set<Language> langOverride = null;
+        if (languageOption != null) {
+            if ("all".equalsIgnoreCase(languageOption)) {
+                langOverride = EnumSet.allOf(Language.class);
+            } else {
+                try {
+                    langOverride = EnumSet.of(Language.valueOf(languageOption.toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    invocation.println("Unknown language: " + languageOption
+                            + ". Valid values: java, yaml, json, xml, html, properties, markdown, all");
+                    return CommandResult.FAILURE;
+                }
+            }
         }
 
         Path rootDir = ASTParserUtil.resolveAppDir(appPath);
@@ -49,10 +83,11 @@ public class QueryCommand implements Command<CommandInvocation> {
             return CommandResult.FAILURE;
         }
 
+        // Load AST trees
         List<ASTTree> trees;
+        long startTime = System.nanoTime();
 
         if (reload) {
-            // Force re-parse, save to store, then query
             try {
                 trees = ASTParserUtil.parseDirectory(rootDir, invocation::println);
                 if (!trees.isEmpty()) {
@@ -64,7 +99,6 @@ public class QueryCommand implements Command<CommandInvocation> {
                 return CommandResult.FAILURE;
             }
         } else if (ASTParserUtil.hasStore(rootDir)) {
-            // Existing store found — load from JSON
             try {
                 trees = ASTParserUtil.loadStore(rootDir);
             } catch (IOException e) {
@@ -72,7 +106,6 @@ public class QueryCommand implements Command<CommandInvocation> {
                 return CommandResult.FAILURE;
             }
         } else {
-            // No store — parse on the fly, keep in memory only
             try {
                 trees = ASTParserUtil.parseDirectory(rootDir, invocation::println);
             } catch (IOException e) {
@@ -86,91 +119,46 @@ public class QueryCommand implements Command<CommandInvocation> {
             return CommandResult.SUCCESS;
         }
 
-        long elapsedMs = (System.nanoTime() - startTime) / 1_000_000;
-        invocation.println("Elapsed Query time: " + elapsedMs + " ms");
+        // Execute query
+        List<QueryMatch> matches = ASTQueryUtil.execute(parsed, trees, fileFilter, langOverride);
 
-        return queryNodes(invocation, trees);
-    }
-
-    private CommandResult queryNodes(CommandInvocation invocation, List<ASTTree> trees) {
-        int totalMatches = 0;
-
-        for (ASTTree tree : trees) {
-            if (fileFilter != null && !matchesFileFilter(tree)) {
-                continue;
-            }
-
-            List<ASTNode> matches = new ArrayList<>();
-            findNodes(tree.getRoot(), nodeType, matches);
-
-            for (ASTNode node : matches) {
-                if (textFilter != null && !matchesTextFilter(node)) {
-                    continue;
-                }
-
-                String sourceFile = tree.getSourceFile() != null ? tree.getSourceFile() : "<unknown>";
-                String text = node.getText() != null ? truncate(node.getText(), 120) : "";
-                int startLine = byteToApproxLine(tree.getSourceCode(), node.getStartByte());
-
-                invocation.println("  " + sourceFile + ":" + startLine
-                        + "  [" + node.getType() + "] = " + text);
-                totalMatches++;
-            }
+        for (QueryMatch match : matches) {
+            invocation.println("  " + match.sourceFile() + ":" + match.line()
+                    + "  [" + match.alias() + "] = " + truncate(match.matchedText(), 120));
         }
+
+        long elapsedMs = (System.nanoTime() - startTime) / 1_000_000;
+        invocation.println(matches.size() + " match(es). Elapsed: " + elapsedMs + " ms");
+
         return CommandResult.SUCCESS;
     }
 
-    private boolean matchesFileFilter(ASTTree tree) {
-        String sourceFile = tree.getSourceFile();
-        return sourceFile != null && sourceFile.contains(fileFilter);
-    }
-
-    private boolean matchesTextFilter(ASTNode node) {
-        String text = nodeFullText(node);
-        return text != null && text.toLowerCase().contains(textFilter.toLowerCase());
-    }
-
-    private String nodeFullText(ASTNode node) {
-        if (node.getText() != null) {
-            return node.getText();
-        }
-        if (node.getChildren() != null) {
-            StringBuilder sb = new StringBuilder();
-            for (ASTNode child : node.getChildren()) {
-                String childText = nodeFullText(child);
-                if (childText != null) {
-                    if (sb.length() > 0) sb.append(" ");
-                    sb.append(childText);
-                }
+    private void printUsage(CommandInvocation invocation) {
+        invocation.println("Usage: ts4j query <expression> [--file filter] [--text filter] [--app path] [--language lang] [--reload]");
+        invocation.println("");
+        invocation.println("Query expression:");
+        invocation.println("  <type>                    List all nodes of the given type");
+        invocation.println("  <type> = <value>          Find nodes where name equals value");
+        invocation.println("  <type> = <pattern*>       Glob/wildcard match (* matches any characters)");
+        invocation.println("  <type> contains <value>   Find nodes where name contains value (case-insensitive)");
+        invocation.println("");
+        invocation.println("Available aliases:");
+        String currentLang = null;
+        for (Map.Entry<String, AliasInfo> e : ASTQueryUtil.getAliases().entrySet()) {
+            String lang = e.getValue().language().name().toLowerCase();
+            if (!lang.equals(currentLang)) {
+                currentLang = lang;
+                invocation.println(" " + lang + ":");
             }
-            return sb.length() > 0 ? sb.toString() : null;
+            invocation.println("  " + String.format("%-14s", e.getKey()) + " -> " + e.getValue().nodeType());
         }
-        return null;
-    }
-
-    private void findNodes(ASTNode node, String type, List<ASTNode> results) {
-        if (node == null) return;
-        if (node.getType() != null && node.getType().equals(type)) {
-            results.add(node);
-        }
-        if (node.getChildren() != null) {
-            for (ASTNode child : node.getChildren()) {
-                findNodes(child, type, results);
-            }
-        }
-    }
-
-    private int byteToApproxLine(String source, int byteOffset) {
-        if (source == null || byteOffset <= 0) return 1;
-        int line = 1;
-        int len = Math.min(byteOffset, source.length());
-        for (int i = 0; i < len; i++) {
-            if (source.charAt(i) == '\n') line++;
-        }
-        return line;
+        invocation.println("");
+        invocation.println("Raw tree-sitter node types (e.g., class_declaration) are also supported.");
+        invocation.println("Language is auto-detected from the query type. Use --language to override.");
     }
 
     private String truncate(String text, int maxLen) {
+        if (text == null) return "";
         int newline = text.indexOf('\n');
         if (newline >= 0) {
             text = text.substring(0, newline) + " ...";
