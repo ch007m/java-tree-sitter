@@ -199,7 +199,8 @@ public final class ASTParserUtil {
         AtomicInteger errorCount = new AtomicInteger();
 
         List<ASTTree> trees;
-        try (ExecutorService executor = Executors.newFixedThreadPool(10)) {
+        int poolSize = Runtime.getRuntime().availableProcessors();
+        try (ExecutorService executor = Executors.newFixedThreadPool(poolSize)) {
             // Submit all parsing tasks up front via stream, collecting futures eagerly
             List<Future<ASTTree>> futures = sourceFiles.stream()
                     .map(sf -> executor.submit(() -> {
@@ -280,22 +281,37 @@ public final class ASTParserUtil {
      */
     public static List<ASTTree> loadStore(Path rootDir) throws IOException {
         Path storeDir = rootDir.resolve(STORE_DIR);
-        List<ASTTree> trees = new ArrayList<>();
+        List<Path> jsonFiles;
         try (Stream<Path> walk = Files.walk(storeDir)) {
-            List<Path> jsonFiles = walk
+            jsonFiles = walk
                     .filter(p -> p.toString().endsWith(".json"))
                     .filter(Files::isRegularFile)
                     .toList();
+        }
 
-            for (Path jsonFile : jsonFiles) {
+        if (jsonFiles.isEmpty()) {
+            return List.of();
+        }
+
+        int poolSize = Runtime.getRuntime().availableProcessors();
+        try (ExecutorService executor = Executors.newFixedThreadPool(poolSize)) {
+            List<Future<ASTTree>> futures = jsonFiles.stream()
+                    .map(jsonFile -> executor.submit(() -> ASTJsonSerializer.fromJson(jsonFile)))
+                    .toList();
+
+            List<ASTTree> trees = new ArrayList<>(futures.size());
+            for (Future<ASTTree> future : futures) {
                 try {
-                    trees.add(ASTJsonSerializer.fromJson(jsonFile));
-                } catch (IOException e) {
+                    trees.add(future.get());
+                } catch (ExecutionException e) {
                     // Skip malformed files
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException("Interrupted while loading AST store", e);
                 }
             }
+            return trees;
         }
-        return trees;
     }
 
     /**
@@ -322,7 +338,8 @@ public final class ASTParserUtil {
         }
 
         // Write all JSON files in parallel using virtual threads
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        int poolSize = Runtime.getRuntime().availableProcessors();
+        try (ExecutorService executor = Executors.newFixedThreadPool(poolSize)) {
             List<Future<?>> futures = new ArrayList<>();
             for (ASTTree ast : trees) {
                 futures.add(executor.submit(() -> {
