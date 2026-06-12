@@ -1,5 +1,6 @@
 package dev.snowdrop.treesitter4j.util;
 
+import dev.snowdrop.treesitter4j.TreeSitterRuntime;
 import io.roastedroot.treesitter.Language;
 import io.roastedroot.treesitter.TreeSitter;
 import io.roastedroot.treesitter.TreeSitterException;
@@ -30,7 +31,6 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,9 +45,8 @@ import java.util.stream.Stream;
  */
 public final class ASTParserUtil {
 
-    public static final String STORE_DIR = ".ts4j";
-
-    private static TreeSitter treeSitterInstance;
+    public final String STORE_DIR = ".ts4j";
+    private TreeSitter ts;
 
     /**
      * Holds a source file's path, detected language, pre-loaded content, and relative path.
@@ -56,22 +55,15 @@ public final class ASTParserUtil {
      */
     record SourceFile(Path path, Language language, String content, String relativePath) {}
 
-    private ASTParserUtil() {}
-    /**
-     * Returns the shared singleton {@link TreeSitter} instance, created on first access.
-     */
-    public static TreeSitter getTreeSitter() {
-        if (treeSitterInstance == null) {
-            treeSitterInstance = TreeSitter.create();
-        }
-        return treeSitterInstance;
+    public ASTParserUtil() {
+        ts = TreeSitterRuntime.get();
     }
 
     /**
      * Find all source files under {@code root} that are recognized by {@link LanguageDetector},
      * excluding directories matching the configured patterns ({@code ts4j.parser.exclude-dirs}).
      */
-    public static List<Path> findSourceFiles(Path root) throws IOException {
+    public List<Path> findSourceFiles(Path root) throws IOException {
         List<String> excludePatterns = ConfigProvider.getConfig()
                 .getOptionalValue("ts4j.parser.exclude-dirs", String.class)
                 .map(s -> Arrays.stream(s.split(","))
@@ -114,7 +106,7 @@ public final class ASTParserUtil {
      * Each file's content is read during the walk so that downstream parsing tasks
      * receive pre-loaded data and perform no additional file I/O.
      */
-    static List<SourceFile> loadSourceFiles(Path root) throws IOException {
+    List<SourceFile> loadSourceFiles(Path root) throws IOException {
         List<String> excludePatterns = ConfigProvider.getConfig()
                 .getOptionalValue("ts4j.parser.exclude-dirs", String.class)
                 .map(s -> Arrays.stream(s.split(","))
@@ -161,7 +153,7 @@ public final class ASTParserUtil {
      * Check whether a directory name matches any of the given exclusion patterns.
      * Patterns ending with {@code *} are treated as prefix matches.
      */
-    public static boolean shouldExclude(String name, List<String> patterns) {
+    public boolean shouldExclude(String name, List<String> patterns) {
         for (String pattern : patterns) {
             if (pattern.endsWith("*")) {
                 if (name.startsWith(pattern.substring(0, pattern.length() - 1))) {
@@ -184,7 +176,7 @@ public final class ASTParserUtil {
      * @param logger   callback for progress/warning messages (may be {@code null})
      * @return list of parsed AST trees
      */
-    public static List<ASTTree> parseDirectory(Path rootDir, Consumer<String> logger) throws IOException {
+    public List<ASTTree> parseDirectory(Path rootDir, Consumer<String> logger) throws IOException {
         List<SourceFile> sourceFiles = loadSourceFiles(rootDir);
 
         if (sourceFiles.isEmpty()) {
@@ -205,8 +197,7 @@ public final class ASTParserUtil {
             // Submit all parsing tasks up front via stream, collecting futures eagerly
             List<Future<ASTTree>> futures = sourceFiles.stream()
                     .map(sf -> executor.submit(() -> {
-                        try (TreeSitter ts = TreeSitter.create();
-                             TreeSitterParser parser = ts.newParser(sf.language());
+                        try (TreeSitterParser parser = ts.newParser(sf.language());
                              TreeSitterTree tree = parser.parseString(sf.content())) {
 
                             if (tree == null) {
@@ -256,7 +247,7 @@ public final class ASTParserUtil {
      * Resolve a project root directory from a user-supplied path (full or relative).
      * Falls back to the current working directory if {@code appPath} is {@code null} or blank.
      */
-    public static Path resolveAppDir(String appPath) {
+    public Path resolveAppDir(String appPath) {
         if (appPath != null && !appPath.isBlank()) {
             return Paths.get(appPath).toAbsolutePath().normalize();
         }
@@ -266,7 +257,7 @@ public final class ASTParserUtil {
     /**
      * Check whether a persisted AST store exists and contains at least one JSON file.
      */
-    public static boolean hasStore(Path rootDir) {
+    public boolean hasStore(Path rootDir) {
         Path storeDir = rootDir.resolve(STORE_DIR);
         if (!Files.isDirectory(storeDir)) {
             return false;
@@ -281,7 +272,7 @@ public final class ASTParserUtil {
     /**
      * Load all AST trees from JSON files persisted under the store directory of {@code rootDir}.
      */
-    public static List<ASTTree> loadStore(Path rootDir) throws IOException {
+    public List<ASTTree> loadStore(Path rootDir) throws IOException {
         Path storeDir = rootDir.resolve(STORE_DIR);
         int poolSize = Runtime.getRuntime().availableProcessors();
         try (Stream<Path> walk = Files.walk(storeDir);
@@ -314,7 +305,7 @@ public final class ASTParserUtil {
      * Language directories are pre-created in one batch, then all JSON files
      * are written in parallel using virtual threads (I/O-bound work).
      */
-    public static void saveToStore(List<ASTTree> trees, Path rootDir) throws IOException {
+    public void saveToStore(List<ASTTree> trees, Path rootDir) throws IOException {
         if (trees.isEmpty()) {
             return;
         }
@@ -368,7 +359,7 @@ public final class ASTParserUtil {
     /**
      * Safely relativize a file path against a root, falling back to the absolute path on error.
      */
-    public static String relativize(Path root, Path file) {
+    public String relativize(Path root, Path file) {
         try {
             return root.relativize(file).toString();
         } catch (IllegalArgumentException e) {
@@ -379,7 +370,7 @@ public final class ASTParserUtil {
     /**
      * Compute a SHA-256 hex digest for the given input string.
      */
-    public static String sha256(String input) {
+    public String sha256(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));

@@ -11,9 +11,11 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ASTQueryUtilParseTest {
 
+    final ASTQueryUtil queryUtil = new ASTQueryUtil();
+
     @Test
     void parseAliasOnly() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("class");
+        ParsedQuery q = queryUtil.parseQuery("class");
         assertEquals("class", q.alias());
         assertNull(q.operator());
         assertNull(q.value());
@@ -23,7 +25,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parseAliasWithEquals() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("class = AppApplication");
+        ParsedQuery q = queryUtil.parseQuery("class = AppApplication");
         assertEquals("class", q.alias());
         assertEquals("=", q.operator());
         assertEquals("AppApplication", q.value());
@@ -32,7 +34,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parseAliasWithContains() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("annotation contains Entity");
+        ParsedQuery q = queryUtil.parseQuery("annotation contains Entity");
         assertEquals("annotation", q.alias());
         assertEquals("contains", q.operator());
         assertEquals("Entity", q.value());
@@ -41,7 +43,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parseIsCaseInsensitive() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("CLASS = Foo");
+        ParsedQuery q = queryUtil.parseQuery("CLASS = Foo");
         assertEquals("class", q.alias());
         assertEquals("=", q.operator());
         assertEquals("Foo", q.value());
@@ -50,7 +52,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parseRawNodeType() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("class_declaration");
+        ParsedQuery q = queryUtil.parseQuery("class_declaration");
         assertEquals("class_declaration", q.alias());
         assertNull(q.operator());
         assertNull(q.value());
@@ -59,7 +61,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parseRawNodeTypeWithOperator() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("class_declaration = MyClass");
+        ParsedQuery q = queryUtil.parseQuery("class_declaration = MyClass");
         assertEquals("class_declaration", q.alias());
         assertEquals("=", q.operator());
         assertEquals("MyClass", q.value());
@@ -67,7 +69,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parsePropertyAlias() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("property");
+        ParsedQuery q = queryUtil.parseQuery("property");
         assertEquals("property", q.alias());
         assertNotNull(q.aliasInfo());
         assertEquals(Language.PROPERTIES, q.aliasInfo().language());
@@ -75,7 +77,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parseElementAlias() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("element = dependency");
+        ParsedQuery q = queryUtil.parseQuery("element = dependency");
         assertEquals("element", q.alias());
         assertEquals("=", q.operator());
         assertEquals("dependency", q.value());
@@ -85,7 +87,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parseContainsPreservesValueCase() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("method contains getData");
+        ParsedQuery q = queryUtil.parseQuery("method contains getData");
         assertEquals("method", q.alias());
         assertEquals("contains", q.operator());
         assertEquals("getData", q.value(), "Value must preserve original case");
@@ -93,7 +95,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parseTrimsWhitespace() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("  class  =  MyApp  ");
+        ParsedQuery q = queryUtil.parseQuery("  class  =  MyApp  ");
         assertEquals("class", q.alias());
         assertEquals("=", q.operator());
         assertEquals("MyApp", q.value());
@@ -101,7 +103,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parsePomDependencyAlias() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-dependency = io.quarkus:quarkus-rest");
+        ParsedQuery q = queryUtil.parseQuery("pom-dependency = io.quarkus:quarkus-rest");
         assertEquals("pom-dependency", q.alias());
         assertEquals("=", q.operator());
         assertEquals("io.quarkus:quarkus-rest", q.value());
@@ -112,7 +114,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parsePomPluginAlias() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-plugin");
+        ParsedQuery q = queryUtil.parseQuery("pom-plugin");
         assertEquals("pom-plugin", q.alias());
         assertNull(q.operator());
         assertNull(q.value());

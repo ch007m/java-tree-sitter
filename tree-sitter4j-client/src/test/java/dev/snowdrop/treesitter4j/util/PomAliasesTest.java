@@ -1,5 +1,6 @@
 package dev.snowdrop.treesitter4j.util;
 
+import dev.snowdrop.treesitter4j.TreeSitterRuntime;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.AliasInfo;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.ParsedQuery;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryMatch;
@@ -21,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * {@code pom-parent}, {@code pom-extension}) with GAV composition.
  */
 class PomAliasesTest {
+
+    final ASTQueryUtil queryUtil = new ASTQueryUtil();
 
     static final String POM_XML = """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -87,7 +90,7 @@ class PomAliasesTest {
 
     @BeforeAll
     static void parsePom() {
-        TreeSitter ts = ASTParserUtil.getTreeSitter();
+        TreeSitter ts = TreeSitterRuntime.get();
         try (TreeSitterParser parser = ts.newParser()) {
             parser.setLanguage(Language.XML);
             try (TreeSitterTree tree = parser.parseString(POM_XML)) {
@@ -97,13 +100,14 @@ class PomAliasesTest {
         }
     }
 
+
     // -----------------------------------------------------------------------
     // Alias registration
     // -----------------------------------------------------------------------
 
     @Test
     void pomAliasesAreRegistered() {
-        var aliases = ASTQueryUtil.getAliases();
+        var aliases = queryUtil.getAliases();
         assertTrue(aliases.containsKey("pom-dependency"));
         assertTrue(aliases.containsKey("pom-plugin"));
         assertTrue(aliases.containsKey("pom-parent"));
@@ -112,7 +116,7 @@ class PomAliasesTest {
 
     @Test
     void pomAliasesTargetXmlLanguage() {
-        var aliases = ASTQueryUtil.getAliases();
+        var aliases = queryUtil.getAliases();
         assertEquals(Language.XML, aliases.get("pom-dependency").language());
         assertEquals(Language.XML, aliases.get("pom-plugin").language());
         assertEquals(Language.XML, aliases.get("pom-parent").language());
@@ -121,7 +125,7 @@ class PomAliasesTest {
 
     @Test
     void pomAliasesHaveComposer() {
-        var aliases = ASTQueryUtil.getAliases();
+        var aliases = queryUtil.getAliases();
         assertNotNull(aliases.get("pom-dependency").composer());
         assertNotNull(aliases.get("pom-plugin").composer());
         assertNotNull(aliases.get("pom-parent").composer());
@@ -134,8 +138,8 @@ class PomAliasesTest {
 
     @Test
     void queryAllDependencies() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-dependency");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-dependency");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(4, matches.size());
         List<String> gavs = matches.stream().map(QueryMatch::matchedText).toList();
@@ -147,8 +151,8 @@ class PomAliasesTest {
 
     @Test
     void queryDependencyExactMatchWithoutVersion() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-dependency = io.quarkus:quarkus-rest");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-dependency = io.quarkus:quarkus-rest");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(1, matches.size());
         assertEquals("io.quarkus:quarkus-rest", matches.get(0).matchedText());
@@ -156,8 +160,8 @@ class PomAliasesTest {
 
     @Test
     void queryDependencyExactMatchWithVersion() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-dependency = io.quarkus:quarkus-hibernate-orm-panache:3.0.0");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-dependency = io.quarkus:quarkus-hibernate-orm-panache:3.0.0");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(1, matches.size());
         assertEquals("io.quarkus:quarkus-hibernate-orm-panache:3.0.0", matches.get(0).matchedText());
@@ -165,8 +169,8 @@ class PomAliasesTest {
 
     @Test
     void queryDependencyWildcardOnGroupId() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-dependency = io.quarkus:*");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-dependency = io.quarkus:*");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(3, matches.size());
         assertTrue(matches.stream().allMatch(m -> m.matchedText().startsWith("io.quarkus:")));
@@ -174,8 +178,8 @@ class PomAliasesTest {
 
     @Test
     void queryDependencyContains() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-dependency contains panache");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-dependency contains panache");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(1, matches.size());
         assertTrue(matches.get(0).matchedText().contains("panache"));
@@ -183,8 +187,8 @@ class PomAliasesTest {
 
     @Test
     void queryDependencyNoMatch() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-dependency = com.nonexistent:no-such-lib");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-dependency = com.nonexistent:no-such-lib");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertTrue(matches.isEmpty());
     }
@@ -195,8 +199,8 @@ class PomAliasesTest {
 
     @Test
     void queryAllPlugins() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-plugin");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-plugin");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(2, matches.size());
         List<String> gavs = matches.stream().map(QueryMatch::matchedText).toList();
@@ -206,8 +210,8 @@ class PomAliasesTest {
 
     @Test
     void queryPluginExactMatch() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-plugin = io.quarkus:quarkus-maven-plugin:3.0.0");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-plugin = io.quarkus:quarkus-maven-plugin:3.0.0");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(1, matches.size());
         assertEquals("io.quarkus:quarkus-maven-plugin:3.0.0", matches.get(0).matchedText());
@@ -215,8 +219,8 @@ class PomAliasesTest {
 
     @Test
     void queryPluginWildcard() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-plugin = org.apache.maven.plugins:*");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-plugin = org.apache.maven.plugins:*");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(1, matches.size());
         assertTrue(matches.get(0).matchedText().startsWith("org.apache.maven.plugins:"));
@@ -228,8 +232,8 @@ class PomAliasesTest {
 
     @Test
     void queryParent() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-parent");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-parent");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(1, matches.size());
         assertEquals("org.springframework.boot:spring-boot-starter-parent:3.2.0",
@@ -238,8 +242,8 @@ class PomAliasesTest {
 
     @Test
     void queryParentExactMatch() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-parent = org.springframework.boot:spring-boot-starter-parent:3.2.0");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-parent = org.springframework.boot:spring-boot-starter-parent:3.2.0");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(1, matches.size());
     }
@@ -250,8 +254,8 @@ class PomAliasesTest {
 
     @Test
     void queryExtension() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-extension");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-extension");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(1, matches.size());
         assertEquals("io.opentelemetry.contrib:opentelemetry-maven-extension:1.0.0",
@@ -260,8 +264,8 @@ class PomAliasesTest {
 
     @Test
     void queryExtensionContains() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-extension contains opentelemetry");
-        List<QueryMatch> matches = ASTQueryUtil.execute(q, pomTrees, null, null);
+        ParsedQuery q = queryUtil.parseQuery("pom-extension contains opentelemetry");
+        List<QueryMatch> matches = queryUtil.execute(q, pomTrees, null, null);
 
         assertEquals(1, matches.size());
     }
