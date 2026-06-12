@@ -30,6 +30,7 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,11 +57,10 @@ public final class ASTParserUtil {
     record SourceFile(Path path, Language language, String content, String relativePath) {}
 
     private ASTParserUtil() {}
-
     /**
-     * Returns the shared singleton {@link TreeSitter} instance, created lazily on first access.
+     * Returns the shared singleton {@link TreeSitter} instance, created on first access.
      */
-    public static synchronized TreeSitter getTreeSitter() {
+    public static TreeSitter getTreeSitter() {
         if (treeSitterInstance == null) {
             treeSitterInstance = TreeSitter.create();
         }
@@ -178,12 +178,10 @@ public final class ASTParserUtil {
      * Parse all supported source files under {@code rootDir} in parallel using a fixed thread pool.
      * <p>
      * File contents are bulk-loaded during the directory walk so that parsing tasks
-     * receive pre-loaded data and perform no additional file I/O. Each task gets its own
-     * {@link TreeSitter} and {@link TreeSitterParser} instance (no native resources shared
-     * across threads).
+     * receive pre-loaded data and perform no additional file I/O.
      *
-     * @param rootDir the project root directory
-     * @param logger  callback for progress/warning messages (may be {@code null})
+     * @param rootDir  the project root directory
+     * @param logger   callback for progress/warning messages (may be {@code null})
      * @return list of parsed AST trees
      */
     public static List<ASTTree> parseDirectory(Path rootDir, Consumer<String> logger) throws IOException {
@@ -194,11 +192,14 @@ public final class ASTParserUtil {
             return List.of();
         }
 
-        if (logger != null) logger.accept("Found " + sourceFiles.size() + " source file(s). Parsing in parallel...");
+        if (logger != null) {
+            logger.accept("Found " + sourceFiles.size() + " source file(s). Parsing in parallel ...");
+        }
 
         AtomicInteger errorCount = new AtomicInteger();
 
         List<ASTTree> trees;
+
         int poolSize = Runtime.getRuntime().availableProcessors();
         try (ExecutorService executor = Executors.newFixedThreadPool(poolSize)) {
             // Submit all parsing tasks up front via stream, collecting futures eagerly
@@ -221,6 +222,7 @@ public final class ASTParserUtil {
                                 logger.accept("  WARN: language " + sf.language() + " not supported at runtime, skipping " + sf.relativePath());
                             return null;
                         } catch (Exception e) {
+                            e.printStackTrace();
                             if (logger != null)
                                 logger.accept("  ERROR parsing " + sf.relativePath() + ": " + e.getMessage());
                             errorCount.incrementAndGet();
