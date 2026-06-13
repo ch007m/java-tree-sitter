@@ -2,8 +2,6 @@ package dev.snowdrop.treesitter4j.util;
 
 import dev.snowdrop.treesitter4j.TreeSitterRuntime;
 import io.roastedroot.treesitter.Language;
-import io.roastedroot.treesitter.TreeSitter;
-import io.roastedroot.treesitter.TreeSitterException;
 import io.roastedroot.treesitter.TreeSitterParser;
 import io.roastedroot.treesitter.TreeSitterTree;
 import io.roastedroot.treesitter.ast.ASTExporter;
@@ -29,8 +27,10 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,7 +46,6 @@ import java.util.stream.Stream;
 public final class ASTParserUtil {
 
     public final String STORE_DIR = ".ts4j";
-    private TreeSitter ts;
 
     /**
      * Holds a source file's path, detected language, pre-loaded content, and relative path.
@@ -54,52 +53,6 @@ public final class ASTParserUtil {
      * receive content directly without additional I/O.
      */
     record SourceFile(Path path, Language language, String content, String relativePath) {}
-
-    public ASTParserUtil() {
-        ts = TreeSitterRuntime.get();
-    }
-
-    /**
-     * Find all source files under {@code root} that are recognized by {@link LanguageDetector},
-     * excluding directories matching the configured patterns ({@code ts4j.parser.exclude-dirs}).
-     */
-    public List<Path> findSourceFiles(Path root) throws IOException {
-        List<String> excludePatterns = ConfigProvider.getConfig()
-                .getOptionalValue("ts4j.parser.exclude-dirs", String.class)
-                .map(s -> Arrays.stream(s.split(","))
-                        .map(String::trim)
-                        .filter(p -> !p.isEmpty())
-                        .toList())
-                .orElse(List.of());
-
-        List<Path> files = new ArrayList<>();
-        Files.walkFileTree(root, EnumSet.of(FileVisitOption.FOLLOW_LINKS),
-                Integer.MAX_VALUE, new SimpleFileVisitor<>() {
-
-                    @Override
-                    public FileVisitResult preVisitDirectory(@Nonnull Path dir, @Nonnull BasicFileAttributes attrs) {
-                        String name = dir.getFileName() != null ? dir.getFileName().toString() : "";
-                        if (shouldExclude(name, excludePatterns)) {
-                            return FileVisitResult.SKIP_SUBTREE;
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (LanguageDetector.detect(file).isPresent()) {
-                            files.add(file);
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public FileVisitResult visitFileFailed(Path file, IOException exc) {
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-        return files;
-    }
 
     /**
      * Walk the directory tree and bulk-load all recognized source files in a single pass.
@@ -193,13 +146,27 @@ public final class ASTParserUtil {
         List<ASTTree> trees;
 
         int poolSize = Runtime.getRuntime().availableProcessors();
+
         try (ExecutorService executor = Executors.newFixedThreadPool(poolSize)) {
+            ConcurrentHashMap<Long, Integer> threadSlot = new ConcurrentHashMap<>();
+            AtomicInteger nextSlot = new AtomicInteger();
+
             // Submit all parsing tasks up front via stream, collecting futures eagerly
             List<Future<ASTTree>> futures = sourceFiles.stream()
                     .map(sf -> executor.submit(() -> {
-                        try (TreeSitterParser parser = ts.newParser(sf.language());
-                             TreeSitterTree tree = parser.parseString(sf.content())) {
+                        int slot = threadSlot.computeIfAbsent(
+                                Thread.currentThread().getId(),
+                                k -> nextSlot.getAndIncrement()
+                        );
+                        TreeSitterParser parser = TreeSitterRuntime.getParsers().get(sf.language());
 
+                        if (parser == null) {
+                            if (logger != null)
+                                logger.accept("  WARN: language " + sf.language() + " not supported at runtime, skipping " + sf.relativePath());
+                            return null;
+                        }
+
+                        try (TreeSitterTree tree = parser.parseString(sf.content())) {
                             if (tree == null) {
                                 if (logger != null)
                                     logger.accept("  WARN: failed to parse " + sf.relativePath());
@@ -208,10 +175,6 @@ public final class ASTParserUtil {
                             }
 
                             return ASTExporter.export(tree, sf.language(), sf.content(), sf.relativePath());
-                        } catch (TreeSitterException e) {
-                            if (logger != null)
-                                logger.accept("  WARN: language " + sf.language() + " not supported at runtime, skipping " + sf.relativePath());
-                            return null;
                         } catch (Exception e) {
                             e.printStackTrace();
                             if (logger != null)

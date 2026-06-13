@@ -190,64 +190,58 @@ public final class ASTQueryUtil {
             treesByLang.computeIfAbsent(lang, k -> new ArrayList<>()).add(tree);
         }
 
-        // Execute query for each language group
-        try (TreeSitterParser parser = ts.newParser()) {
-            for (var entry : treesByLang.entrySet()) {
-                Language lang = entry.getKey();
+        // Execute query for each language group using pre-created parsers
+        for (var entry : treesByLang.entrySet()) {
+            Language lang = entry.getKey();
+            TreeSitterParser parser = TreeSitterRuntime.getParser(lang);
+            if (parser == null) continue;
 
-                try {
-                    parser.setLanguage(lang);
-                } catch (TreeSitterException e) {
-                    continue; // language not available at runtime
-                }
+            TreeSitterQuery tsQuery;
+            try {
+                tsQuery = ts.newQuery(lang, queryPattern);
+            } catch (TreeSitterException e) {
+                // Pattern not valid for this language — skip entire group
+                continue;
+            }
 
-                TreeSitterQuery tsQuery;
-                try {
-                    tsQuery = ts.newQuery(lang, queryPattern);
-                } catch (TreeSitterException e) {
-                    // Pattern not valid for this language — skip entire group
-                    continue;
-                }
+            try {
+                for (ASTTree astTree : entry.getValue()) {
+                    String source = astTree.getSourceCode();
+                    if (source == null || source.isEmpty())
+                        continue;
 
-                try {
-                    for (ASTTree astTree : entry.getValue()) {
-                        String source = astTree.getSourceCode();
-                        if (source == null || source.isEmpty())
+                    try (TreeSitterTree tree = parser.parseString(source)) {
+                        if (tree == null)
                             continue;
 
-                        try (TreeSitterTree tree = parser.parseString(source)) {
-                            if (tree == null)
+                        List<TreeSitterQueryResult> results = tsQuery.exec(tree.rootNode(), source);
+
+                        for (TreeSitterQueryResult result : results) {
+                            if (!"name".equals(result.name()))
                                 continue;
 
-                            List<TreeSitterQueryResult> results = tsQuery.exec(tree.rootNode(), source);
+                            String text = source.substring(
+                                    result.node().startByte(), result.node().endByte());
 
-                            for (TreeSitterQueryResult result : results) {
-                                if (!"name".equals(result.name()))
+                            // Apply value composer if present (e.g. GAV composition for POM aliases)
+                            if (query.aliasInfo() != null && query.aliasInfo().composer() != null) {
+                                text = query.aliasInfo().composer().compose(text);
+                                if (text == null)
                                     continue;
-
-                                String text = source.substring(
-                                        result.node().startByte(), result.node().endByte());
-
-                                // Apply value composer if present (e.g. GAV composition for POM aliases)
-                                if (query.aliasInfo() != null && query.aliasInfo().composer() != null) {
-                                    text = query.aliasInfo().composer().compose(text);
-                                    if (text == null)
-                                        continue;
-                                }
-
-                                if (!matchesFilter(text, query.operator(), query.value()))
-                                    continue;
-
-                                int line = byteToLine(source, result.node().startByte());
-                                matches.add(new QueryMatch(
-                                        astTree.getSourceFile() != null ? astTree.getSourceFile() : "<unknown>",
-                                        line, query.alias(), text));
                             }
+
+                            if (!matchesFilter(text, query.operator(), query.value()))
+                                continue;
+
+                            int line = byteToLine(source, result.node().startByte());
+                            matches.add(new QueryMatch(
+                                    astTree.getSourceFile() != null ? astTree.getSourceFile() : "<unknown>",
+                                    line, query.alias(), text));
                         }
                     }
-                } finally {
-                    tsQuery.close();
                 }
+            } finally {
+                tsQuery.close();
             }
         }
 
