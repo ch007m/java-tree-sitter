@@ -13,13 +13,13 @@ The project contains three modules, each using a different Java tree-sitter libr
 
 | Module              | Library                                                                                                        | Binding             | Languages                                       |
 |---------------------|----------------------------------------------------------------------------------------------------------------|---------------------|--------------------------------------------------|
-| `tree-sitter4j-client` | [tree-sitter4j](https://github.com/roastedroot/tree-sitter4j) (`io.roastedroot`) + [Chicory](https://github.com/dylibso/chicory) WASM | Pure Java (WASM)    | Java, YAML, JSON, Properties, HTML, XML, Markdown |
+| `treesitter4j-client` | [treesitter4j](https://github.com/roastedroot/treesitter4j) (`io.roastedroot`) + [Chicory](https://github.com/dylibso/chicory) WASM | Pure Java (WASM)    | Java, YAML, JSON, Properties, HTML, XML, Markdown |
 | `bonede`            | [tree-sitter-ng](https://github.com/bonede/tree-sitter-ng) (`io.github.bonede`)                                | JNI                 | Java                                             |
 | `languagepack`      | [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sitter-language-pack) (`dev.kreuzberg`)      | JNI + auto-download | Java, YAML, JSON, XML, HTML, JS, ...             |
 
-### tree-sitter4j client
+### treesitter4j client
 
-Uses the **[tree-sitter4j](https://github.com/roastedroot/tree-sitter4j)** library which runs tree-sitter entirely in pure Java -- no native C libraries or JNI required. The tree-sitter core and language grammars are compiled to WASM and executed via the [Chicory](https://github.com/dylibso/chicory) WebAssembly runtime.
+Uses the **[treesitter4j](https://github.com/roastedroot/treesitter4j)** library which runs tree-sitter entirely in pure Java -- no native C libraries or JNI required. The tree-sitter core and language grammars are compiled to WASM and executed via the [Chicory](https://github.com/dylibso/chicory) WebAssembly runtime.
 
 - Polyglot: supports Java, YAML, JSON, XML, Properties, HTML, Markdown
 - Automatic language detection from file extension
@@ -35,13 +35,13 @@ Uses the **[tree-sitter4j](https://github.com/roastedroot/tree-sitter4j)** libra
 
 ```bash
 # Build and run
-mvn clean install -pl tree-sitter4j-client
-java -jar tree-sitter4j-client/target/tree-sitter4j-client-1.0.0-SNAPSHOT-runner.jar
+mvn clean install -pl treesitter4j-client
+java -jar treesitter4j-client/target/treesitter4j-client-1.0.0-SNAPSHOT-runner.jar
 ```
 
 Using jbang
 ```
-jbang app install --force --name ts4j dev.snowdrop:tree-sitter4j-client:1.0.0-SNAPSHOT:runner
+jbang app install --force --name ts4j dev.snowdrop:treesitter4j-client:1.0.0-SNAPSHOT:runner
 
 ts4j parse /path/to/project
 ts4j query class --app /path/to/project
@@ -145,7 +145,7 @@ To override the defaults, pass the property on the command line:
 
 ```bash
 java -Dts4j.parser.exclude-dirs=".*,target,node_modules,build,dist" \
-     -jar tree-sitter4j-client/target/tree-sitter4j-client-1.0.0-SNAPSHOT-runner.jar
+     -jar treesitter4j-client/target/treesitter4j-client-1.0.0-SNAPSHOT-runner.jar
 
 # Or with jbang
 ts4j -Dts4j.parser.exclude-dirs=".*,build" parse /path/to/project

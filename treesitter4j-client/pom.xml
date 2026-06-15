@@ -10,8 +10,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>tree-sitter4j-client</artifactId>
-    <name>tree-sitter :: tree-sitter4j</name>
+    <artifactId>treesitter4j-client</artifactId>
+    <name>tree-sitter :: treesitter4j</name>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>io.roastedroot</groupId>
-            <artifactId>tree-sitter4j</artifactId>
+            <artifactId>treesitter4j</artifactId>
             <version>999-SNAPSHOT</version>
         </dependency>
         <dependency>
