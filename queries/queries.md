@@ -1,7 +1,10 @@
 ## Examples of tree-sitter queries
 
 Execute the following bash commands at the root of this project
-to play with "S-Expression" queries using tree-sitter client
+to play with "S-Expression" queries using tree-sitter client.
+
+**NOTE**: Install first the `tree-sitter` client and the java grammar and configure the client to point to the directory containing the 
+grammars !
 
 ```shell
 # Query :: class Name = AppApplication
