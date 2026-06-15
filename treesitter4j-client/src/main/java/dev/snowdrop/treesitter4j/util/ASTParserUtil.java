@@ -1,6 +1,6 @@
 package dev.snowdrop.treesitter4j.util;
 
-import dev.snowdrop.treesitter4j.TreeSitterRuntime;
+import dev.snowdrop.treesitter4j.TreeSitterPool;
 import io.roastedroot.treesitter.Language;
 import io.roastedroot.treesitter.TreeSitterParser;
 import io.roastedroot.treesitter.TreeSitterTree;
@@ -143,18 +143,21 @@ public final class ASTParserUtil {
         AtomicInteger errorCount = new AtomicInteger();
         List<ASTTree> trees;
 
-        try (ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
+        int poolSize = Runtime.getRuntime().availableProcessors();
+        try (ExecutorService executor = Executors.newFixedThreadPool(poolSize);
+             TreeSitterPool pool = TreeSitterPool.create(poolSize)) {
             List<Future<ASTTree>> futures = sourceFiles.stream()
                     .map(sf -> executor.submit(() -> {
-                        TreeSitterParser parser = TreeSitterRuntime.getParsers().get(sf.language());
-
-                        if (parser == null) {
-                            if (logger != null)
-                                logger.accept("  WARN: language " + sf.language() + " not supported at runtime, skipping " + sf.relativePath());
+                        TreeSitterPool.Loan loan;
+                        try {
+                            loan = pool.borrow();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
                             return null;
                         }
-
-                        try (TreeSitterTree tree = parser.parseString(sf.content())) {
+                        try (loan;
+                             TreeSitterParser parser = loan.instance().newParser(sf.language());
+                             TreeSitterTree tree = parser.parseString(sf.content())) {
                             if (tree == null) {
                                 if (logger != null)
                                     logger.accept("  WARN: failed to parse " + sf.relativePath());
@@ -163,14 +166,19 @@ public final class ASTParserUtil {
                             }
                             return ASTExporter.export(tree, sf.language(), sf.content(), sf.relativePath());
                         } catch (TrapException ex) {
-                            // TODO: Investigate why we got a "Trapped on unreachable instruction"
+                            loan.discard();
+                            if (Boolean.getBoolean("ts4j.parser.fail-fast")) {
+                                throw new RuntimeException("Parsing failed for " + sf.relativePath(), ex);
+                            }
                             if (logger != null)
                                 logger.accept("  Trapping exception " + ex.getMessage() + " ( " + ex.getMessage() + " ) ");
                             errorCount.incrementAndGet();
                             return null;
                         } catch (Exception e) {
-                            // TODO: Investigate why we got
-                            // out of bounds memory access: attempted to access address: 1953656732 but limit is: 2359296 and size: 1
+                            loan.discard();
+                            if (Boolean.getBoolean("ts4j.parser.fail-fast")) {
+                                throw new RuntimeException("Parsing failed for " + sf.relativePath(), e);
+                            }
                             if (logger != null)
                                 logger.accept("  ERROR parsing " + sf.relativePath() + ": " + e.getMessage() + " ( " + e.getMessage() + " ) ");
                             errorCount.incrementAndGet();
