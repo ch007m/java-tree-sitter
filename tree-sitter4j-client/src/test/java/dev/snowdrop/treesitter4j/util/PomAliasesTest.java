@@ -1,7 +1,6 @@
 package dev.snowdrop.treesitter4j.util;
 
 import dev.snowdrop.treesitter4j.TreeSitterRuntime;
-import dev.snowdrop.treesitter4j.util.ASTQueryUtil.AliasInfo;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.ParsedQuery;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryMatch;
 import io.roastedroot.treesitter.Language;
@@ -106,7 +105,7 @@ class PomAliasesTest {
     // -----------------------------------------------------------------------
 
     @Test
-    void pomAliasesAreRegistered() {
+    void pomGetTypeAndQueryExpressionAreRegistered() {
         var aliases = queryUtil.getAliases();
         assertTrue(aliases.containsKey("pom-dependency"));
         assertTrue(aliases.containsKey("pom-plugin"));
@@ -115,7 +114,7 @@ class PomAliasesTest {
     }
 
     @Test
-    void pomAliasesTargetXmlLanguage() {
+    void pomGetTypeAndQueryExpressionTargetXmlLanguage() {
         var aliases = queryUtil.getAliases();
         assertEquals(Language.XML, aliases.get("pom-dependency").language());
         assertEquals(Language.XML, aliases.get("pom-plugin").language());
@@ -124,7 +123,7 @@ class PomAliasesTest {
     }
 
     @Test
-    void pomAliasesHaveComposer() {
+    void pomGetTypeAndQueryExpressionHaveComposer() {
         var aliases = queryUtil.getAliases();
         assertNotNull(aliases.get("pom-dependency").composer());
         assertNotNull(aliases.get("pom-plugin").composer());

@@ -1,6 +1,7 @@
 package dev.snowdrop.treesitter4j.util;
 
 import dev.snowdrop.treesitter4j.TreeSitterRuntime;
+import dev.snowdrop.treesitter4j.util.lang.*;
 import io.roastedroot.treesitter.Language;
 import io.roastedroot.treesitter.TreeSitter;
 import io.roastedroot.treesitter.TreeSitterException;
@@ -11,11 +12,7 @@ import io.roastedroot.treesitter.TreeSitterTree;
 import io.roastedroot.treesitter.ast.ASTNode;
 import io.roastedroot.treesitter.ast.ASTTree;
 
-import dev.snowdrop.treesitter4j.util.lang.JavaAliases;
-import dev.snowdrop.treesitter4j.util.lang.LanguageAliases;
-import dev.snowdrop.treesitter4j.util.lang.PomAliases;
-import dev.snowdrop.treesitter4j.util.lang.PropertiesAliases;
-import dev.snowdrop.treesitter4j.util.lang.XmlAliases;
+import dev.snowdrop.treesitter4j.util.lang.LanguageDictionary;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +25,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Query utility that maps human-friendly type aliases to tree-sitter S-expression query patterns and executes them via the
+ * Query utility that maps human-friendly types to tree-sitter S-expression query patterns and executes them via the
  * tree-sitter query API.
  * <p>
  * Each alias is associated with a specific {@link Language}, so only files belonging to that language are searched. Raw
@@ -46,15 +43,15 @@ import java.util.regex.Pattern;
 public final class ASTQueryUtil {
 
     private TreeSitter ts;
-    private final Map<String, AliasInfo> ALIASES;
+    private final Map<String, QueryInfo> TYPE_QUERY_LIST;
 
     public ASTQueryUtil() {
         ts = TreeSitterRuntime.get();
-        Map<String, AliasInfo> m = new LinkedHashMap<>();
-        for (LanguageAliases la : LANGUAGE_ALIASES) {
-            m.putAll(la.aliases());
+        Map<String, QueryInfo> m = new LinkedHashMap<>();
+        for (LanguageDictionary la : LANGUAGES) {
+            m.putAll(la.getTypeAndQueryExpression());
         }
-        ALIASES = Collections.unmodifiableMap(m);
+        TYPE_QUERY_LIST = Collections.unmodifiableMap(m);
     }
 
     /**
@@ -66,16 +63,15 @@ public final class ASTQueryUtil {
         String compose(String capturedText);
     }
 
-    /** Describes a human-friendly alias for a tree-sitter node type. */
-    public record AliasInfo(String nodeType, String queryPattern, Language language, ValueComposer composer) {
-        /** Convenience constructor for aliases without a composer. */
-        public AliasInfo(String nodeType, String queryPattern, Language language) {
+    /** Describes a human-friendly query pattern for a tree-sitter node type. */
+    public record QueryInfo(String nodeType, String queryPattern, Language language, ValueComposer composer) {
+        public QueryInfo(String nodeType, String queryPattern, Language language) {
             this(nodeType, queryPattern, language, null);
         }
     }
 
     /** A parsed query expression (alias, optional operator and value, resolved alias info). */
-    public record ParsedQuery(String alias, String operator, String value, AliasInfo aliasInfo) {
+    public record ParsedQuery(String alias, String operator, String value, QueryInfo queryInfo) {
     }
 
     /** A single query match result. */
@@ -87,16 +83,16 @@ public final class ASTQueryUtil {
     // Built by aggregating per-language LanguageAliases implementations.
     // ---------------------------------------------------------------------------
 
-    private final List<LanguageAliases> LANGUAGE_ALIASES = List.of(
-            new JavaAliases(),
-            new PropertiesAliases(),
-            new XmlAliases(),
-            new PomAliases()
+    private final List<LanguageDictionary> LANGUAGES = List.of(
+            new JavaDictionnary(),
+            new PropertiesDictionnary(),
+            new XmlDictionnary(),
+            new PomDictionnary()
     );
 
     /** Returns the read-only alias dictionary. */
-    public Map<String, AliasInfo> getAliases() {
-        return ALIASES;
+    public Map<String, QueryInfo> getAliases() {
+        return TYPE_QUERY_LIST;
     }
 
     // ---------------------------------------------------------------------------
@@ -120,9 +116,9 @@ public final class ASTQueryUtil {
         // Check for "contains" operator (with surrounding spaces)
         int containsIdx = trimmed.toLowerCase().indexOf(" contains ");
         if (containsIdx > 0) {
-            String alias = trimmed.substring(0, containsIdx).trim().toLowerCase();
-            String value = normalizeQueryValue(alias, trimmed.substring(containsIdx + " contains ".length()).trim());
-            return new ParsedQuery(alias, "contains", value, ALIASES.get(alias));
+            String type = trimmed.substring(0, containsIdx).trim().toLowerCase();
+            String value = normalizeQueryValue(type, trimmed.substring(containsIdx + " contains ".length()).trim());
+            return new ParsedQuery(type, "contains", value, TYPE_QUERY_LIST.get(type));
         }
 
         // Check for "=" operator
@@ -130,12 +126,12 @@ public final class ASTQueryUtil {
         if (eqIdx > 0) {
             String alias = trimmed.substring(0, eqIdx).trim().toLowerCase();
             String value = normalizeQueryValue(alias, trimmed.substring(eqIdx + 1).trim());
-            return new ParsedQuery(alias, "=", value, ALIASES.get(alias));
+            return new ParsedQuery(alias, "=", value, TYPE_QUERY_LIST.get(alias));
         }
 
         // No operator — plain type/alias
         String alias = trimmed.toLowerCase();
-        return new ParsedQuery(alias, null, null, ALIASES.get(alias));
+        return new ParsedQuery(alias, null, null, TYPE_QUERY_LIST.get(alias));
     }
 
     // ---------------------------------------------------------------------------
@@ -160,10 +156,10 @@ public final class ASTQueryUtil {
         String queryPattern;
         Set<Language> targetLanguages;
 
-        if (query.aliasInfo() != null) {
+        if (query.queryInfo() != null) {
             // Known alias — use its pattern and language
-            queryPattern = query.aliasInfo().queryPattern();
-            targetLanguages = EnumSet.of(query.aliasInfo().language());
+            queryPattern = query.queryInfo().queryPattern();
+            targetLanguages = EnumSet.of(query.queryInfo().language());
         } else {
             // Raw node type — generic pattern, auto-detect language from trees
             queryPattern = "(" + query.alias() + ") @name";
@@ -224,8 +220,8 @@ public final class ASTQueryUtil {
                                     result.node().startByte(), result.node().endByte());
 
                             // Apply value composer if present (e.g. GAV composition for POM aliases)
-                            if (query.aliasInfo() != null && query.aliasInfo().composer() != null) {
-                                text = query.aliasInfo().composer().compose(text);
+                            if (query.queryInfo() != null && query.queryInfo().composer() != null) {
+                                text = query.queryInfo().composer().compose(text);
                                 if (text == null)
                                     continue;
                             }

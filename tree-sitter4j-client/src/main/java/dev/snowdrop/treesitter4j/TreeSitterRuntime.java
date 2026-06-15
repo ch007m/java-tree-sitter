@@ -26,13 +26,11 @@ public class TreeSitterRuntime {
      * Also pre-creates parsers for all supported languages.
      */
     public static TreeSitter get() {
-        TreeSitter ts = instance;
-        if (ts == null) {
-            ts = TreeSitter.create();
-            instance = ts;
-            parsers = createParserMap(ts);
+        if (instance == null) {
+            instance = TreeSitter.create();
+            parsers = createParserMap(instance);
         }
-        return ts;
+        return instance;
     }
 
     /**

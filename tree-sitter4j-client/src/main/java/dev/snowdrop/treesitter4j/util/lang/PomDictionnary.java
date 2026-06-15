@@ -1,6 +1,6 @@
 package dev.snowdrop.treesitter4j.util.lang;
 
-import dev.snowdrop.treesitter4j.util.ASTQueryUtil.AliasInfo;
+import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryInfo;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.ValueComposer;
 import io.roastedroot.treesitter.Language;
 
@@ -21,22 +21,22 @@ import java.util.regex.Pattern;
  * {@link ValueComposer} to extract the GAV string. Elements whose tag name
  * does not match the expected type are skipped (composer returns {@code null}).
  */
-public final class PomAliases implements LanguageAliases {
+public final class PomDictionnary implements LanguageDictionary {
 
     /** Pattern to capture entire XML elements. */
     private static final String ELEMENT_PATTERN = "(element) @name";
 
-    private static final Map<String, AliasInfo> ALIASES;
+    private static final Map<String, QueryInfo> ALIASES;
 
     static {
-        Map<String, AliasInfo> m = new LinkedHashMap<>();
-        m.put("pom-dependency", new AliasInfo("element", ELEMENT_PATTERN, Language.XML,
+        Map<String, QueryInfo> m = new LinkedHashMap<>();
+        m.put("pom-dependency", new QueryInfo("element", ELEMENT_PATTERN, Language.XML,
                 gavComposer("dependency")));
-        m.put("pom-plugin", new AliasInfo("element", ELEMENT_PATTERN, Language.XML,
+        m.put("pom-plugin", new QueryInfo("element", ELEMENT_PATTERN, Language.XML,
                 gavComposer("plugin")));
-        m.put("pom-parent", new AliasInfo("element", ELEMENT_PATTERN, Language.XML,
+        m.put("pom-parent", new QueryInfo("element", ELEMENT_PATTERN, Language.XML,
                 gavComposer("parent")));
-        m.put("pom-extension", new AliasInfo("element", ELEMENT_PATTERN, Language.XML,
+        m.put("pom-extension", new QueryInfo("element", ELEMENT_PATTERN, Language.XML,
                 gavComposer("extension")));
         ALIASES = Collections.unmodifiableMap(m);
     }
@@ -47,7 +47,7 @@ public final class PomAliases implements LanguageAliases {
     }
 
     @Override
-    public Map<String, AliasInfo> aliases() {
+    public Map<String, QueryInfo> getTypeAndQueryExpression() {
         return ALIASES;
     }
 

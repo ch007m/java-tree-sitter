@@ -9,6 +9,7 @@ import io.roastedroot.treesitter.ast.ASTJsonSerializer;
 import io.roastedroot.treesitter.ast.ASTTree;
 import jakarta.annotation.Nonnull;
 import org.eclipse.microprofile.config.ConfigProvider;
+import run.endive.runtime.TrapException;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -27,10 +28,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HexFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -142,22 +141,11 @@ public final class ASTParserUtil {
         }
 
         AtomicInteger errorCount = new AtomicInteger();
-
         List<ASTTree> trees;
 
-        int poolSize = Runtime.getRuntime().availableProcessors();
-
-        try (ExecutorService executor = Executors.newFixedThreadPool(poolSize)) {
-            ConcurrentHashMap<Long, Integer> threadSlot = new ConcurrentHashMap<>();
-            AtomicInteger nextSlot = new AtomicInteger();
-
-            // Submit all parsing tasks up front via stream, collecting futures eagerly
+        try (ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
             List<Future<ASTTree>> futures = sourceFiles.stream()
                     .map(sf -> executor.submit(() -> {
-                        int slot = threadSlot.computeIfAbsent(
-                                Thread.currentThread().getId(),
-                                k -> nextSlot.getAndIncrement()
-                        );
                         TreeSitterParser parser = TreeSitterRuntime.getParsers().get(sf.language());
 
                         if (parser == null) {
@@ -173,12 +161,15 @@ public final class ASTParserUtil {
                                 errorCount.incrementAndGet();
                                 return null;
                             }
-
                             return ASTExporter.export(tree, sf.language(), sf.content(), sf.relativePath());
+                        } catch (TrapException ex) {
+                            // TODO: Investigate why we got a "Trapped on unreachable instruction"
+                            return null;
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            // TODO: Investigate why we got
+                            // out of bounds memory access: attempted to access address: 1953656732 but limit is: 2359296 and size: 1
                             if (logger != null)
-                                logger.accept("  ERROR parsing " + sf.relativePath() + ": " + e.getMessage());
+                                logger.accept("  ERROR parsing " + sf.relativePath() + ": " + e.getMessage() + " ( " + e.getCause().getLocalizedMessage() + " ) ");
                             errorCount.incrementAndGet();
                             return null;
                         }

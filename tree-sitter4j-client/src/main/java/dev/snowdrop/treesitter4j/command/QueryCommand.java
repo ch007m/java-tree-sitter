@@ -2,7 +2,7 @@ package dev.snowdrop.treesitter4j.command;
 
 import dev.snowdrop.treesitter4j.util.ASTParserUtil;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil;
-import dev.snowdrop.treesitter4j.util.ASTQueryUtil.AliasInfo;
+import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryInfo;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.ParsedQuery;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryMatch;
 import io.roastedroot.treesitter.Language;
@@ -61,7 +61,7 @@ public class QueryCommand implements Command<CommandInvocation> {
 
         // Apply --text as a "contains" filter when the expression has no inline operator
         if (textFilter != null && !textFilter.isBlank() && parsed.operator() == null) {
-            parsed = new ParsedQuery(parsed.alias(), "contains", textFilter, parsed.aliasInfo());
+            parsed = new ParsedQuery(parsed.alias(), "contains", textFilter, parsed.queryInfo());
         }
 
         // Resolve language override
@@ -136,7 +136,7 @@ public class QueryCommand implements Command<CommandInvocation> {
         return CommandResult.SUCCESS;
     }
 
-    private void printUsage(CommandInvocation invocation, Map<String, AliasInfo> aliases) {
+    private void printUsage(CommandInvocation invocation, Map<String, QueryInfo> aliases) {
         invocation.println("Usage: ts4j query <expression> [--file filter] [--text filter] [--app path] [--language lang] [--reload]");
         invocation.println("");
         invocation.println("Query expression:");
@@ -147,7 +147,7 @@ public class QueryCommand implements Command<CommandInvocation> {
         invocation.println("");
         invocation.println("Available aliases:");
         String currentLang = null;
-        for (Map.Entry<String, AliasInfo> e : aliases.entrySet()) {
+        for (Map.Entry<String, QueryInfo> e : aliases.entrySet()) {
             String lang = e.getValue().language().name().toLowerCase();
             if (!lang.equals(currentLang)) {
                 currentLang = lang;

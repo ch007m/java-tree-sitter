@@ -19,8 +19,8 @@ class ASTQueryUtilParseTest {
         assertEquals("class", q.alias());
         assertNull(q.operator());
         assertNull(q.value());
-        assertNotNull(q.aliasInfo());
-        assertEquals(Language.JAVA, q.aliasInfo().language());
+        assertNotNull(q.queryInfo());
+        assertEquals(Language.JAVA, q.queryInfo().language());
     }
 
     @Test
@@ -29,7 +29,7 @@ class ASTQueryUtilParseTest {
         assertEquals("class", q.alias());
         assertEquals("=", q.operator());
         assertEquals("AppApplication", q.value());
-        assertNotNull(q.aliasInfo());
+        assertNotNull(q.queryInfo());
     }
 
     @Test
@@ -38,7 +38,7 @@ class ASTQueryUtilParseTest {
         assertEquals("annotation", q.alias());
         assertEquals("contains", q.operator());
         assertEquals("Entity", q.value());
-        assertNotNull(q.aliasInfo());
+        assertNotNull(q.queryInfo());
     }
 
     @Test
@@ -47,7 +47,7 @@ class ASTQueryUtilParseTest {
         assertEquals("class", q.alias());
         assertEquals("=", q.operator());
         assertEquals("Foo", q.value());
-        assertNotNull(q.aliasInfo());
+        assertNotNull(q.queryInfo());
     }
 
     @Test
@@ -56,7 +56,7 @@ class ASTQueryUtilParseTest {
         assertEquals("class_declaration", q.alias());
         assertNull(q.operator());
         assertNull(q.value());
-        assertNull(q.aliasInfo(), "Raw node types should not resolve to an alias");
+        assertNull(q.queryInfo(), "Raw node types should not resolve to an alias");
     }
 
     @Test
@@ -71,8 +71,8 @@ class ASTQueryUtilParseTest {
     void parsePropertyAlias() {
         ParsedQuery q = queryUtil.parseQuery("property");
         assertEquals("property", q.alias());
-        assertNotNull(q.aliasInfo());
-        assertEquals(Language.PROPERTIES, q.aliasInfo().language());
+        assertNotNull(q.queryInfo());
+        assertEquals(Language.PROPERTIES, q.queryInfo().language());
     }
 
     @Test
@@ -81,8 +81,8 @@ class ASTQueryUtilParseTest {
         assertEquals("element", q.alias());
         assertEquals("=", q.operator());
         assertEquals("dependency", q.value());
-        assertNotNull(q.aliasInfo());
-        assertEquals(Language.XML, q.aliasInfo().language());
+        assertNotNull(q.queryInfo());
+        assertEquals(Language.XML, q.queryInfo().language());
     }
 
     @Test
@@ -107,9 +107,9 @@ class ASTQueryUtilParseTest {
         assertEquals("pom-dependency", q.alias());
         assertEquals("=", q.operator());
         assertEquals("io.quarkus:quarkus-rest", q.value());
-        assertNotNull(q.aliasInfo());
-        assertEquals(Language.XML, q.aliasInfo().language());
-        assertNotNull(q.aliasInfo().composer(), "POM aliases must have a composer");
+        assertNotNull(q.queryInfo());
+        assertEquals(Language.XML, q.queryInfo().language());
+        assertNotNull(q.queryInfo().composer(), "POM aliases must have a composer");
     }
 
     @Test
@@ -118,8 +118,8 @@ class ASTQueryUtilParseTest {
         assertEquals("pom-plugin", q.alias());
         assertNull(q.operator());
         assertNull(q.value());
-        assertNotNull(q.aliasInfo());
-        assertEquals(Language.XML, q.aliasInfo().language());
-        assertNotNull(q.aliasInfo().composer());
+        assertNotNull(q.queryInfo());
+        assertEquals(Language.XML, q.queryInfo().language());
+        assertNotNull(q.queryInfo().composer());
     }
 }
