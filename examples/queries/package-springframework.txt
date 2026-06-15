@@ -1,3 +1,0 @@
-(import_declaration
-  (scoped_identifier) @import.path
-  (#match? @import.path "^org\\.springframework")) @springframework.import
