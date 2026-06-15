@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@CommandDefinition(name = "syntax", description = "Query AST nodes by type, file, or text")
+@CommandDefinition(name = "query", description = "Query AST nodes by type, file, or text")
 public class QueryCommand implements Command<CommandInvocation> {
 
     @Arguments(description = "Query expression: <type> [= | contains <value>]  (e.g., class, 'class = MyApp', 'annotation contains Entity')")
