@@ -1,8 +1,7 @@
 package dev.snowdrop.treesitter4j.util;
 
+import dev.snowdrop.treesitter4j.TreeSitterRuntime;
 import io.roastedroot.treesitter.Language;
-import io.roastedroot.treesitter.TreeSitter;
-import io.roastedroot.treesitter.TreeSitterException;
 import io.roastedroot.treesitter.TreeSitterParser;
 import io.roastedroot.treesitter.TreeSitterTree;
 import io.roastedroot.treesitter.ast.ASTExporter;
@@ -10,8 +9,10 @@ import io.roastedroot.treesitter.ast.ASTJsonSerializer;
 import io.roastedroot.treesitter.ast.ASTTree;
 import jakarta.annotation.Nonnull;
 import org.eclipse.microprofile.config.ConfigProvider;
+import run.endive.runtime.TrapException;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
@@ -27,8 +28,15 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HexFormat;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -36,27 +44,21 @@ import java.util.stream.Stream;
  */
 public final class ASTParserUtil {
 
-    public static final String STORE_DIR = ".ts4j";
-
-    private static TreeSitter treeSitterInstance;
-
-    private ASTParserUtil() {}
+    public final String STORE_DIR = ".ts4j";
 
     /**
-     * Returns the shared singleton {@link TreeSitter} instance, created lazily on first access.
+     * Holds a source file's path, detected language, pre-loaded content, and relative path.
+     * Used to bulk-load file data during the directory walk so that parsing tasks
+     * receive content directly without additional I/O.
      */
-    public static synchronized TreeSitter getTreeSitter() {
-        if (treeSitterInstance == null) {
-            treeSitterInstance = TreeSitter.create();
-        }
-        return treeSitterInstance;
-    }
+    record SourceFile(Path path, Language language, String content, String relativePath) {}
 
     /**
-     * Find all source files under {@code root} that are recognized by {@link LanguageDetector},
-     * excluding directories matching the configured patterns ({@code ts4j.parser.exclude-dirs}).
+     * Walk the directory tree and bulk-load all recognized source files in a single pass.
+     * Each file's content is read during the walk so that downstream parsing tasks
+     * receive pre-loaded data and perform no additional file I/O.
      */
-    public static List<Path> findSourceFiles(Path root) throws IOException {
+    List<SourceFile> loadSourceFiles(Path root) throws IOException {
         List<String> excludePatterns = ConfigProvider.getConfig()
                 .getOptionalValue("ts4j.parser.exclude-dirs", String.class)
                 .map(s -> Arrays.stream(s.split(","))
@@ -65,7 +67,7 @@ public final class ASTParserUtil {
                         .toList())
                 .orElse(List.of());
 
-        List<Path> files = new ArrayList<>();
+        List<SourceFile> files = new ArrayList<>();
         Files.walkFileTree(root, EnumSet.of(FileVisitOption.FOLLOW_LINKS),
                 Integer.MAX_VALUE, new SimpleFileVisitor<>() {
 
@@ -80,9 +82,14 @@ public final class ASTParserUtil {
 
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (LanguageDetector.detect(file).isPresent()) {
-                            files.add(file);
-                        }
+                        LanguageDetector.detect(file).ifPresent(lang -> {
+                            try {
+                                String content = Files.readString(file);
+                                files.add(new SourceFile(file, lang, content, relativize(root, file)));
+                            } catch (IOException e) {
+                                // Skip unreadable files
+                            }
+                        });
                         return FileVisitResult.CONTINUE;
                     }
 
@@ -98,7 +105,7 @@ public final class ASTParserUtil {
      * Check whether a directory name matches any of the given exclusion patterns.
      * Patterns ending with {@code *} are treated as prefix matches.
      */
-    public static boolean shouldExclude(String name, List<String> patterns) {
+    public boolean shouldExclude(String name, List<String> patterns) {
         for (String pattern : patterns) {
             if (pattern.endsWith("*")) {
                 if (name.startsWith(pattern.substring(0, pattern.length() - 1))) {
@@ -112,67 +119,79 @@ public final class ASTParserUtil {
     }
 
     /**
-     * Parse all supported source files under {@code rootDir} and return the resulting AST trees in memory.
+     * Parse all supported source files under {@code rootDir} in parallel using a fixed thread pool.
+     * <p>
+     * File contents are bulk-loaded during the directory walk so that parsing tasks
+     * receive pre-loaded data and perform no additional file I/O.
      *
-     * @param rootDir the project root directory
-     * @param logger  callback for progress/warning messages (may be {@code null})
+     * @param rootDir  the project root directory
+     * @param logger   callback for progress/warning messages (may be {@code null})
      * @return list of parsed AST trees
      */
-    public static List<ASTTree> parseDirectory(Path rootDir, Consumer<String> logger) throws IOException {
-        List<Path> sourceFiles = findSourceFiles(rootDir);
+    public List<ASTTree> parseDirectory(Path rootDir, Consumer<String> logger) throws IOException {
+        List<SourceFile> sourceFiles = loadSourceFiles(rootDir);
 
         if (sourceFiles.isEmpty()) {
             if (logger != null) logger.accept("No supported source files found under " + rootDir);
             return List.of();
         }
 
-        if (logger != null) logger.accept("Found " + sourceFiles.size() + " source file(s). Parsing...");
-
-        List<ASTTree> trees = new ArrayList<>();
-        int errorCount = 0;
-
-        TreeSitter ts = getTreeSitter();
-        try (TreeSitterParser parser = ts.newParser()) {
-
-            for (Path file : sourceFiles) {
-                Optional<Language> langOpt = LanguageDetector.detect(file);
-                if (langOpt.isEmpty()) {
-                    continue;
-                }
-                Language lang = langOpt.get();
-
-                try {
-                    String source = Files.readString(file);
-
-                    try {
-                        parser.setLanguage(lang);
-                    } catch (TreeSitterException e) {
-                        if (logger != null)
-                            logger.accept("  WARN: language " + lang + " not supported at runtime, skipping " + relativize(rootDir, file));
-                        continue;
-                    }
-
-                    try (TreeSitterTree tree = parser.parseString(source)) {
-                        if (tree == null) {
-                            if (logger != null)
-                                logger.accept("  WARN: failed to parse " + relativize(rootDir, file));
-                            errorCount++;
-                            continue;
-                        }
-
-                        ASTTree ast = ASTExporter.export(tree, lang, source, relativize(rootDir, file));
-                        trees.add(ast);
-                    }
-                } catch (Exception e) {
-                    if (logger != null)
-                        logger.accept("  ERROR parsing " + relativize(rootDir, file) + ": " + e.getMessage());
-                    errorCount++;
-                }
-            }
+        if (logger != null) {
+            logger.accept("Found " + sourceFiles.size() + " source file(s). Parsing in parallel ...");
         }
 
-        if (logger != null && errorCount > 0) {
-            logger.accept(errorCount + " file(s) failed to parse.");
+        AtomicInteger errorCount = new AtomicInteger();
+        List<ASTTree> trees;
+
+        try (ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
+            List<Future<ASTTree>> futures = sourceFiles.stream()
+                    .map(sf -> executor.submit(() -> {
+                        TreeSitterParser parser = TreeSitterRuntime.getParsers().get(sf.language());
+
+                        if (parser == null) {
+                            if (logger != null)
+                                logger.accept("  WARN: language " + sf.language() + " not supported at runtime, skipping " + sf.relativePath());
+                            return null;
+                        }
+
+                        try (TreeSitterTree tree = parser.parseString(sf.content())) {
+                            if (tree == null) {
+                                if (logger != null)
+                                    logger.accept("  WARN: failed to parse " + sf.relativePath());
+                                errorCount.incrementAndGet();
+                                return null;
+                            }
+                            return ASTExporter.export(tree, sf.language(), sf.content(), sf.relativePath());
+                        } catch (TrapException ex) {
+                            // TODO: Investigate why we got a "Trapped on unreachable instruction"
+                            return null;
+                        } catch (Exception e) {
+                            // TODO: Investigate why we got
+                            // out of bounds memory access: attempted to access address: 1953656732 but limit is: 2359296 and size: 1
+                            if (logger != null)
+                                logger.accept("  ERROR parsing " + sf.relativePath() + ": " + e.getMessage() + " ( " + e.getCause().getLocalizedMessage() + " ) ");
+                            errorCount.incrementAndGet();
+                            return null;
+                        }
+                    }))
+                    .toList();
+
+            // Collect results, filtering out nulls (failed parses)
+            trees = futures.stream()
+                    .map(future -> {
+                        try {
+                            return future.get();
+                        } catch (ExecutionException | InterruptedException e) {
+                            errorCount.incrementAndGet();
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+        }
+
+        if (logger != null && errorCount.get() > 0) {
+            logger.accept(errorCount.get() + " file(s) failed to parse.");
         }
 
         return trees;
@@ -182,7 +201,7 @@ public final class ASTParserUtil {
      * Resolve a project root directory from a user-supplied path (full or relative).
      * Falls back to the current working directory if {@code appPath} is {@code null} or blank.
      */
-    public static Path resolveAppDir(String appPath) {
+    public Path resolveAppDir(String appPath) {
         if (appPath != null && !appPath.isBlank()) {
             return Paths.get(appPath).toAbsolutePath().normalize();
         }
@@ -192,7 +211,7 @@ public final class ASTParserUtil {
     /**
      * Check whether a persisted AST store exists and contains at least one JSON file.
      */
-    public static boolean hasStore(Path rootDir) {
+    public boolean hasStore(Path rootDir) {
         Path storeDir = rootDir.resolve(STORE_DIR);
         if (!Files.isDirectory(storeDir)) {
             return false;
@@ -207,48 +226,94 @@ public final class ASTParserUtil {
     /**
      * Load all AST trees from JSON files persisted under the store directory of {@code rootDir}.
      */
-    public static List<ASTTree> loadStore(Path rootDir) throws IOException {
+    public List<ASTTree> loadStore(Path rootDir) throws IOException {
         Path storeDir = rootDir.resolve(STORE_DIR);
-        List<ASTTree> trees = new ArrayList<>();
-        try (Stream<Path> walk = Files.walk(storeDir)) {
-            List<Path> jsonFiles = walk
+        int poolSize = Runtime.getRuntime().availableProcessors();
+        try (Stream<Path> walk = Files.walk(storeDir);
+             ExecutorService executor = Executors.newFixedThreadPool(poolSize)) {
+            List<Future<ASTTree>> futures = walk
                     .filter(p -> p.toString().endsWith(".json"))
                     .filter(Files::isRegularFile)
+                    .map(jsonFile -> executor.submit(() -> ASTJsonSerializer.fromJson(jsonFile)))
                     .toList();
 
-            for (Path jsonFile : jsonFiles) {
+            List<ASTTree> trees = new ArrayList<>(futures.size());
+            for (Future<ASTTree> future : futures) {
                 try {
-                    trees.add(ASTJsonSerializer.fromJson(jsonFile));
-                } catch (IOException e) {
+                    trees.add(future.get());
+                } catch (ExecutionException e) {
                     // Skip malformed files
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException("Interrupted while loading AST store", e);
                 }
             }
+            return trees;
         }
-        return trees;
     }
 
     /**
      * Save a list of AST trees to the JSON store under {@code rootDir/.ts4j/},
      * grouped by language and named by SHA-256 hash of the source file path.
+     * <p>
+     * Language directories are pre-created in one batch, then all JSON files
+     * are written in parallel using virtual threads (I/O-bound work).
      */
-    public static void saveToStore(List<ASTTree> trees, Path rootDir) throws IOException {
+    public void saveToStore(List<ASTTree> trees, Path rootDir) throws IOException {
+        if (trees.isEmpty()) {
+            return;
+        }
+
         Path storeDir = rootDir.resolve(STORE_DIR);
         Files.createDirectories(storeDir);
 
-        for (ASTTree ast : trees) {
-            String langName = ast.getLanguage() != null ? ast.getLanguage().toLowerCase() : "unknown";
-            Path langDir = storeDir.resolve(langName);
-            Files.createDirectories(langDir);
-            String sha = sha256(ast.getSourceFile());
-            Path jsonFile = langDir.resolve(sha + ".json");
-            ASTJsonSerializer.toJson(ast, jsonFile);
+        // Pre-create all needed language directories in one pass
+        Set<String> languages = trees.stream()
+                .map(ast -> ast.getLanguage() != null ? ast.getLanguage().toLowerCase() : "unknown")
+                .collect(Collectors.toSet());
+        for (String lang : languages) {
+            Files.createDirectories(storeDir.resolve(lang));
+        }
+
+        // Write all JSON files in parallel using virtual threads
+        int poolSize = Runtime.getRuntime().availableProcessors();
+        try (ExecutorService executor = Executors.newFixedThreadPool(poolSize)) {
+            List<Future<?>> futures = new ArrayList<>();
+            for (ASTTree ast : trees) {
+                futures.add(executor.submit(() -> {
+                    String langName = ast.getLanguage() != null ? ast.getLanguage().toLowerCase() : "unknown";
+                    Path langDir = storeDir.resolve(langName);
+                    String sha = sha256(ast.getSourceFile());
+                    Path jsonFile = langDir.resolve(sha + ".json");
+                    try {
+                        ASTJsonSerializer.toJson(ast, jsonFile);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }));
+            }
+
+            for (Future<?> future : futures) {
+                try {
+                    future.get();
+                } catch (ExecutionException e) {
+                    Throwable cause = e.getCause();
+                    if (cause instanceof UncheckedIOException uio) {
+                        throw uio.getCause();
+                    }
+                    throw new IOException("Failed to save AST JSON", cause);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException("Interrupted while saving AST store", e);
+                }
+            }
         }
     }
 
     /**
      * Safely relativize a file path against a root, falling back to the absolute path on error.
      */
-    public static String relativize(Path root, Path file) {
+    public String relativize(Path root, Path file) {
         try {
             return root.relativize(file).toString();
         } catch (IllegalArgumentException e) {
@@ -259,7 +324,7 @@ public final class ASTParserUtil {
     /**
      * Compute a SHA-256 hex digest for the given input string.
      */
-    public static String sha256(String input) {
+    public String sha256(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));

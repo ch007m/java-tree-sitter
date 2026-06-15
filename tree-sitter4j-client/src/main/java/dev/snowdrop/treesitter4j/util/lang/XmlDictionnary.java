@@ -1,6 +1,6 @@
 package dev.snowdrop.treesitter4j.util.lang;
 
-import dev.snowdrop.treesitter4j.util.ASTQueryUtil.AliasInfo;
+import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryInfo;
 import io.roastedroot.treesitter.Language;
 
 import java.util.Collections;
@@ -14,15 +14,15 @@ import java.util.Map;
  * <a href="https://github.com/tree-sitter-grammars/tree-sitter-xml/blob/master/xml/src/node-types.json">
  *   tree-sitter-xml node types</a>
  */
-public final class XmlAliases implements LanguageAliases {
+public final class XmlDictionnary implements LanguageDictionary {
 
-    private static final Map<String, AliasInfo> ALIASES;
+    private static final Map<String, QueryInfo> ALIASES;
 
     static {
-        Map<String, AliasInfo> m = new LinkedHashMap<>();
-        m.put("element", new AliasInfo("element",
+        Map<String, QueryInfo> m = new LinkedHashMap<>();
+        m.put("element", new QueryInfo("element",
                 "(element (start_tag (tag_name) @name))", Language.XML));
-        m.put("attribute", new AliasInfo("attribute",
+        m.put("attribute", new QueryInfo("attribute",
                 "(attribute (attribute_name) @name)", Language.XML));
         ALIASES = Collections.unmodifiableMap(m);
     }
@@ -33,7 +33,7 @@ public final class XmlAliases implements LanguageAliases {
     }
 
     @Override
-    public Map<String, AliasInfo> aliases() {
+    public Map<String, QueryInfo> getTypeAndQueryExpression() {
         return ALIASES;
     }
 }

@@ -23,6 +23,7 @@ public class ParseCommand implements Command<CommandInvocation> {
     @Override
     public CommandResult execute(CommandInvocation invocation) {
         long startTime = System.nanoTime();
+        ASTParserUtil parserUtil = new ASTParserUtil();
 
         Path rootDir = Paths.get(projectPath).toAbsolutePath().normalize();
         if (!Files.isDirectory(rootDir)) {
@@ -32,7 +33,7 @@ public class ParseCommand implements Command<CommandInvocation> {
 
         List<ASTTree> trees;
         try {
-            trees = ASTParserUtil.parseDirectory(rootDir, invocation::println);
+            trees = parserUtil.parseDirectory(rootDir, invocation::println);
         } catch (IOException e) {
             invocation.println("Error parsing directory: " + e.getMessage());
             return CommandResult.FAILURE;
@@ -43,7 +44,7 @@ public class ParseCommand implements Command<CommandInvocation> {
         }
 
         try {
-            ASTParserUtil.saveToStore(trees, rootDir);
+            parserUtil.saveToStore(trees, rootDir);
         } catch (IOException e) {
             invocation.println("Error saving AST store: " + e.getMessage());
             return CommandResult.FAILURE;
@@ -51,7 +52,7 @@ public class ParseCommand implements Command<CommandInvocation> {
 
         long elapsedMs = (System.nanoTime() - startTime) / 1_000_000;
         invocation.println("Parsing complete: " + trees.size() + " file(s) succeeded.");
-        invocation.println("AST store saved to " + rootDir.resolve(ASTParserUtil.STORE_DIR));
+        invocation.println("AST store saved to " + rootDir.resolve(parserUtil.STORE_DIR));
         invocation.println("Elapsed time: " + elapsedMs + " ms");
 
         return CommandResult.SUCCESS;

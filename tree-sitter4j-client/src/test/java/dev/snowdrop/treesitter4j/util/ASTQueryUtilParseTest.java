@@ -11,55 +11,57 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ASTQueryUtilParseTest {
 
+    final ASTQueryUtil queryUtil = new ASTQueryUtil();
+
     @Test
     void parseAliasOnly() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("class");
+        ParsedQuery q = queryUtil.parseQuery("class");
         assertEquals("class", q.alias());
         assertNull(q.operator());
         assertNull(q.value());
-        assertNotNull(q.aliasInfo());
-        assertEquals(Language.JAVA, q.aliasInfo().language());
+        assertNotNull(q.queryInfo());
+        assertEquals(Language.JAVA, q.queryInfo().language());
     }
 
     @Test
     void parseAliasWithEquals() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("class = AppApplication");
+        ParsedQuery q = queryUtil.parseQuery("class = AppApplication");
         assertEquals("class", q.alias());
         assertEquals("=", q.operator());
         assertEquals("AppApplication", q.value());
-        assertNotNull(q.aliasInfo());
+        assertNotNull(q.queryInfo());
     }
 
     @Test
     void parseAliasWithContains() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("annotation contains Entity");
+        ParsedQuery q = queryUtil.parseQuery("annotation contains Entity");
         assertEquals("annotation", q.alias());
         assertEquals("contains", q.operator());
         assertEquals("Entity", q.value());
-        assertNotNull(q.aliasInfo());
+        assertNotNull(q.queryInfo());
     }
 
     @Test
     void parseIsCaseInsensitive() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("CLASS = Foo");
+        ParsedQuery q = queryUtil.parseQuery("CLASS = Foo");
         assertEquals("class", q.alias());
         assertEquals("=", q.operator());
         assertEquals("Foo", q.value());
-        assertNotNull(q.aliasInfo());
+        assertNotNull(q.queryInfo());
     }
 
     @Test
     void parseRawNodeType() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("class_declaration");
+        ParsedQuery q = queryUtil.parseQuery("class_declaration");
         assertEquals("class_declaration", q.alias());
         assertNull(q.operator());
         assertNull(q.value());
-        assertNull(q.aliasInfo(), "Raw node types should not resolve to an alias");
+        assertNull(q.queryInfo(), "Raw node types should not resolve to an alias");
     }
 
     @Test
     void parseRawNodeTypeWithOperator() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("class_declaration = MyClass");
+        ParsedQuery q = queryUtil.parseQuery("class_declaration = MyClass");
         assertEquals("class_declaration", q.alias());
         assertEquals("=", q.operator());
         assertEquals("MyClass", q.value());
@@ -67,25 +69,25 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parsePropertyAlias() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("property");
+        ParsedQuery q = queryUtil.parseQuery("property");
         assertEquals("property", q.alias());
-        assertNotNull(q.aliasInfo());
-        assertEquals(Language.PROPERTIES, q.aliasInfo().language());
+        assertNotNull(q.queryInfo());
+        assertEquals(Language.PROPERTIES, q.queryInfo().language());
     }
 
     @Test
     void parseElementAlias() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("element = dependency");
+        ParsedQuery q = queryUtil.parseQuery("element = dependency");
         assertEquals("element", q.alias());
         assertEquals("=", q.operator());
         assertEquals("dependency", q.value());
-        assertNotNull(q.aliasInfo());
-        assertEquals(Language.XML, q.aliasInfo().language());
+        assertNotNull(q.queryInfo());
+        assertEquals(Language.XML, q.queryInfo().language());
     }
 
     @Test
     void parseContainsPreservesValueCase() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("method contains getData");
+        ParsedQuery q = queryUtil.parseQuery("method contains getData");
         assertEquals("method", q.alias());
         assertEquals("contains", q.operator());
         assertEquals("getData", q.value(), "Value must preserve original case");
@@ -93,7 +95,7 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parseTrimsWhitespace() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("  class  =  MyApp  ");
+        ParsedQuery q = queryUtil.parseQuery("  class  =  MyApp  ");
         assertEquals("class", q.alias());
         assertEquals("=", q.operator());
         assertEquals("MyApp", q.value());
@@ -101,23 +103,23 @@ class ASTQueryUtilParseTest {
 
     @Test
     void parsePomDependencyAlias() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-dependency = io.quarkus:quarkus-rest");
+        ParsedQuery q = queryUtil.parseQuery("pom-dependency = io.quarkus:quarkus-rest");
         assertEquals("pom-dependency", q.alias());
         assertEquals("=", q.operator());
         assertEquals("io.quarkus:quarkus-rest", q.value());
-        assertNotNull(q.aliasInfo());
-        assertEquals(Language.XML, q.aliasInfo().language());
-        assertNotNull(q.aliasInfo().composer(), "POM aliases must have a composer");
+        assertNotNull(q.queryInfo());
+        assertEquals(Language.XML, q.queryInfo().language());
+        assertNotNull(q.queryInfo().composer(), "POM aliases must have a composer");
     }
 
     @Test
     void parsePomPluginAlias() {
-        ParsedQuery q = ASTQueryUtil.parseQuery("pom-plugin");
+        ParsedQuery q = queryUtil.parseQuery("pom-plugin");
         assertEquals("pom-plugin", q.alias());
         assertNull(q.operator());
         assertNull(q.value());
-        assertNotNull(q.aliasInfo());
-        assertEquals(Language.XML, q.aliasInfo().language());
-        assertNotNull(q.aliasInfo().composer());
+        assertNotNull(q.queryInfo());
+        assertEquals(Language.XML, q.queryInfo().language());
+        assertNotNull(q.queryInfo().composer());
     }
 }

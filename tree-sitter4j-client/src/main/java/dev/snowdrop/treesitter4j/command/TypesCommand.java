@@ -28,16 +28,17 @@ public class TypesCommand implements Command<CommandInvocation> {
 
     @Override
     public CommandResult execute(CommandInvocation invocation) {
-        Path rootDir = ASTParserUtil.resolveAppDir(appPath);
-        if (!ASTParserUtil.hasStore(rootDir)) {
+        ASTParserUtil parserUtil = new ASTParserUtil();
+        Path rootDir = parserUtil.resolveAppDir(appPath);
+        if (!parserUtil.hasStore(rootDir)) {
             invocation.println("No AST store found. Run 'ts4j parse <path>' first.");
-            invocation.println("Looked in: " + rootDir.resolve(ASTParserUtil.STORE_DIR));
+            invocation.println("Looked in: " + rootDir.resolve(parserUtil.STORE_DIR));
             return CommandResult.FAILURE;
         }
 
         List<ASTTree> trees;
         try {
-            trees = ASTParserUtil.loadStore(rootDir);
+            trees = parserUtil.loadStore(rootDir);
         } catch (IOException e) {
             invocation.println("Error loading AST store: " + e.getMessage());
             return CommandResult.FAILURE;

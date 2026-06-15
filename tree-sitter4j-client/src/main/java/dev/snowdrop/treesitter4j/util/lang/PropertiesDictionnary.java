@@ -1,6 +1,6 @@
 package dev.snowdrop.treesitter4j.util.lang;
 
-import dev.snowdrop.treesitter4j.util.ASTQueryUtil.AliasInfo;
+import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryInfo;
 import io.roastedroot.treesitter.Language;
 
 import java.util.Collections;
@@ -14,13 +14,13 @@ import java.util.Map;
  * <a href="https://github.com/tree-sitter-grammars/tree-sitter-properties/blob/main/src/node-types.json">
  *   tree-sitter-properties node types</a>
  */
-public final class PropertiesAliases implements LanguageAliases {
+public final class PropertiesDictionnary implements LanguageDictionary {
 
-    private static final Map<String, AliasInfo> ALIASES;
+    private static final Map<String, QueryInfo> ALIASES;
 
     static {
-        Map<String, AliasInfo> m = new LinkedHashMap<>();
-        m.put("property", new AliasInfo("property",
+        Map<String, QueryInfo> m = new LinkedHashMap<>();
+        m.put("property", new QueryInfo("property",
                 "(property (key) @name)", Language.PROPERTIES));
         ALIASES = Collections.unmodifiableMap(m);
     }
@@ -31,7 +31,7 @@ public final class PropertiesAliases implements LanguageAliases {
     }
 
     @Override
-    public Map<String, AliasInfo> aliases() {
+    public Map<String, QueryInfo> getTypeAndQueryExpression() {
         return ALIASES;
     }
 }

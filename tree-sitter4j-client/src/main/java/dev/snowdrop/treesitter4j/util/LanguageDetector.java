@@ -4,11 +4,23 @@ import io.roastedroot.treesitter.Language;
 
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.EnumSet;
 import java.util.Optional;
+import java.util.Set;
 
 public final class LanguageDetector {
 
     private LanguageDetector() {}
+
+    /**
+     * Returns the set of all languages recognized by this detector.
+     */
+    public static Set<Language> supportedLanguages() {
+        return EnumSet.of(
+                Language.JAVA, Language.JSON, Language.YAML, Language.XML,
+                Language.HTML, Language.PROPERTIES, Language.MARKDOWN
+        );
+    }
 
     /**
      * Detect the tree-sitter {@link Language} from a file's extension.

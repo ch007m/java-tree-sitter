@@ -2,7 +2,7 @@ package dev.snowdrop.treesitter4j.command;
 
 import dev.snowdrop.treesitter4j.util.ASTParserUtil;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil;
-import dev.snowdrop.treesitter4j.util.ASTQueryUtil.AliasInfo;
+import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryInfo;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.ParsedQuery;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryMatch;
 import io.roastedroot.treesitter.Language;
@@ -47,18 +47,21 @@ public class QueryCommand implements Command<CommandInvocation> {
 
     @Override
     public CommandResult execute(CommandInvocation invocation) {
+        ASTQueryUtil queryUtil = new ASTQueryUtil();
+        ASTParserUtil parserUtil = new ASTParserUtil();
+
         if (queryArgs == null || queryArgs.isEmpty()) {
-            printUsage(invocation);
+            printUsage(invocation, queryUtil.getAliases());
             return CommandResult.FAILURE;
         }
 
         // Parse query expression
         String rawQuery = String.join(" ", queryArgs);
-        ParsedQuery parsed = ASTQueryUtil.parseQuery(rawQuery);
+        ParsedQuery parsed = queryUtil.parseQuery(rawQuery);
 
         // Apply --text as a "contains" filter when the expression has no inline operator
         if (textFilter != null && !textFilter.isBlank() && parsed.operator() == null) {
-            parsed = new ParsedQuery(parsed.alias(), "contains", textFilter, parsed.aliasInfo());
+            parsed = new ParsedQuery(parsed.alias(), "contains", textFilter, parsed.queryInfo());
         }
 
         // Resolve language override
@@ -77,7 +80,7 @@ public class QueryCommand implements Command<CommandInvocation> {
             }
         }
 
-        Path rootDir = ASTParserUtil.resolveAppDir(appPath);
+        Path rootDir = parserUtil.resolveAppDir(appPath);
         if (!Files.isDirectory(rootDir)) {
             invocation.println("Error: '" + (appPath != null ? appPath : rootDir) + "' is not a valid directory.");
             return CommandResult.FAILURE;
@@ -89,25 +92,25 @@ public class QueryCommand implements Command<CommandInvocation> {
 
         if (reload) {
             try {
-                trees = ASTParserUtil.parseDirectory(rootDir, invocation::println);
+                trees = parserUtil.parseDirectory(rootDir, invocation::println);
                 if (!trees.isEmpty()) {
-                    ASTParserUtil.saveToStore(trees, rootDir);
-                    invocation.println("AST store saved to " + rootDir.resolve(ASTParserUtil.STORE_DIR));
+                    parserUtil.saveToStore(trees, rootDir);
+                    invocation.println("AST store saved to " + rootDir.resolve(parserUtil.STORE_DIR));
                 }
             } catch (IOException e) {
                 invocation.println("Error during reload: " + e.getMessage());
                 return CommandResult.FAILURE;
             }
-        } else if (ASTParserUtil.hasStore(rootDir)) {
+        } else if (parserUtil.hasStore(rootDir)) {
             try {
-                trees = ASTParserUtil.loadStore(rootDir);
+                trees = parserUtil.loadStore(rootDir);
             } catch (IOException e) {
                 invocation.println("Error loading AST store: " + e.getMessage());
                 return CommandResult.FAILURE;
             }
         } else {
             try {
-                trees = ASTParserUtil.parseDirectory(rootDir, invocation::println);
+                trees = parserUtil.parseDirectory(rootDir, invocation::println);
             } catch (IOException e) {
                 invocation.println("Error parsing application: " + e.getMessage());
                 return CommandResult.FAILURE;
@@ -120,7 +123,7 @@ public class QueryCommand implements Command<CommandInvocation> {
         }
 
         // Execute query
-        List<QueryMatch> matches = ASTQueryUtil.execute(parsed, trees, fileFilter, langOverride);
+        List<QueryMatch> matches = queryUtil.execute(parsed, trees, fileFilter, langOverride);
 
         for (QueryMatch match : matches) {
             invocation.println("  " + match.sourceFile() + ":" + match.line()
@@ -133,7 +136,7 @@ public class QueryCommand implements Command<CommandInvocation> {
         return CommandResult.SUCCESS;
     }
 
-    private void printUsage(CommandInvocation invocation) {
+    private void printUsage(CommandInvocation invocation, Map<String, QueryInfo> aliases) {
         invocation.println("Usage: ts4j query <expression> [--file filter] [--text filter] [--app path] [--language lang] [--reload]");
         invocation.println("");
         invocation.println("Query expression:");
@@ -144,7 +147,7 @@ public class QueryCommand implements Command<CommandInvocation> {
         invocation.println("");
         invocation.println("Available aliases:");
         String currentLang = null;
-        for (Map.Entry<String, AliasInfo> e : ASTQueryUtil.getAliases().entrySet()) {
+        for (Map.Entry<String, QueryInfo> e : aliases.entrySet()) {
             String lang = e.getValue().language().name().toLowerCase();
             if (!lang.equals(currentLang)) {
                 currentLang = lang;

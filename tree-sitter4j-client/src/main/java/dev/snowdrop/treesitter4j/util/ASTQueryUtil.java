@@ -1,5 +1,7 @@
 package dev.snowdrop.treesitter4j.util;
 
+import dev.snowdrop.treesitter4j.TreeSitterRuntime;
+import dev.snowdrop.treesitter4j.util.lang.*;
 import io.roastedroot.treesitter.Language;
 import io.roastedroot.treesitter.TreeSitter;
 import io.roastedroot.treesitter.TreeSitterException;
@@ -10,11 +12,7 @@ import io.roastedroot.treesitter.TreeSitterTree;
 import io.roastedroot.treesitter.ast.ASTNode;
 import io.roastedroot.treesitter.ast.ASTTree;
 
-import dev.snowdrop.treesitter4j.util.lang.JavaAliases;
-import dev.snowdrop.treesitter4j.util.lang.LanguageAliases;
-import dev.snowdrop.treesitter4j.util.lang.PomAliases;
-import dev.snowdrop.treesitter4j.util.lang.PropertiesAliases;
-import dev.snowdrop.treesitter4j.util.lang.XmlAliases;
+import dev.snowdrop.treesitter4j.util.lang.LanguageDictionary;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,12 +25,12 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Query utility that maps human-friendly type aliases to tree-sitter S-expression
- * query patterns and executes them via the tree-sitter query API.
+ * Query utility that maps human-friendly types to tree-sitter S-expression query patterns and executes them via the
+ * tree-sitter query API.
  * <p>
- * Each alias is associated with a specific {@link Language}, so only files belonging
- * to that language are searched. Raw tree-sitter node types are also supported and
- * the language is auto-detected from a dynamic type-to-language map built from loaded AST trees.
+ * Each alias is associated with a specific {@link Language}, so only files belonging to that language are searched. Raw
+ * tree-sitter node types are also supported and the language is auto-detected from a dynamic type-to-language map built from
+ * loaded AST trees.
  * <p>
  * <b>S-expression grammar references:</b>
  * <ul>
@@ -44,56 +42,57 @@ import java.util.regex.Pattern;
  */
 public final class ASTQueryUtil {
 
+    private TreeSitter ts;
+    private final Map<String, QueryInfo> TYPE_QUERY_LIST;
+
+    public ASTQueryUtil() {
+        ts = TreeSitterRuntime.get();
+        Map<String, QueryInfo> m = new LinkedHashMap<>();
+        for (LanguageDictionary la : LANGUAGES) {
+            m.putAll(la.getTypeAndQueryExpression());
+        }
+        TYPE_QUERY_LIST = Collections.unmodifiableMap(m);
+    }
+
     /**
-     * Composes a filterable value from raw captured text.
-     * Returns the composed value, or {@code null} to skip the match entirely.
+     * Composes a filterable value from raw captured text. Returns the composed value, or {@code null} to skip the match
+     * entirely.
      */
     @FunctionalInterface
     public interface ValueComposer {
         String compose(String capturedText);
     }
 
-    /** Describes a human-friendly alias for a tree-sitter node type. */
-    public record AliasInfo(String nodeType, String queryPattern, Language language, ValueComposer composer) {
-        /** Convenience constructor for aliases without a composer. */
-        public AliasInfo(String nodeType, String queryPattern, Language language) {
+    /** Describes a human-friendly query pattern for a tree-sitter node type. */
+    public record QueryInfo(String nodeType, String queryPattern, Language language, ValueComposer composer) {
+        public QueryInfo(String nodeType, String queryPattern, Language language) {
             this(nodeType, queryPattern, language, null);
         }
     }
 
     /** A parsed query expression (alias, optional operator and value, resolved alias info). */
-    public record ParsedQuery(String alias, String operator, String value, AliasInfo aliasInfo) {}
+    public record ParsedQuery(String alias, String operator, String value, QueryInfo queryInfo) {
+    }
 
     /** A single query match result. */
-    public record QueryMatch(String sourceFile, int line, String alias, String matchedText) {}
+    public record QueryMatch(String sourceFile, int line, String alias, String matchedText) {
+    }
 
     // ---------------------------------------------------------------------------
     // Alias dictionary: friendly name -> (node type, S-expression pattern, language)
     // Built by aggregating per-language LanguageAliases implementations.
     // ---------------------------------------------------------------------------
 
-    private static final List<LanguageAliases> LANGUAGE_ALIASES = List.of(
-            new JavaAliases(),
-            new PropertiesAliases(),
-            new XmlAliases(),
-            new PomAliases()
+    private final List<LanguageDictionary> LANGUAGES = List.of(
+            new JavaDictionnary(),
+            new PropertiesDictionnary(),
+            new XmlDictionnary(),
+            new PomDictionnary()
     );
 
-    private static final Map<String, AliasInfo> ALIASES;
-
-    static {
-        Map<String, AliasInfo> m = new LinkedHashMap<>();
-        for (LanguageAliases la : LANGUAGE_ALIASES) {
-            m.putAll(la.aliases());
-        }
-        ALIASES = Collections.unmodifiableMap(m);
-    }
-
-    private ASTQueryUtil() {}
-
     /** Returns the read-only alias dictionary. */
-    public static Map<String, AliasInfo> getAliases() {
-        return ALIASES;
+    public Map<String, QueryInfo> getAliases() {
+        return TYPE_QUERY_LIST;
     }
 
     // ---------------------------------------------------------------------------
@@ -111,15 +110,15 @@ public final class ASTQueryUtil {
      *   <li>{@code class_declaration}             &ndash; raw node type (auto-detect language)</li>
      * </ul>
      */
-    public static ParsedQuery parseQuery(String rawInput) {
+    public ParsedQuery parseQuery(String rawInput) {
         String trimmed = rawInput.trim();
 
         // Check for "contains" operator (with surrounding spaces)
         int containsIdx = trimmed.toLowerCase().indexOf(" contains ");
         if (containsIdx > 0) {
-            String alias = trimmed.substring(0, containsIdx).trim().toLowerCase();
-            String value = normalizeQueryValue(alias, trimmed.substring(containsIdx + " contains ".length()).trim());
-            return new ParsedQuery(alias, "contains", value, ALIASES.get(alias));
+            String type = trimmed.substring(0, containsIdx).trim().toLowerCase();
+            String value = normalizeQueryValue(type, trimmed.substring(containsIdx + " contains ".length()).trim());
+            return new ParsedQuery(type, "contains", value, TYPE_QUERY_LIST.get(type));
         }
 
         // Check for "=" operator
@@ -127,12 +126,12 @@ public final class ASTQueryUtil {
         if (eqIdx > 0) {
             String alias = trimmed.substring(0, eqIdx).trim().toLowerCase();
             String value = normalizeQueryValue(alias, trimmed.substring(eqIdx + 1).trim());
-            return new ParsedQuery(alias, "=", value, ALIASES.get(alias));
+            return new ParsedQuery(alias, "=", value, TYPE_QUERY_LIST.get(alias));
         }
 
         // No operator — plain type/alias
         String alias = trimmed.toLowerCase();
-        return new ParsedQuery(alias, null, null, ALIASES.get(alias));
+        return new ParsedQuery(alias, null, null, TYPE_QUERY_LIST.get(alias));
     }
 
     // ---------------------------------------------------------------------------
@@ -142,26 +141,25 @@ public final class ASTQueryUtil {
     /**
      * Execute a parsed query against the given AST trees using the tree-sitter query API.
      *
-     * @param query            the parsed query expression
-     * @param trees            AST trees to search (from store or freshly parsed)
-     * @param fileFilter       optional file-path substring filter (may be {@code null})
-     * @param languageOverride if non-null, overrides the automatic language detection.
-     *                         Pass {@code EnumSet.allOf(Language.class)} to search all languages.
+     * @param query the parsed query expression
+     * @param trees AST trees to search (from store or freshly parsed)
+     * @param fileFilter optional file-path substring filter (may be {@code null})
+     * @param languageOverride if non-null, overrides the automatic language detection. Pass
+     * {@code EnumSet.allOf(Language.class)} to search all languages.
      * @return list of matches
      */
-    public static List<QueryMatch> execute(ParsedQuery query, List<ASTTree> trees,
-                                           String fileFilter, Set<Language> languageOverride) {
+    public List<QueryMatch> execute(ParsedQuery query, List<ASTTree> trees,
+            String fileFilter, Set<Language> languageOverride) {
         List<QueryMatch> matches = new ArrayList<>();
-        TreeSitter ts = ASTParserUtil.getTreeSitter();
 
         // Determine query pattern and target languages
         String queryPattern;
         Set<Language> targetLanguages;
 
-        if (query.aliasInfo() != null) {
+        if (query.queryInfo() != null) {
             // Known alias — use its pattern and language
-            queryPattern = query.aliasInfo().queryPattern();
-            targetLanguages = EnumSet.of(query.aliasInfo().language());
+            queryPattern = query.queryInfo().queryPattern();
+            targetLanguages = EnumSet.of(query.queryInfo().language());
         } else {
             // Raw node type — generic pattern, auto-detect language from trees
             queryPattern = "(" + query.alias() + ") @name";
@@ -179,7 +177,8 @@ public final class ASTQueryUtil {
         Map<Language, List<ASTTree>> treesByLang = new LinkedHashMap<>();
         for (ASTTree tree : trees) {
             Language lang = resolveLanguage(tree);
-            if (lang == null || !targetLanguages.contains(lang)) continue;
+            if (lang == null || !targetLanguages.contains(lang))
+                continue;
             if (fileFilter != null && !fileFilter.isBlank()
                     && (tree.getSourceFile() == null || !tree.getSourceFile().contains(fileFilter))) {
                 continue;
@@ -187,59 +186,58 @@ public final class ASTQueryUtil {
             treesByLang.computeIfAbsent(lang, k -> new ArrayList<>()).add(tree);
         }
 
-        // Execute query for each language group
-        try (TreeSitterParser parser = ts.newParser()) {
-            for (var entry : treesByLang.entrySet()) {
-                Language lang = entry.getKey();
+        // Execute query for each language group using pre-created parsers
+        for (var entry : treesByLang.entrySet()) {
+            Language lang = entry.getKey();
+            TreeSitterParser parser = TreeSitterRuntime.getParser(lang);
+            if (parser == null) continue;
 
-                try {
-                    parser.setLanguage(lang);
-                } catch (TreeSitterException e) {
-                    continue; // language not available at runtime
-                }
+            TreeSitterQuery tsQuery;
+            try {
+                tsQuery = ts.newQuery(lang, queryPattern);
+            } catch (TreeSitterException e) {
+                // Pattern not valid for this language — skip entire group
+                continue;
+            }
 
-                TreeSitterQuery tsQuery;
-                try {
-                    tsQuery = ts.newQuery(lang, queryPattern);
-                } catch (TreeSitterException e) {
-                    // Pattern not valid for this language — skip entire group
-                    continue;
-                }
+            try {
+                for (ASTTree astTree : entry.getValue()) {
+                    String source = astTree.getSourceCode();
+                    if (source == null || source.isEmpty())
+                        continue;
 
-                try {
-                    for (ASTTree astTree : entry.getValue()) {
-                        String source = astTree.getSourceCode();
-                        if (source == null || source.isEmpty()) continue;
+                    try (TreeSitterTree tree = parser.parseString(source)) {
+                        if (tree == null)
+                            continue;
 
-                        try (TreeSitterTree tree = parser.parseString(source)) {
-                            if (tree == null) continue;
+                        List<TreeSitterQueryResult> results = tsQuery.exec(tree.rootNode(), source);
 
-                            List<TreeSitterQueryResult> results = tsQuery.exec(tree.rootNode(), source);
+                        for (TreeSitterQueryResult result : results) {
+                            if (!"name".equals(result.name()))
+                                continue;
 
-                            for (TreeSitterQueryResult result : results) {
-                                if (!"name".equals(result.name())) continue;
+                            String text = source.substring(
+                                    result.node().startByte(), result.node().endByte());
 
-                                String text = source.substring(
-                                        result.node().startByte(), result.node().endByte());
-
-                                // Apply value composer if present (e.g. GAV composition for POM aliases)
-                                if (query.aliasInfo() != null && query.aliasInfo().composer() != null) {
-                                    text = query.aliasInfo().composer().compose(text);
-                                    if (text == null) continue;
-                                }
-
-                                if (!matchesFilter(text, query.operator(), query.value())) continue;
-
-                                int line = byteToLine(source, result.node().startByte());
-                                matches.add(new QueryMatch(
-                                        astTree.getSourceFile() != null ? astTree.getSourceFile() : "<unknown>",
-                                        line, query.alias(), text));
+                            // Apply value composer if present (e.g. GAV composition for POM aliases)
+                            if (query.queryInfo() != null && query.queryInfo().composer() != null) {
+                                text = query.queryInfo().composer().compose(text);
+                                if (text == null)
+                                    continue;
                             }
+
+                            if (!matchesFilter(text, query.operator(), query.value()))
+                                continue;
+
+                            int line = byteToLine(source, result.node().startByte());
+                            matches.add(new QueryMatch(
+                                    astTree.getSourceFile() != null ? astTree.getSourceFile() : "<unknown>",
+                                    line, query.alias(), text));
                         }
                     }
-                } finally {
-                    tsQuery.close();
                 }
+            } finally {
+                tsQuery.close();
             }
         }
 
@@ -251,15 +249,15 @@ public final class ASTQueryUtil {
     // ---------------------------------------------------------------------------
 
     /**
-     * Build a map of every named node type to the set of languages in which it appears.
-     * This is used to auto-detect the language when the user queries a raw node type
-     * instead of a friendly alias.
+     * Build a map of every named node type to the set of languages in which it appears. This is used to auto-detect the
+     * language when the user queries a raw node type instead of a friendly alias.
      */
-    public static Map<String, Set<Language>> buildTypeLanguageMap(List<ASTTree> trees) {
+    public Map<String, Set<Language>> buildTypeLanguageMap(List<ASTTree> trees) {
         Map<String, Set<Language>> map = new HashMap<>();
         for (ASTTree tree : trees) {
             Language lang = resolveLanguage(tree);
-            if (lang == null) continue;
+            if (lang == null)
+                continue;
             collectNodeTypes(tree.getRoot(), lang, map);
         }
         return map;
@@ -268,8 +266,9 @@ public final class ASTQueryUtil {
     /**
      * Resolve the {@link Language} enum from an {@link ASTTree}'s language string.
      */
-    public static Language resolveLanguage(ASTTree tree) {
-        if (tree.getLanguage() == null) return null;
+    public Language resolveLanguage(ASTTree tree) {
+        if (tree.getLanguage() == null)
+            return null;
         try {
             return Language.valueOf(tree.getLanguage().toUpperCase());
         } catch (IllegalArgumentException e) {
@@ -281,9 +280,10 @@ public final class ASTQueryUtil {
     // Internal helpers
     // ---------------------------------------------------------------------------
 
-    private static void collectNodeTypes(ASTNode node, Language lang,
-                                         Map<String, Set<Language>> map) {
-        if (node == null) return;
+    private void collectNodeTypes(ASTNode node, Language lang,
+            Map<String, Set<Language>> map) {
+        if (node == null)
+            return;
         if (node.getType() != null && node.isNamed()) {
             map.computeIfAbsent(node.getType(), k -> EnumSet.noneOf(Language.class)).add(lang);
         }
@@ -295,19 +295,19 @@ public final class ASTQueryUtil {
     }
 
     /**
-     * Normalize the query value for a given alias.
-     * For annotation queries, strips the leading {@code @} since tree-sitter
+     * Normalize the query value for a given alias. For annotation queries, strips the leading {@code @} since tree-sitter
      * captures only the identifier name (e.g. {@code Entity}, not {@code @Entity}).
      */
-    private static String normalizeQueryValue(String alias, String value) {
+    private String normalizeQueryValue(String alias, String value) {
         if ("annotation".equals(alias) && value != null && value.startsWith("@")) {
             return value.substring(1);
         }
         return value;
     }
 
-    private static boolean matchesFilter(String text, String operator, String value) {
-        if (operator == null || value == null) return true;
+    private boolean matchesFilter(String text, String operator, String value) {
+        if (operator == null || value == null)
+            return true;
         return switch (operator) {
             case "=" -> value.contains("*") ? matchesGlob(text, value) : text.equals(value);
             case "contains" -> text.toLowerCase().contains(value.toLowerCase());
@@ -319,13 +319,13 @@ public final class ASTQueryUtil {
      * Match text against a glob pattern where {@code *} matches any sequence of characters.
      * <p>Examples: {@code quarkus.db.*} matches {@code quarkus.db.kind} and {@code quarkus.db.url}.
      */
-    private static boolean matchesGlob(String text, String globPattern) {
+    private boolean matchesGlob(String text, String globPattern) {
         // Convert glob to regex: escape regex-special chars, replace * with .*
         String regex = globToRegex(globPattern);
         return Pattern.matches(regex, text);
     }
 
-    private static String globToRegex(String glob) {
+    private String globToRegex(String glob) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < glob.length(); i++) {
             char c = glob.charAt(i);
@@ -343,12 +343,14 @@ public final class ASTQueryUtil {
     /**
      * Convert a byte offset in a source string to an approximate 1-based line number.
      */
-    public static int byteToLine(String source, int byteOffset) {
-        if (source == null || byteOffset <= 0) return 1;
+    public int byteToLine(String source, int byteOffset) {
+        if (source == null || byteOffset <= 0)
+            return 1;
         int line = 1;
         int len = Math.min(byteOffset, source.length());
         for (int i = 0; i < len; i++) {
-            if (source.charAt(i) == '\n') line++;
+            if (source.charAt(i) == '\n')
+                line++;
         }
         return line;
     }
