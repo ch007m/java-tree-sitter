@@ -164,12 +164,15 @@ public final class ASTParserUtil {
                             return ASTExporter.export(tree, sf.language(), sf.content(), sf.relativePath());
                         } catch (TrapException ex) {
                             // TODO: Investigate why we got a "Trapped on unreachable instruction"
+                            if (logger != null)
+                                logger.accept("  Trapping exception " + ex.getMessage() + " ( " + ex.getMessage() + " ) ");
+                            errorCount.incrementAndGet();
                             return null;
                         } catch (Exception e) {
                             // TODO: Investigate why we got
                             // out of bounds memory access: attempted to access address: 1953656732 but limit is: 2359296 and size: 1
                             if (logger != null)
-                                logger.accept("  ERROR parsing " + sf.relativePath() + ": " + e.getMessage() + " ( " + e.getCause().getLocalizedMessage() + " ) ");
+                                logger.accept("  ERROR parsing " + sf.relativePath() + ": " + e.getMessage() + " ( " + e.getMessage() + " ) ");
                             errorCount.incrementAndGet();
                             return null;
                         }
@@ -182,6 +185,7 @@ public final class ASTParserUtil {
                         try {
                             return future.get();
                         } catch (ExecutionException | InterruptedException e) {
+                            e.printStackTrace();
                             errorCount.incrementAndGet();
                             return null;
                         }
