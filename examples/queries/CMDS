@@ -1,0 +1,11 @@
+cd ~/code/quarkus/rewrite-mtool/_others/treesitter/aesh-tree-sitter
+
+# Query - className
+./examples/queries/query.sh className.txt
+
+# Query - annotation
+./examples/queries/query.sh annotation.txt
+
+./examples/queries/query.sh allPackages.txt
+./examples/queries/query.sh package-springframework.txt
+

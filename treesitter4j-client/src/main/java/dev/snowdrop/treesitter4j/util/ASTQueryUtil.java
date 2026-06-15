@@ -25,10 +25,10 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Query utility that maps human-friendly types to tree-sitter S-expression query patterns and executes them via the
- * tree-sitter query API.
+ * Query utility that maps human-friendly types to tree-sitter S-expression syntax patterns and executes them via the
+ * tree-sitter syntax API.
  * <p>
- * Each alias is associated with a specific {@link Language}, so only files belonging to that language are searched. Raw
+ * Each syntax is associated with a specific {@link Language}, so only files belonging to that language are searched. Raw
  * tree-sitter node types are also supported and the language is auto-detected from a dynamic type-to-language map built from
  * loaded AST trees.
  * <p>
@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  *   <li>Java: <a href="https://github.com/tree-sitter/tree-sitter-java/blob/master/src/node-types.json">tree-sitter-java node types</a></li>
  *   <li>Properties: <a href="https://github.com/tree-sitter-grammars/tree-sitter-properties/blob/main/src/node-types.json">tree-sitter-properties node types</a></li>
  *   <li>XML: <a href="https://github.com/tree-sitter-grammars/tree-sitter-xml/blob/master/xml/src/node-types.json">tree-sitter-xml node types</a></li>
- *   <li>S-expression query syntax: <a href="https://tree-sitter.github.io/tree-sitter/using-parsers/queries/1-syntax.html">tree-sitter query documentation</a></li>
+ *   <li>S-expression syntax syntax: <a href="https://tree-sitter.github.io/tree-sitter/using-parsers/queries/1-syntax.html">tree-sitter syntax documentation</a></li>
  * </ul>
  */
 public final class ASTQueryUtil {
@@ -63,18 +63,18 @@ public final class ASTQueryUtil {
         String compose(String capturedText);
     }
 
-    /** Describes a human-friendly query pattern for a tree-sitter node type. */
+    /** Describes a human-friendly syntax pattern for a tree-sitter node type. */
     public record QueryInfo(String nodeType, String queryPattern, Language language, ValueComposer composer) {
         public QueryInfo(String nodeType, String queryPattern, Language language) {
             this(nodeType, queryPattern, language, null);
         }
     }
 
-    /** A parsed query expression (alias, optional operator and value, resolved alias info). */
-    public record ParsedQuery(String alias, String operator, String value, QueryInfo queryInfo) {
+    /** A parsed syntax expression (syntax, optional operator and value, resolved syntax info). */
+    public record ParsedQuery(String syntax, String operator, String value, QueryInfo queryInfo) {
     }
 
-    /** A single query match result. */
+    /** A single syntax match result. */
     public record QueryMatch(String sourceFile, int line, String alias, String matchedText) {
     }
 
@@ -90,7 +90,7 @@ public final class ASTQueryUtil {
             new PomDictionnary()
     );
 
-    /** Returns the read-only alias dictionary. */
+    /** Returns the read-only syntax dictionary. */
     public Map<String, QueryInfo> getAliases() {
         return TYPE_QUERY_LIST;
     }
@@ -100,7 +100,7 @@ public final class ASTQueryUtil {
     // ---------------------------------------------------------------------------
 
     /**
-     * Parse a human-friendly query expression into its components.
+     * Parse a human-friendly syntax expression into its components.
      * <p>Supported forms:
      * <ul>
      *   <li>{@code class}                         &ndash; list all classes</li>
@@ -129,7 +129,7 @@ public final class ASTQueryUtil {
             return new ParsedQuery(alias, "=", value, TYPE_QUERY_LIST.get(alias));
         }
 
-        // No operator — plain type/alias
+        // No operator — plain type/syntax
         String alias = trimmed.toLowerCase();
         return new ParsedQuery(alias, null, null, TYPE_QUERY_LIST.get(alias));
     }
@@ -139,9 +139,9 @@ public final class ASTQueryUtil {
     // ---------------------------------------------------------------------------
 
     /**
-     * Execute a parsed query against the given AST trees using the tree-sitter query API.
+     * Execute a parsed syntax against the given AST trees using the tree-sitter syntax API.
      *
-     * @param query the parsed query expression
+     * @param query the parsed syntax expression
      * @param trees AST trees to search (from store or freshly parsed)
      * @param fileFilter optional file-path substring filter (may be {@code null})
      * @param languageOverride if non-null, overrides the automatic language detection. Pass
@@ -152,19 +152,19 @@ public final class ASTQueryUtil {
             String fileFilter, Set<Language> languageOverride) {
         List<QueryMatch> matches = new ArrayList<>();
 
-        // Determine query pattern and target languages
+        // Determine syntax pattern and target languages
         String queryPattern;
         Set<Language> targetLanguages;
 
         if (query.queryInfo() != null) {
-            // Known alias — use its pattern and language
+            // Known syntax — use its pattern and language
             queryPattern = query.queryInfo().queryPattern();
             targetLanguages = EnumSet.of(query.queryInfo().language());
         } else {
             // Raw node type — generic pattern, auto-detect language from trees
-            queryPattern = "(" + query.alias() + ") @name";
+            queryPattern = query.syntax();
             Map<String, Set<Language>> typeLanguageMap = buildTypeLanguageMap(trees);
-            Set<Language> fromMap = typeLanguageMap.get(query.alias());
+            Set<Language> fromMap = typeLanguageMap.get(query.syntax());
             targetLanguages = fromMap != null ? EnumSet.copyOf(fromMap) : EnumSet.allOf(Language.class);
         }
 
@@ -186,7 +186,7 @@ public final class ASTQueryUtil {
             treesByLang.computeIfAbsent(lang, k -> new ArrayList<>()).add(tree);
         }
 
-        // Execute query for each language group using pre-created parsers
+        // Execute syntax for each language group using pre-created parsers
         for (var entry : treesByLang.entrySet()) {
             Language lang = entry.getKey();
             TreeSitterParser parser = TreeSitterRuntime.getParser(lang);
@@ -194,6 +194,8 @@ public final class ASTQueryUtil {
 
             TreeSitterQuery tsQuery;
             try {
+                //TODO Log in debug mode the syntax
+                System.out.println("syntax : " + queryPattern);
                 tsQuery = ts.newQuery(lang, queryPattern);
             } catch (TreeSitterException e) {
                 // Pattern not valid for this language — skip entire group
@@ -213,6 +215,13 @@ public final class ASTQueryUtil {
                         List<TreeSitterQueryResult> results = tsQuery.exec(tree.rootNode(), source);
 
                         for (TreeSitterQueryResult result : results) {
+
+                            results.forEach(r -> {
+                                System.out.println("Query Result for language : " + astTree.getLanguage() + ", and file : " + astTree.getSourceFile());
+                                System.out.println("node name : " + r.name());
+                                System.out.println("node type : " + r.node().type());
+                            });
+
                             if (!"name".equals(result.name()))
                                 continue;
 
@@ -226,13 +235,19 @@ public final class ASTQueryUtil {
                                     continue;
                             }
 
+                            // Match the result against the syntax value
                             if (!matchesFilter(text, query.operator(), query.value()))
                                 continue;
+
+                            System.out.println("Text searched : " + text);
+                            System.out.println("Operator : " + query.operator());
+                            System.out.println("value : " + query.value);
+                            System.out.println("===================================");
 
                             int line = byteToLine(source, result.node().startByte());
                             matches.add(new QueryMatch(
                                     astTree.getSourceFile() != null ? astTree.getSourceFile() : "<unknown>",
-                                    line, query.alias(), text));
+                                    line, query.syntax(), text));
                         }
                     }
                 }
@@ -250,7 +265,7 @@ public final class ASTQueryUtil {
 
     /**
      * Build a map of every named node type to the set of languages in which it appears. This is used to auto-detect the
-     * language when the user queries a raw node type instead of a friendly alias.
+     * language when the user queries a raw node type instead of a friendly syntax.
      */
     public Map<String, Set<Language>> buildTypeLanguageMap(List<ASTTree> trees) {
         Map<String, Set<Language>> map = new HashMap<>();
@@ -295,7 +310,7 @@ public final class ASTQueryUtil {
     }
 
     /**
-     * Normalize the query value for a given alias. For annotation queries, strips the leading {@code @} since tree-sitter
+     * Normalize the syntax value for a given syntax. For annotation queries, strips the leading {@code @} since tree-sitter
      * captures only the identifier name (e.g. {@code Entity}, not {@code @Entity}).
      */
     private String normalizeQueryValue(String alias, String value) {

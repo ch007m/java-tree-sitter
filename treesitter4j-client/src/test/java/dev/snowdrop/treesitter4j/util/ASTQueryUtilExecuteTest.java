@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Tests for {@link ASTQueryUtil#execute(ParsedQuery, List, String, Set)}.
  * Verifies that human-friendly queries produce correct results using
- * the tree-sitter query API.
+ * the tree-sitter syntax API.
  */
 class ASTQueryUtilExecuteTest {
 
@@ -343,7 +343,7 @@ class ASTQueryUtilExecuteTest {
     }
 
     // -----------------------------------------------------------------------
-    // Raw node type (no alias)
+    // Raw node type (no syntax)
     // -----------------------------------------------------------------------
 
     @Test
@@ -429,7 +429,7 @@ class ASTQueryUtilExecuteTest {
 
     @Test
     void queryPropertyOnlySearchesPropertiesFiles() {
-        // "property" alias targets Language.PROPERTIES — should not touch Java files
+        // "property" syntax targets Language.PROPERTIES — should not touch Java files
         ParsedQuery q = queryUtil.parseQuery("property");
         List<QueryMatch> matches = queryUtil.execute(q, allTrees, null, null);
 

@@ -17,7 +17,7 @@ public interface LanguageDictionary {
     Language language();
 
     /**
-     * Returns an unmodifiable map of friendly alias names to their
+     * Returns an unmodifiable map of friendly syntax names to their
      * {@link QueryInfo} descriptors.
      */
     Map<String, QueryInfo> getTypeAndQueryExpression();

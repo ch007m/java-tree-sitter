@@ -17,7 +17,7 @@ public class JtGroupCommand implements Command<CommandInvocation> {
         invocation.println("Usage: ts4j <command>");
         invocation.println("Commands:");
         invocation.println("  parse   Parse files from an application and persist AST nodes as JSON");
-        invocation.println("  query   Query persisted AST nodes");
+        invocation.println("  syntax   Query persisted AST nodes");
         invocation.println("  types   List distinct AST node types, grouped by language");
         return CommandResult.SUCCESS;
     }

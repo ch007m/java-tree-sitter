@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@CommandDefinition(name = "query", description = "Query AST nodes by type, file, or text")
+@CommandDefinition(name = "syntax", description = "Query AST nodes by type, file, or text")
 public class QueryCommand implements Command<CommandInvocation> {
 
     @Arguments(description = "Query expression: <type> [= | contains <value>]  (e.g., class, 'class = MyApp', 'annotation contains Entity')")
@@ -38,11 +38,11 @@ public class QueryCommand implements Command<CommandInvocation> {
     private String appPath;
 
     @Option(name = "language", shortName = 'L',
-            description = "Filter by language (java, yaml, json, xml, html, properties, markdown) or 'all' to search every language. Default: auto-detect from query type.",
+            description = "Filter by language (java, yaml, json, xml, html, properties, markdown) or 'all' to search every language. Default: auto-detect from syntax type.",
             hasValue = true)
     private String languageOption;
 
-    @Option(name = "reload", shortName = 'r', description = "Force re-parse of source files, save AST to the store, then query", hasValue = false)
+    @Option(name = "reload", shortName = 'r', description = "Force re-parse of source files, save AST to the store, then syntax", hasValue = false)
     private boolean reload;
 
     @Override
@@ -55,13 +55,13 @@ public class QueryCommand implements Command<CommandInvocation> {
             return CommandResult.FAILURE;
         }
 
-        // Parse query expression
+        // Parse syntax expression
         String rawQuery = String.join(" ", queryArgs);
         ParsedQuery parsed = queryUtil.parseQuery(rawQuery);
 
         // Apply --text as a "contains" filter when the expression has no inline operator
         if (textFilter != null && !textFilter.isBlank() && parsed.operator() == null) {
-            parsed = new ParsedQuery(parsed.alias(), "contains", textFilter, parsed.queryInfo());
+            parsed = new ParsedQuery(parsed.syntax(), "contains", textFilter, parsed.queryInfo());
         }
 
         // Resolve language override
@@ -122,7 +122,7 @@ public class QueryCommand implements Command<CommandInvocation> {
             return CommandResult.SUCCESS;
         }
 
-        // Execute query
+        // Execute syntax
         List<QueryMatch> matches = queryUtil.execute(parsed, trees, fileFilter, langOverride);
 
         for (QueryMatch match : matches) {
@@ -137,7 +137,7 @@ public class QueryCommand implements Command<CommandInvocation> {
     }
 
     private void printUsage(CommandInvocation invocation, Map<String, QueryInfo> aliases) {
-        invocation.println("Usage: ts4j query <expression> [--file filter] [--text filter] [--app path] [--language lang] [--reload]");
+        invocation.println("Usage: ts4j syntax <expression> [--file filter] [--text filter] [--app path] [--language lang] [--reload]");
         invocation.println("");
         invocation.println("Query expression:");
         invocation.println("  <type>                    List all nodes of the given type");
@@ -157,7 +157,7 @@ public class QueryCommand implements Command<CommandInvocation> {
         }
         invocation.println("");
         invocation.println("Raw tree-sitter node types (e.g., class_declaration) are also supported.");
-        invocation.println("Language is auto-detected from the query type. Use --language to override.");
+        invocation.println("Language is auto-detected from the syntax type. Use --language to override.");
     }
 
     private String truncate(String text, int maxLen) {

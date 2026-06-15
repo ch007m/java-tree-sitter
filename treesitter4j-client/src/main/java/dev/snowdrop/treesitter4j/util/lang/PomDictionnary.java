@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  * from the child elements of {@code <dependency>}, {@code <plugin>},
  * {@code <parent>}, and {@code <extension>} XML elements.
  * <p>
- * Each alias captures the entire {@code (element) @name} node, then uses a
+ * Each syntax captures the entire {@code (element) @name} node, then uses a
  * {@link ValueComposer} to extract the GAV string. Elements whose tag name
  * does not match the expected type are skipped (composer returns {@code null}).
  */
