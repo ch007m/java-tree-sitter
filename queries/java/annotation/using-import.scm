@@ -15,9 +15,3 @@
   (scoped_identifier) @import.name
   (#eq? @import.name "jakarta.persistence.Entity")
 )
-
-; Search about Entity annotation => @Entity
-(marker_annotation
-  name: (identifier) @annotation.name
-  (#eq? @annotation.name "Entity")
-)

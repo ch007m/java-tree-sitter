@@ -10,7 +10,7 @@ grammars !
 
 ```shell
 # Query :: class Name = AppApplication
-./queries/query.sh java class/className.scm
+./queries/query.sh java class/with-name.scm
 
 # Query :: annotation = @Entity
 ./queries/query.sh java annotation/name.scm

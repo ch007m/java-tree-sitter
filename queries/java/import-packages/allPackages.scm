@@ -1,4 +1,5 @@
 (import_declaration
   (scoped_identifier
     scope: (scoped_identifier) @package_name
-    name: (identifier) @class_name))
+    name: (identifier) @class_name)
+)
