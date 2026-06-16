@@ -36,4 +36,10 @@ grammars !
 ./queries/query.sh properties datasource-prefix.scm
 ```
 
+### pom.xml dependency queries
+
+```shell
+# Query :: find dependency
+./queries/query.sh xml dependency.scm
+```
 
