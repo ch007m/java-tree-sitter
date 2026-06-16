@@ -1,6 +1,7 @@
 package com.todo.app.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
