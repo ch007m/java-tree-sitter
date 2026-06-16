@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit immediately if a command exits with a non-zero status
-set -ex
+set -e
 
 # --- Pre-flight Verification Check ---
 # 'command -v' is the standard, shell-builtin way to check for binaries (safer than 'which')
