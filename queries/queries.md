@@ -39,7 +39,7 @@ grammars !
 ### pom.xml dependency queries
 
 ```shell
-# Query :: find dependency
+# Query :: find dependency: org.springframework.boot
 ./queries/query.sh xml dependency.scm
 ```
 
