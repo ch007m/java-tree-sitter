@@ -94,10 +94,10 @@ echo "----------------------------------------------------------"
 
 for source_file in "${ACTIVE_SELECTION[@]}"; do
     echo "📖 Processing: $source_file"
-
+    set -x
     # Run tree-sitter query (suppressing path configuration warnings)
     tree-sitter query "$QUERY_PATH" "$source_file" 2>/dev/null || true
-
+    set +x
     echo "----------------------------------------------------------"
 done
 
