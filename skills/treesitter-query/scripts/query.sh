@@ -17,7 +17,7 @@ LANGUAGE="${1:-java}"          # Defaults to 'java' if not provided
 QUERY_FILE_NAME="${2:-query.scm}" # Defaults to 'query.scm' if not provided
 
 # Resolve the absolute path to your query selector
-QUERY_PATH="$(pwd)/queries/$LANGUAGE/$QUERY_FILE_NAME"
+QUERY_PATH="$(pwd)/examples/$LANGUAGE/$QUERY_FILE_NAME"
 
 echo "=========================================================="
 echo "🚀 Initializing macOS-Safe Tree-Sitter Workspace Scan"

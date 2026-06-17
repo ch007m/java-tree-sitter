@@ -1,0 +1,3289 @@
+{
+  "language" : "JAVA",
+  "sourceFile" : "src/main/java/com/todo/app/controller/TaskController.java",
+  "sourceCode" : "package com.todo.app.controller;\n\nimport java.util.List;\n\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.stereotype.Controller;\nimport org.springframework.ui.Model;\nimport org.springframework.web.bind.annotation.DeleteMapping;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.ResponseBody;\n\nimport org.springframework.data.domain.Page;\n\nimport com.todo.app.entity.Task;\nimport com.todo.app.service.TaskService;\n\n@Controller\npublic class TaskController {\n\n    @Autowired\n    private TaskService taskService;\n\n    @GetMapping(\"/error\")\n    public String viewErrorPage() {\n        return \"error\";\n    }\n\n    @GetMapping(\"/\")\n    public String viewIndexPage() {\n        return \"redirect:/home\";\n    }\n\n    @GetMapping(\"/home\")\n    public String viewHome(Model model) {\n        model.addAttribute(\"task\", new Task());\n        return findPaginated(1, model);\n    }\n\n    @GetMapping(\"/home/{pageNo}\")\n    public String findPaginated(@PathVariable(value = \"pageNo\") int pageNo, Model model) {\n\n        model.addAttribute(\"task\", new Task());\n\n        int pageSize = 6;\n\n        Page<Task> page = taskService.getAllTasksPage(pageNo, pageSize);\n        List<Task> tasks = page.getContent();\n\n        if (tasks.isEmpty()) {\n            model.addAttribute(\"noTasks\", true);\n            if (pageNo > 1) {\n                return \"redirect:/home/\" + (pageNo - 1);\n            }\n        } else {\n            model.addAttribute(\"currentPage\", pageNo);\n            model.addAttribute(\"totalPages\", page.getTotalPages());\n            model.addAttribute(\"totalItems\", page.getTotalElements());\n            model.addAttribute(\"tasks\", tasks);\n\n            if (pageNo > page.getTotalPages()) {\n                return \"redirect:/home/\" + page.getTotalPages();\n            }\n            if (pageNo < 1) {\n                return \"redirect:/home\";\n            }\n        }\n\n        return \"home\";\n    }\n\n    // Create task using AJAX request\n    @PostMapping(\"/home\")\n    @ResponseBody\n    public ResponseEntity<List<Task>> createTask(@RequestBody Task task) {\n        taskService.addTask(task);\n        List<Task> tasks = taskService.getAllTasks();\n        return ResponseEntity.ok(tasks);\n    }\n\n    // Delete task using AJAX request\n    @DeleteMapping(\"/home/{taskId}\")\n    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {\n        taskService.deleteTask(taskId);\n        return ResponseEntity.ok().build();\n    }\n\n}",
+  "root" : {
+    "type" : "program",
+    "startByte" : 0,
+    "endByte" : 2739,
+    "named" : true,
+    "text" : null,
+    "children" : [ {
+      "type" : "package_declaration",
+      "startByte" : 0,
+      "endByte" : 32,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 8,
+        "endByte" : 31,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 8,
+          "endByte" : 20,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 8,
+            "endByte" : 16,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "identifier",
+              "startByte" : 8,
+              "endByte" : 11,
+              "named" : true,
+              "text" : "com",
+              "children" : [ ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 12,
+              "endByte" : 16,
+              "named" : true,
+              "text" : "todo",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 17,
+            "endByte" : 20,
+            "named" : true,
+            "text" : "app",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 21,
+          "endByte" : 31,
+          "named" : true,
+          "text" : "controller",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 34,
+      "endByte" : 56,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 41,
+        "endByte" : 55,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 41,
+          "endByte" : 50,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "identifier",
+            "startByte" : 41,
+            "endByte" : 45,
+            "named" : true,
+            "text" : "java",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 46,
+            "endByte" : 50,
+            "named" : true,
+            "text" : "util",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 51,
+          "endByte" : 55,
+          "named" : true,
+          "text" : "List",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 58,
+      "endByte" : 120,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 65,
+        "endByte" : 119,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 65,
+          "endByte" : 109,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 65,
+            "endByte" : 98,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 65,
+              "endByte" : 90,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "scoped_identifier",
+                "startByte" : 65,
+                "endByte" : 84,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 65,
+                  "endByte" : 68,
+                  "named" : true,
+                  "text" : "org",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 69,
+                  "endByte" : 84,
+                  "named" : true,
+                  "text" : "springframework",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 85,
+                "endByte" : 90,
+                "named" : true,
+                "text" : "beans",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 91,
+              "endByte" : 98,
+              "named" : true,
+              "text" : "factory",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 99,
+            "endByte" : 109,
+            "named" : true,
+            "text" : "annotation",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 110,
+          "endByte" : 119,
+          "named" : true,
+          "text" : "Autowired",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 121,
+      "endByte" : 168,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 128,
+        "endByte" : 167,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 128,
+          "endByte" : 152,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 128,
+            "endByte" : 147,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "identifier",
+              "startByte" : 128,
+              "endByte" : 131,
+              "named" : true,
+              "text" : "org",
+              "children" : [ ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 132,
+              "endByte" : 147,
+              "named" : true,
+              "text" : "springframework",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 148,
+            "endByte" : 152,
+            "named" : true,
+            "text" : "http",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 153,
+          "endByte" : 167,
+          "named" : true,
+          "text" : "ResponseEntity",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 169,
+      "endByte" : 218,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 176,
+        "endByte" : 217,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 176,
+          "endByte" : 206,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 176,
+            "endByte" : 195,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "identifier",
+              "startByte" : 176,
+              "endByte" : 179,
+              "named" : true,
+              "text" : "org",
+              "children" : [ ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 180,
+              "endByte" : 195,
+              "named" : true,
+              "text" : "springframework",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 196,
+            "endByte" : 206,
+            "named" : true,
+            "text" : "stereotype",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 207,
+          "endByte" : 217,
+          "named" : true,
+          "text" : "Controller",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 219,
+      "endByte" : 255,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 226,
+        "endByte" : 254,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 226,
+          "endByte" : 248,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 226,
+            "endByte" : 245,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "identifier",
+              "startByte" : 226,
+              "endByte" : 229,
+              "named" : true,
+              "text" : "org",
+              "children" : [ ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 230,
+              "endByte" : 245,
+              "named" : true,
+              "text" : "springframework",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 246,
+            "endByte" : 248,
+            "named" : true,
+            "text" : "ui",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 249,
+          "endByte" : 254,
+          "named" : true,
+          "text" : "Model",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 256,
+      "endByte" : 317,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 263,
+        "endByte" : 316,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 263,
+          "endByte" : 302,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 263,
+            "endByte" : 291,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 263,
+              "endByte" : 286,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "scoped_identifier",
+                "startByte" : 263,
+                "endByte" : 282,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 263,
+                  "endByte" : 266,
+                  "named" : true,
+                  "text" : "org",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 267,
+                  "endByte" : 282,
+                  "named" : true,
+                  "text" : "springframework",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 283,
+                "endByte" : 286,
+                "named" : true,
+                "text" : "web",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 287,
+              "endByte" : 291,
+              "named" : true,
+              "text" : "bind",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 292,
+            "endByte" : 302,
+            "named" : true,
+            "text" : "annotation",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 303,
+          "endByte" : 316,
+          "named" : true,
+          "text" : "DeleteMapping",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 318,
+      "endByte" : 376,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 325,
+        "endByte" : 375,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 325,
+          "endByte" : 364,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 325,
+            "endByte" : 353,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 325,
+              "endByte" : 348,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "scoped_identifier",
+                "startByte" : 325,
+                "endByte" : 344,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 325,
+                  "endByte" : 328,
+                  "named" : true,
+                  "text" : "org",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 329,
+                  "endByte" : 344,
+                  "named" : true,
+                  "text" : "springframework",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 345,
+                "endByte" : 348,
+                "named" : true,
+                "text" : "web",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 349,
+              "endByte" : 353,
+              "named" : true,
+              "text" : "bind",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 354,
+            "endByte" : 364,
+            "named" : true,
+            "text" : "annotation",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 365,
+          "endByte" : 375,
+          "named" : true,
+          "text" : "GetMapping",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 377,
+      "endByte" : 437,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 384,
+        "endByte" : 436,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 384,
+          "endByte" : 423,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 384,
+            "endByte" : 412,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 384,
+              "endByte" : 407,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "scoped_identifier",
+                "startByte" : 384,
+                "endByte" : 403,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 384,
+                  "endByte" : 387,
+                  "named" : true,
+                  "text" : "org",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 388,
+                  "endByte" : 403,
+                  "named" : true,
+                  "text" : "springframework",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 404,
+                "endByte" : 407,
+                "named" : true,
+                "text" : "web",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 408,
+              "endByte" : 412,
+              "named" : true,
+              "text" : "bind",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 413,
+            "endByte" : 423,
+            "named" : true,
+            "text" : "annotation",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 424,
+          "endByte" : 436,
+          "named" : true,
+          "text" : "PathVariable",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 438,
+      "endByte" : 497,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 445,
+        "endByte" : 496,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 445,
+          "endByte" : 484,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 445,
+            "endByte" : 473,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 445,
+              "endByte" : 468,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "scoped_identifier",
+                "startByte" : 445,
+                "endByte" : 464,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 445,
+                  "endByte" : 448,
+                  "named" : true,
+                  "text" : "org",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 449,
+                  "endByte" : 464,
+                  "named" : true,
+                  "text" : "springframework",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 465,
+                "endByte" : 468,
+                "named" : true,
+                "text" : "web",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 469,
+              "endByte" : 473,
+              "named" : true,
+              "text" : "bind",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 474,
+            "endByte" : 484,
+            "named" : true,
+            "text" : "annotation",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 485,
+          "endByte" : 496,
+          "named" : true,
+          "text" : "PostMapping",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 498,
+      "endByte" : 557,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 505,
+        "endByte" : 556,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 505,
+          "endByte" : 544,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 505,
+            "endByte" : 533,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 505,
+              "endByte" : 528,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "scoped_identifier",
+                "startByte" : 505,
+                "endByte" : 524,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 505,
+                  "endByte" : 508,
+                  "named" : true,
+                  "text" : "org",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 509,
+                  "endByte" : 524,
+                  "named" : true,
+                  "text" : "springframework",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 525,
+                "endByte" : 528,
+                "named" : true,
+                "text" : "web",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 529,
+              "endByte" : 533,
+              "named" : true,
+              "text" : "bind",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 534,
+            "endByte" : 544,
+            "named" : true,
+            "text" : "annotation",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 545,
+          "endByte" : 556,
+          "named" : true,
+          "text" : "RequestBody",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 558,
+      "endByte" : 618,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 565,
+        "endByte" : 617,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 565,
+          "endByte" : 604,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 565,
+            "endByte" : 593,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 565,
+              "endByte" : 588,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "scoped_identifier",
+                "startByte" : 565,
+                "endByte" : 584,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 565,
+                  "endByte" : 568,
+                  "named" : true,
+                  "text" : "org",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 569,
+                  "endByte" : 584,
+                  "named" : true,
+                  "text" : "springframework",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 585,
+                "endByte" : 588,
+                "named" : true,
+                "text" : "web",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 589,
+              "endByte" : 593,
+              "named" : true,
+              "text" : "bind",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 594,
+            "endByte" : 604,
+            "named" : true,
+            "text" : "annotation",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 605,
+          "endByte" : 617,
+          "named" : true,
+          "text" : "ResponseBody",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 620,
+      "endByte" : 664,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 627,
+        "endByte" : 663,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 627,
+          "endByte" : 658,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 627,
+            "endByte" : 651,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 627,
+              "endByte" : 646,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 627,
+                "endByte" : 630,
+                "named" : true,
+                "text" : "org",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 631,
+                "endByte" : 646,
+                "named" : true,
+                "text" : "springframework",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 647,
+              "endByte" : 651,
+              "named" : true,
+              "text" : "data",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 652,
+            "endByte" : 658,
+            "named" : true,
+            "text" : "domain",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 659,
+          "endByte" : 663,
+          "named" : true,
+          "text" : "Page",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 666,
+      "endByte" : 698,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 673,
+        "endByte" : 697,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 673,
+          "endByte" : 692,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 673,
+            "endByte" : 685,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 673,
+              "endByte" : 681,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 673,
+                "endByte" : 676,
+                "named" : true,
+                "text" : "com",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 677,
+                "endByte" : 681,
+                "named" : true,
+                "text" : "todo",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 682,
+              "endByte" : 685,
+              "named" : true,
+              "text" : "app",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 686,
+            "endByte" : 692,
+            "named" : true,
+            "text" : "entity",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 693,
+          "endByte" : 697,
+          "named" : true,
+          "text" : "Task",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 699,
+      "endByte" : 739,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 706,
+        "endByte" : 738,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 706,
+          "endByte" : 726,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 706,
+            "endByte" : 718,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 706,
+              "endByte" : 714,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 706,
+                "endByte" : 709,
+                "named" : true,
+                "text" : "com",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 710,
+                "endByte" : 714,
+                "named" : true,
+                "text" : "todo",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 715,
+              "endByte" : 718,
+              "named" : true,
+              "text" : "app",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 719,
+            "endByte" : 726,
+            "named" : true,
+            "text" : "service",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 727,
+          "endByte" : 738,
+          "named" : true,
+          "text" : "TaskService",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "class_declaration",
+      "startByte" : 741,
+      "endByte" : 2739,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "modifiers",
+        "startByte" : 741,
+        "endByte" : 759,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "marker_annotation",
+          "startByte" : 741,
+          "endByte" : 752,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "identifier",
+            "startByte" : 742,
+            "endByte" : 752,
+            "named" : true,
+            "text" : "Controller",
+            "children" : [ ]
+          } ]
+        } ]
+      }, {
+        "type" : "identifier",
+        "startByte" : 766,
+        "endByte" : 780,
+        "named" : true,
+        "text" : "TaskController",
+        "children" : [ ]
+      }, {
+        "type" : "class_body",
+        "startByte" : 781,
+        "endByte" : 2739,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "field_declaration",
+          "startByte" : 788,
+          "endByte" : 835,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 788,
+            "endByte" : 810,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "marker_annotation",
+              "startByte" : 788,
+              "endByte" : 798,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 789,
+                "endByte" : 798,
+                "named" : true,
+                "text" : "Autowired",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "type_identifier",
+            "startByte" : 811,
+            "endByte" : 822,
+            "named" : true,
+            "text" : "TaskService",
+            "children" : [ ]
+          }, {
+            "type" : "variable_declarator",
+            "startByte" : 823,
+            "endByte" : 834,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "identifier",
+              "startByte" : 823,
+              "endByte" : 834,
+              "named" : true,
+              "text" : "taskService",
+              "children" : [ ]
+            } ]
+          } ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 841,
+          "endByte" : 928,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 841,
+            "endByte" : 873,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "annotation",
+              "startByte" : 841,
+              "endByte" : 862,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 842,
+                "endByte" : 852,
+                "named" : true,
+                "text" : "GetMapping",
+                "children" : [ ]
+              }, {
+                "type" : "annotation_argument_list",
+                "startByte" : 852,
+                "endByte" : 862,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "string_literal",
+                  "startByte" : 853,
+                  "endByte" : 861,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "string_fragment",
+                    "startByte" : 854,
+                    "endByte" : 860,
+                    "named" : true,
+                    "text" : "/error",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          }, {
+            "type" : "type_identifier",
+            "startByte" : 874,
+            "endByte" : 880,
+            "named" : true,
+            "text" : "String",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 881,
+            "endByte" : 894,
+            "named" : true,
+            "text" : "viewErrorPage",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 894,
+            "endByte" : 896,
+            "named" : true,
+            "text" : "()",
+            "children" : [ ]
+          }, {
+            "type" : "block",
+            "startByte" : 897,
+            "endByte" : 928,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "return_statement",
+              "startByte" : 907,
+              "endByte" : 922,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "string_literal",
+                "startByte" : 914,
+                "endByte" : 921,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "string_fragment",
+                  "startByte" : 915,
+                  "endByte" : 920,
+                  "named" : true,
+                  "text" : "error",
+                  "children" : [ ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 934,
+          "endByte" : 1025,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 934,
+            "endByte" : 961,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "annotation",
+              "startByte" : 934,
+              "endByte" : 950,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 935,
+                "endByte" : 945,
+                "named" : true,
+                "text" : "GetMapping",
+                "children" : [ ]
+              }, {
+                "type" : "annotation_argument_list",
+                "startByte" : 945,
+                "endByte" : 950,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "string_literal",
+                  "startByte" : 946,
+                  "endByte" : 949,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "string_fragment",
+                    "startByte" : 947,
+                    "endByte" : 948,
+                    "named" : true,
+                    "text" : "/",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          }, {
+            "type" : "type_identifier",
+            "startByte" : 962,
+            "endByte" : 968,
+            "named" : true,
+            "text" : "String",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 969,
+            "endByte" : 982,
+            "named" : true,
+            "text" : "viewIndexPage",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 982,
+            "endByte" : 984,
+            "named" : true,
+            "text" : "()",
+            "children" : [ ]
+          }, {
+            "type" : "block",
+            "startByte" : 985,
+            "endByte" : 1025,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "return_statement",
+              "startByte" : 995,
+              "endByte" : 1019,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "string_literal",
+                "startByte" : 1002,
+                "endByte" : 1018,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "string_fragment",
+                  "startByte" : 1003,
+                  "endByte" : 1017,
+                  "named" : true,
+                  "text" : "redirect:/home",
+                  "children" : [ ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 1031,
+          "endByte" : 1187,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 1031,
+            "endByte" : 1062,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "annotation",
+              "startByte" : 1031,
+              "endByte" : 1051,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 1032,
+                "endByte" : 1042,
+                "named" : true,
+                "text" : "GetMapping",
+                "children" : [ ]
+              }, {
+                "type" : "annotation_argument_list",
+                "startByte" : 1042,
+                "endByte" : 1051,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "string_literal",
+                  "startByte" : 1043,
+                  "endByte" : 1050,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "string_fragment",
+                    "startByte" : 1044,
+                    "endByte" : 1049,
+                    "named" : true,
+                    "text" : "/home",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          }, {
+            "type" : "type_identifier",
+            "startByte" : 1063,
+            "endByte" : 1069,
+            "named" : true,
+            "text" : "String",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 1070,
+            "endByte" : 1078,
+            "named" : true,
+            "text" : "viewHome",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 1078,
+            "endByte" : 1091,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "formal_parameter",
+              "startByte" : 1079,
+              "endByte" : 1090,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "type_identifier",
+                "startByte" : 1079,
+                "endByte" : 1084,
+                "named" : true,
+                "text" : "Model",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 1085,
+                "endByte" : 1090,
+                "named" : true,
+                "text" : "model",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "block",
+            "startByte" : 1092,
+            "endByte" : 1187,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "expression_statement",
+              "startByte" : 1102,
+              "endByte" : 1141,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 1102,
+                "endByte" : 1140,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 1102,
+                  "endByte" : 1107,
+                  "named" : true,
+                  "text" : "model",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 1108,
+                  "endByte" : 1120,
+                  "named" : true,
+                  "text" : "addAttribute",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 1120,
+                  "endByte" : 1140,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "string_literal",
+                    "startByte" : 1121,
+                    "endByte" : 1127,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "string_fragment",
+                      "startByte" : 1122,
+                      "endByte" : 1126,
+                      "named" : true,
+                      "text" : "task",
+                      "children" : [ ]
+                    } ]
+                  }, {
+                    "type" : "object_creation_expression",
+                    "startByte" : 1129,
+                    "endByte" : 1139,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "type_identifier",
+                      "startByte" : 1133,
+                      "endByte" : 1137,
+                      "named" : true,
+                      "text" : "Task",
+                      "children" : [ ]
+                    }, {
+                      "type" : "argument_list",
+                      "startByte" : 1137,
+                      "endByte" : 1139,
+                      "named" : true,
+                      "text" : "()",
+                      "children" : [ ]
+                    } ]
+                  } ]
+                } ]
+              } ]
+            }, {
+              "type" : "return_statement",
+              "startByte" : 1150,
+              "endByte" : 1181,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 1157,
+                "endByte" : 1180,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 1157,
+                  "endByte" : 1170,
+                  "named" : true,
+                  "text" : "findPaginated",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 1170,
+                  "endByte" : 1180,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "decimal_integer_literal",
+                    "startByte" : 1171,
+                    "endByte" : 1172,
+                    "named" : true,
+                    "text" : "1",
+                    "children" : [ ]
+                  }, {
+                    "type" : "identifier",
+                    "startByte" : 1174,
+                    "endByte" : 1179,
+                    "named" : true,
+                    "text" : "model",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 1193,
+          "endByte" : 2204,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 1193,
+            "endByte" : 1233,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "annotation",
+              "startByte" : 1193,
+              "endByte" : 1222,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 1194,
+                "endByte" : 1204,
+                "named" : true,
+                "text" : "GetMapping",
+                "children" : [ ]
+              }, {
+                "type" : "annotation_argument_list",
+                "startByte" : 1204,
+                "endByte" : 1222,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "string_literal",
+                  "startByte" : 1205,
+                  "endByte" : 1221,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "string_fragment",
+                    "startByte" : 1206,
+                    "endByte" : 1220,
+                    "named" : true,
+                    "text" : "/home/{pageNo}",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          }, {
+            "type" : "type_identifier",
+            "startByte" : 1234,
+            "endByte" : 1240,
+            "named" : true,
+            "text" : "String",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 1241,
+            "endByte" : 1254,
+            "named" : true,
+            "text" : "findPaginated",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 1254,
+            "endByte" : 1311,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "formal_parameter",
+              "startByte" : 1255,
+              "endByte" : 1297,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "modifiers",
+                "startByte" : 1255,
+                "endByte" : 1286,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "annotation",
+                  "startByte" : 1255,
+                  "endByte" : 1286,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 1256,
+                    "endByte" : 1268,
+                    "named" : true,
+                    "text" : "PathVariable",
+                    "children" : [ ]
+                  }, {
+                    "type" : "annotation_argument_list",
+                    "startByte" : 1268,
+                    "endByte" : 1286,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "element_value_pair",
+                      "startByte" : 1269,
+                      "endByte" : 1285,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "identifier",
+                        "startByte" : 1269,
+                        "endByte" : 1274,
+                        "named" : true,
+                        "text" : "value",
+                        "children" : [ ]
+                      }, {
+                        "type" : "string_literal",
+                        "startByte" : 1277,
+                        "endByte" : 1285,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "string_fragment",
+                          "startByte" : 1278,
+                          "endByte" : 1284,
+                          "named" : true,
+                          "text" : "pageNo",
+                          "children" : [ ]
+                        } ]
+                      } ]
+                    } ]
+                  } ]
+                } ]
+              }, {
+                "type" : "integral_type",
+                "startByte" : 1287,
+                "endByte" : 1290,
+                "named" : true,
+                "text" : "int",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 1291,
+                "endByte" : 1297,
+                "named" : true,
+                "text" : "pageNo",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "formal_parameter",
+              "startByte" : 1299,
+              "endByte" : 1310,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "type_identifier",
+                "startByte" : 1299,
+                "endByte" : 1304,
+                "named" : true,
+                "text" : "Model",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 1305,
+                "endByte" : 1310,
+                "named" : true,
+                "text" : "model",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "block",
+            "startByte" : 1312,
+            "endByte" : 2204,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "expression_statement",
+              "startByte" : 1323,
+              "endByte" : 1362,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 1323,
+                "endByte" : 1361,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 1323,
+                  "endByte" : 1328,
+                  "named" : true,
+                  "text" : "model",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 1329,
+                  "endByte" : 1341,
+                  "named" : true,
+                  "text" : "addAttribute",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 1341,
+                  "endByte" : 1361,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "string_literal",
+                    "startByte" : 1342,
+                    "endByte" : 1348,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "string_fragment",
+                      "startByte" : 1343,
+                      "endByte" : 1347,
+                      "named" : true,
+                      "text" : "task",
+                      "children" : [ ]
+                    } ]
+                  }, {
+                    "type" : "object_creation_expression",
+                    "startByte" : 1350,
+                    "endByte" : 1360,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "type_identifier",
+                      "startByte" : 1354,
+                      "endByte" : 1358,
+                      "named" : true,
+                      "text" : "Task",
+                      "children" : [ ]
+                    }, {
+                      "type" : "argument_list",
+                      "startByte" : 1358,
+                      "endByte" : 1360,
+                      "named" : true,
+                      "text" : "()",
+                      "children" : [ ]
+                    } ]
+                  } ]
+                } ]
+              } ]
+            }, {
+              "type" : "local_variable_declaration",
+              "startByte" : 1372,
+              "endByte" : 1389,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "integral_type",
+                "startByte" : 1372,
+                "endByte" : 1375,
+                "named" : true,
+                "text" : "int",
+                "children" : [ ]
+              }, {
+                "type" : "variable_declarator",
+                "startByte" : 1376,
+                "endByte" : 1388,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 1376,
+                  "endByte" : 1384,
+                  "named" : true,
+                  "text" : "pageSize",
+                  "children" : [ ]
+                }, {
+                  "type" : "decimal_integer_literal",
+                  "startByte" : 1387,
+                  "endByte" : 1388,
+                  "named" : true,
+                  "text" : "6",
+                  "children" : [ ]
+                } ]
+              } ]
+            }, {
+              "type" : "local_variable_declaration",
+              "startByte" : 1399,
+              "endByte" : 1463,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "generic_type",
+                "startByte" : 1399,
+                "endByte" : 1409,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "type_identifier",
+                  "startByte" : 1399,
+                  "endByte" : 1403,
+                  "named" : true,
+                  "text" : "Page",
+                  "children" : [ ]
+                }, {
+                  "type" : "type_arguments",
+                  "startByte" : 1403,
+                  "endByte" : 1409,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "type_identifier",
+                    "startByte" : 1404,
+                    "endByte" : 1408,
+                    "named" : true,
+                    "text" : "Task",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "variable_declarator",
+                "startByte" : 1410,
+                "endByte" : 1462,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 1410,
+                  "endByte" : 1414,
+                  "named" : true,
+                  "text" : "page",
+                  "children" : [ ]
+                }, {
+                  "type" : "method_invocation",
+                  "startByte" : 1417,
+                  "endByte" : 1462,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 1417,
+                    "endByte" : 1428,
+                    "named" : true,
+                    "text" : "taskService",
+                    "children" : [ ]
+                  }, {
+                    "type" : "identifier",
+                    "startByte" : 1429,
+                    "endByte" : 1444,
+                    "named" : true,
+                    "text" : "getAllTasksPage",
+                    "children" : [ ]
+                  }, {
+                    "type" : "argument_list",
+                    "startByte" : 1444,
+                    "endByte" : 1462,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "identifier",
+                      "startByte" : 1445,
+                      "endByte" : 1451,
+                      "named" : true,
+                      "text" : "pageNo",
+                      "children" : [ ]
+                    }, {
+                      "type" : "identifier",
+                      "startByte" : 1453,
+                      "endByte" : 1461,
+                      "named" : true,
+                      "text" : "pageSize",
+                      "children" : [ ]
+                    } ]
+                  } ]
+                } ]
+              } ]
+            }, {
+              "type" : "local_variable_declaration",
+              "startByte" : 1472,
+              "endByte" : 1509,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "generic_type",
+                "startByte" : 1472,
+                "endByte" : 1482,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "type_identifier",
+                  "startByte" : 1472,
+                  "endByte" : 1476,
+                  "named" : true,
+                  "text" : "List",
+                  "children" : [ ]
+                }, {
+                  "type" : "type_arguments",
+                  "startByte" : 1476,
+                  "endByte" : 1482,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "type_identifier",
+                    "startByte" : 1477,
+                    "endByte" : 1481,
+                    "named" : true,
+                    "text" : "Task",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "variable_declarator",
+                "startByte" : 1483,
+                "endByte" : 1508,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 1483,
+                  "endByte" : 1488,
+                  "named" : true,
+                  "text" : "tasks",
+                  "children" : [ ]
+                }, {
+                  "type" : "method_invocation",
+                  "startByte" : 1491,
+                  "endByte" : 1508,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 1491,
+                    "endByte" : 1495,
+                    "named" : true,
+                    "text" : "page",
+                    "children" : [ ]
+                  }, {
+                    "type" : "identifier",
+                    "startByte" : 1496,
+                    "endByte" : 1506,
+                    "named" : true,
+                    "text" : "getContent",
+                    "children" : [ ]
+                  }, {
+                    "type" : "argument_list",
+                    "startByte" : 1506,
+                    "endByte" : 1508,
+                    "named" : true,
+                    "text" : "()",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            }, {
+              "type" : "if_statement",
+              "startByte" : 1519,
+              "endByte" : 2174,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "parenthesized_expression",
+                "startByte" : 1522,
+                "endByte" : 1539,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "method_invocation",
+                  "startByte" : 1523,
+                  "endByte" : 1538,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 1523,
+                    "endByte" : 1528,
+                    "named" : true,
+                    "text" : "tasks",
+                    "children" : [ ]
+                  }, {
+                    "type" : "identifier",
+                    "startByte" : 1529,
+                    "endByte" : 1536,
+                    "named" : true,
+                    "text" : "isEmpty",
+                    "children" : [ ]
+                  }, {
+                    "type" : "argument_list",
+                    "startByte" : 1536,
+                    "endByte" : 1538,
+                    "named" : true,
+                    "text" : "()",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "block",
+                "startByte" : 1540,
+                "endByte" : 1701,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "expression_statement",
+                  "startByte" : 1554,
+                  "endByte" : 1590,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "method_invocation",
+                    "startByte" : 1554,
+                    "endByte" : 1589,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "identifier",
+                      "startByte" : 1554,
+                      "endByte" : 1559,
+                      "named" : true,
+                      "text" : "model",
+                      "children" : [ ]
+                    }, {
+                      "type" : "identifier",
+                      "startByte" : 1560,
+                      "endByte" : 1572,
+                      "named" : true,
+                      "text" : "addAttribute",
+                      "children" : [ ]
+                    }, {
+                      "type" : "argument_list",
+                      "startByte" : 1572,
+                      "endByte" : 1589,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "string_literal",
+                        "startByte" : 1573,
+                        "endByte" : 1582,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "string_fragment",
+                          "startByte" : 1574,
+                          "endByte" : 1581,
+                          "named" : true,
+                          "text" : "noTasks",
+                          "children" : [ ]
+                        } ]
+                      }, {
+                        "type" : "true",
+                        "startByte" : 1584,
+                        "endByte" : 1588,
+                        "named" : true,
+                        "text" : "true",
+                        "children" : [ ]
+                      } ]
+                    } ]
+                  } ]
+                }, {
+                  "type" : "if_statement",
+                  "startByte" : 1603,
+                  "endByte" : 1691,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "parenthesized_expression",
+                    "startByte" : 1606,
+                    "endByte" : 1618,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "binary_expression",
+                      "startByte" : 1607,
+                      "endByte" : 1617,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "identifier",
+                        "startByte" : 1607,
+                        "endByte" : 1613,
+                        "named" : true,
+                        "text" : "pageNo",
+                        "children" : [ ]
+                      }, {
+                        "type" : "decimal_integer_literal",
+                        "startByte" : 1616,
+                        "endByte" : 1617,
+                        "named" : true,
+                        "text" : "1",
+                        "children" : [ ]
+                      } ]
+                    } ]
+                  }, {
+                    "type" : "block",
+                    "startByte" : 1619,
+                    "endByte" : 1691,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "return_statement",
+                      "startByte" : 1637,
+                      "endByte" : 1677,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "binary_expression",
+                        "startByte" : 1644,
+                        "endByte" : 1676,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "string_literal",
+                          "startByte" : 1644,
+                          "endByte" : 1661,
+                          "named" : true,
+                          "text" : null,
+                          "children" : [ {
+                            "type" : "string_fragment",
+                            "startByte" : 1645,
+                            "endByte" : 1660,
+                            "named" : true,
+                            "text" : "redirect:/home/",
+                            "children" : [ ]
+                          } ]
+                        }, {
+                          "type" : "parenthesized_expression",
+                          "startByte" : 1664,
+                          "endByte" : 1676,
+                          "named" : true,
+                          "text" : null,
+                          "children" : [ {
+                            "type" : "binary_expression",
+                            "startByte" : 1665,
+                            "endByte" : 1675,
+                            "named" : true,
+                            "text" : null,
+                            "children" : [ {
+                              "type" : "identifier",
+                              "startByte" : 1665,
+                              "endByte" : 1671,
+                              "named" : true,
+                              "text" : "pageNo",
+                              "children" : [ ]
+                            }, {
+                              "type" : "decimal_integer_literal",
+                              "startByte" : 1674,
+                              "endByte" : 1675,
+                              "named" : true,
+                              "text" : "1",
+                              "children" : [ ]
+                            } ]
+                          } ]
+                        } ]
+                      } ]
+                    } ]
+                  } ]
+                } ]
+              }, {
+                "type" : "block",
+                "startByte" : 1707,
+                "endByte" : 2174,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "expression_statement",
+                  "startByte" : 1721,
+                  "endByte" : 1763,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "method_invocation",
+                    "startByte" : 1721,
+                    "endByte" : 1762,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "identifier",
+                      "startByte" : 1721,
+                      "endByte" : 1726,
+                      "named" : true,
+                      "text" : "model",
+                      "children" : [ ]
+                    }, {
+                      "type" : "identifier",
+                      "startByte" : 1727,
+                      "endByte" : 1739,
+                      "named" : true,
+                      "text" : "addAttribute",
+                      "children" : [ ]
+                    }, {
+                      "type" : "argument_list",
+                      "startByte" : 1739,
+                      "endByte" : 1762,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "string_literal",
+                        "startByte" : 1740,
+                        "endByte" : 1753,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "string_fragment",
+                          "startByte" : 1741,
+                          "endByte" : 1752,
+                          "named" : true,
+                          "text" : "currentPage",
+                          "children" : [ ]
+                        } ]
+                      }, {
+                        "type" : "identifier",
+                        "startByte" : 1755,
+                        "endByte" : 1761,
+                        "named" : true,
+                        "text" : "pageNo",
+                        "children" : [ ]
+                      } ]
+                    } ]
+                  } ]
+                }, {
+                  "type" : "expression_statement",
+                  "startByte" : 1776,
+                  "endByte" : 1831,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "method_invocation",
+                    "startByte" : 1776,
+                    "endByte" : 1830,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "identifier",
+                      "startByte" : 1776,
+                      "endByte" : 1781,
+                      "named" : true,
+                      "text" : "model",
+                      "children" : [ ]
+                    }, {
+                      "type" : "identifier",
+                      "startByte" : 1782,
+                      "endByte" : 1794,
+                      "named" : true,
+                      "text" : "addAttribute",
+                      "children" : [ ]
+                    }, {
+                      "type" : "argument_list",
+                      "startByte" : 1794,
+                      "endByte" : 1830,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "string_literal",
+                        "startByte" : 1795,
+                        "endByte" : 1807,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "string_fragment",
+                          "startByte" : 1796,
+                          "endByte" : 1806,
+                          "named" : true,
+                          "text" : "totalPages",
+                          "children" : [ ]
+                        } ]
+                      }, {
+                        "type" : "method_invocation",
+                        "startByte" : 1809,
+                        "endByte" : 1829,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "identifier",
+                          "startByte" : 1809,
+                          "endByte" : 1813,
+                          "named" : true,
+                          "text" : "page",
+                          "children" : [ ]
+                        }, {
+                          "type" : "identifier",
+                          "startByte" : 1814,
+                          "endByte" : 1827,
+                          "named" : true,
+                          "text" : "getTotalPages",
+                          "children" : [ ]
+                        }, {
+                          "type" : "argument_list",
+                          "startByte" : 1827,
+                          "endByte" : 1829,
+                          "named" : true,
+                          "text" : "()",
+                          "children" : [ ]
+                        } ]
+                      } ]
+                    } ]
+                  } ]
+                }, {
+                  "type" : "expression_statement",
+                  "startByte" : 1844,
+                  "endByte" : 1902,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "method_invocation",
+                    "startByte" : 1844,
+                    "endByte" : 1901,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "identifier",
+                      "startByte" : 1844,
+                      "endByte" : 1849,
+                      "named" : true,
+                      "text" : "model",
+                      "children" : [ ]
+                    }, {
+                      "type" : "identifier",
+                      "startByte" : 1850,
+                      "endByte" : 1862,
+                      "named" : true,
+                      "text" : "addAttribute",
+                      "children" : [ ]
+                    }, {
+                      "type" : "argument_list",
+                      "startByte" : 1862,
+                      "endByte" : 1901,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "string_literal",
+                        "startByte" : 1863,
+                        "endByte" : 1875,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "string_fragment",
+                          "startByte" : 1864,
+                          "endByte" : 1874,
+                          "named" : true,
+                          "text" : "totalItems",
+                          "children" : [ ]
+                        } ]
+                      }, {
+                        "type" : "method_invocation",
+                        "startByte" : 1877,
+                        "endByte" : 1900,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "identifier",
+                          "startByte" : 1877,
+                          "endByte" : 1881,
+                          "named" : true,
+                          "text" : "page",
+                          "children" : [ ]
+                        }, {
+                          "type" : "identifier",
+                          "startByte" : 1882,
+                          "endByte" : 1898,
+                          "named" : true,
+                          "text" : "getTotalElements",
+                          "children" : [ ]
+                        }, {
+                          "type" : "argument_list",
+                          "startByte" : 1898,
+                          "endByte" : 1900,
+                          "named" : true,
+                          "text" : "()",
+                          "children" : [ ]
+                        } ]
+                      } ]
+                    } ]
+                  } ]
+                }, {
+                  "type" : "expression_statement",
+                  "startByte" : 1915,
+                  "endByte" : 1950,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "method_invocation",
+                    "startByte" : 1915,
+                    "endByte" : 1949,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "identifier",
+                      "startByte" : 1915,
+                      "endByte" : 1920,
+                      "named" : true,
+                      "text" : "model",
+                      "children" : [ ]
+                    }, {
+                      "type" : "identifier",
+                      "startByte" : 1921,
+                      "endByte" : 1933,
+                      "named" : true,
+                      "text" : "addAttribute",
+                      "children" : [ ]
+                    }, {
+                      "type" : "argument_list",
+                      "startByte" : 1933,
+                      "endByte" : 1949,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "string_literal",
+                        "startByte" : 1934,
+                        "endByte" : 1941,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "string_fragment",
+                          "startByte" : 1935,
+                          "endByte" : 1940,
+                          "named" : true,
+                          "text" : "tasks",
+                          "children" : [ ]
+                        } ]
+                      }, {
+                        "type" : "identifier",
+                        "startByte" : 1943,
+                        "endByte" : 1948,
+                        "named" : true,
+                        "text" : "tasks",
+                        "children" : [ ]
+                      } ]
+                    } ]
+                  } ]
+                }, {
+                  "type" : "if_statement",
+                  "startByte" : 1964,
+                  "endByte" : 2079,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "parenthesized_expression",
+                    "startByte" : 1967,
+                    "endByte" : 1998,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "binary_expression",
+                      "startByte" : 1968,
+                      "endByte" : 1997,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "identifier",
+                        "startByte" : 1968,
+                        "endByte" : 1974,
+                        "named" : true,
+                        "text" : "pageNo",
+                        "children" : [ ]
+                      }, {
+                        "type" : "method_invocation",
+                        "startByte" : 1977,
+                        "endByte" : 1997,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "identifier",
+                          "startByte" : 1977,
+                          "endByte" : 1981,
+                          "named" : true,
+                          "text" : "page",
+                          "children" : [ ]
+                        }, {
+                          "type" : "identifier",
+                          "startByte" : 1982,
+                          "endByte" : 1995,
+                          "named" : true,
+                          "text" : "getTotalPages",
+                          "children" : [ ]
+                        }, {
+                          "type" : "argument_list",
+                          "startByte" : 1995,
+                          "endByte" : 1997,
+                          "named" : true,
+                          "text" : "()",
+                          "children" : [ ]
+                        } ]
+                      } ]
+                    } ]
+                  }, {
+                    "type" : "block",
+                    "startByte" : 1999,
+                    "endByte" : 2079,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "return_statement",
+                      "startByte" : 2017,
+                      "endByte" : 2065,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "binary_expression",
+                        "startByte" : 2024,
+                        "endByte" : 2064,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "string_literal",
+                          "startByte" : 2024,
+                          "endByte" : 2041,
+                          "named" : true,
+                          "text" : null,
+                          "children" : [ {
+                            "type" : "string_fragment",
+                            "startByte" : 2025,
+                            "endByte" : 2040,
+                            "named" : true,
+                            "text" : "redirect:/home/",
+                            "children" : [ ]
+                          } ]
+                        }, {
+                          "type" : "method_invocation",
+                          "startByte" : 2044,
+                          "endByte" : 2064,
+                          "named" : true,
+                          "text" : null,
+                          "children" : [ {
+                            "type" : "identifier",
+                            "startByte" : 2044,
+                            "endByte" : 2048,
+                            "named" : true,
+                            "text" : "page",
+                            "children" : [ ]
+                          }, {
+                            "type" : "identifier",
+                            "startByte" : 2049,
+                            "endByte" : 2062,
+                            "named" : true,
+                            "text" : "getTotalPages",
+                            "children" : [ ]
+                          }, {
+                            "type" : "argument_list",
+                            "startByte" : 2062,
+                            "endByte" : 2064,
+                            "named" : true,
+                            "text" : "()",
+                            "children" : [ ]
+                          } ]
+                        } ]
+                      } ]
+                    } ]
+                  } ]
+                }, {
+                  "type" : "if_statement",
+                  "startByte" : 2092,
+                  "endByte" : 2164,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "parenthesized_expression",
+                    "startByte" : 2095,
+                    "endByte" : 2107,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "binary_expression",
+                      "startByte" : 2096,
+                      "endByte" : 2106,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "identifier",
+                        "startByte" : 2096,
+                        "endByte" : 2102,
+                        "named" : true,
+                        "text" : "pageNo",
+                        "children" : [ ]
+                      }, {
+                        "type" : "decimal_integer_literal",
+                        "startByte" : 2105,
+                        "endByte" : 2106,
+                        "named" : true,
+                        "text" : "1",
+                        "children" : [ ]
+                      } ]
+                    } ]
+                  }, {
+                    "type" : "block",
+                    "startByte" : 2108,
+                    "endByte" : 2164,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "return_statement",
+                      "startByte" : 2126,
+                      "endByte" : 2150,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "string_literal",
+                        "startByte" : 2133,
+                        "endByte" : 2149,
+                        "named" : true,
+                        "text" : null,
+                        "children" : [ {
+                          "type" : "string_fragment",
+                          "startByte" : 2134,
+                          "endByte" : 2148,
+                          "named" : true,
+                          "text" : "redirect:/home",
+                          "children" : [ ]
+                        } ]
+                      } ]
+                    } ]
+                  } ]
+                } ]
+              } ]
+            }, {
+              "type" : "return_statement",
+              "startByte" : 2184,
+              "endByte" : 2198,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "string_literal",
+                "startByte" : 2191,
+                "endByte" : 2197,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "string_fragment",
+                  "startByte" : 2192,
+                  "endByte" : 2196,
+                  "named" : true,
+                  "text" : "home",
+                  "children" : [ ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "line_comment",
+          "startByte" : 2210,
+          "endByte" : 2243,
+          "named" : true,
+          "text" : "// Create task using AJAX request",
+          "children" : [ ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 2248,
+          "endByte" : 2498,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 2248,
+            "endByte" : 2298,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "annotation",
+              "startByte" : 2248,
+              "endByte" : 2269,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 2249,
+                "endByte" : 2260,
+                "named" : true,
+                "text" : "PostMapping",
+                "children" : [ ]
+              }, {
+                "type" : "annotation_argument_list",
+                "startByte" : 2260,
+                "endByte" : 2269,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "string_literal",
+                  "startByte" : 2261,
+                  "endByte" : 2268,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "string_fragment",
+                    "startByte" : 2262,
+                    "endByte" : 2267,
+                    "named" : true,
+                    "text" : "/home",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            }, {
+              "type" : "marker_annotation",
+              "startByte" : 2274,
+              "endByte" : 2287,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 2275,
+                "endByte" : 2287,
+                "named" : true,
+                "text" : "ResponseBody",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "generic_type",
+            "startByte" : 2299,
+            "endByte" : 2325,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "type_identifier",
+              "startByte" : 2299,
+              "endByte" : 2313,
+              "named" : true,
+              "text" : "ResponseEntity",
+              "children" : [ ]
+            }, {
+              "type" : "type_arguments",
+              "startByte" : 2313,
+              "endByte" : 2325,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "generic_type",
+                "startByte" : 2314,
+                "endByte" : 2324,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "type_identifier",
+                  "startByte" : 2314,
+                  "endByte" : 2318,
+                  "named" : true,
+                  "text" : "List",
+                  "children" : [ ]
+                }, {
+                  "type" : "type_arguments",
+                  "startByte" : 2318,
+                  "endByte" : 2324,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "type_identifier",
+                    "startByte" : 2319,
+                    "endByte" : 2323,
+                    "named" : true,
+                    "text" : "Task",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 2326,
+            "endByte" : 2336,
+            "named" : true,
+            "text" : "createTask",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 2336,
+            "endByte" : 2360,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "formal_parameter",
+              "startByte" : 2337,
+              "endByte" : 2359,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "modifiers",
+                "startByte" : 2337,
+                "endByte" : 2349,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "marker_annotation",
+                  "startByte" : 2337,
+                  "endByte" : 2349,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 2338,
+                    "endByte" : 2349,
+                    "named" : true,
+                    "text" : "RequestBody",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "type_identifier",
+                "startByte" : 2350,
+                "endByte" : 2354,
+                "named" : true,
+                "text" : "Task",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 2355,
+                "endByte" : 2359,
+                "named" : true,
+                "text" : "task",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "block",
+            "startByte" : 2361,
+            "endByte" : 2498,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "expression_statement",
+              "startByte" : 2371,
+              "endByte" : 2397,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 2371,
+                "endByte" : 2396,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 2371,
+                  "endByte" : 2382,
+                  "named" : true,
+                  "text" : "taskService",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 2383,
+                  "endByte" : 2390,
+                  "named" : true,
+                  "text" : "addTask",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 2390,
+                  "endByte" : 2396,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 2391,
+                    "endByte" : 2395,
+                    "named" : true,
+                    "text" : "task",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            }, {
+              "type" : "local_variable_declaration",
+              "startByte" : 2406,
+              "endByte" : 2451,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "generic_type",
+                "startByte" : 2406,
+                "endByte" : 2416,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "type_identifier",
+                  "startByte" : 2406,
+                  "endByte" : 2410,
+                  "named" : true,
+                  "text" : "List",
+                  "children" : [ ]
+                }, {
+                  "type" : "type_arguments",
+                  "startByte" : 2410,
+                  "endByte" : 2416,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "type_identifier",
+                    "startByte" : 2411,
+                    "endByte" : 2415,
+                    "named" : true,
+                    "text" : "Task",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "variable_declarator",
+                "startByte" : 2417,
+                "endByte" : 2450,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 2417,
+                  "endByte" : 2422,
+                  "named" : true,
+                  "text" : "tasks",
+                  "children" : [ ]
+                }, {
+                  "type" : "method_invocation",
+                  "startByte" : 2425,
+                  "endByte" : 2450,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 2425,
+                    "endByte" : 2436,
+                    "named" : true,
+                    "text" : "taskService",
+                    "children" : [ ]
+                  }, {
+                    "type" : "identifier",
+                    "startByte" : 2437,
+                    "endByte" : 2448,
+                    "named" : true,
+                    "text" : "getAllTasks",
+                    "children" : [ ]
+                  }, {
+                    "type" : "argument_list",
+                    "startByte" : 2448,
+                    "endByte" : 2450,
+                    "named" : true,
+                    "text" : "()",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            }, {
+              "type" : "return_statement",
+              "startByte" : 2460,
+              "endByte" : 2492,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 2467,
+                "endByte" : 2491,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 2467,
+                  "endByte" : 2481,
+                  "named" : true,
+                  "text" : "ResponseEntity",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 2482,
+                  "endByte" : 2484,
+                  "named" : true,
+                  "text" : "ok",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 2484,
+                  "endByte" : 2491,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 2485,
+                    "endByte" : 2490,
+                    "named" : true,
+                    "text" : "tasks",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "line_comment",
+          "startByte" : 2504,
+          "endByte" : 2537,
+          "named" : true,
+          "text" : "// Delete task using AJAX request",
+          "children" : [ ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 2542,
+          "endByte" : 2736,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 2542,
+            "endByte" : 2585,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "annotation",
+              "startByte" : 2542,
+              "endByte" : 2574,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 2543,
+                "endByte" : 2556,
+                "named" : true,
+                "text" : "DeleteMapping",
+                "children" : [ ]
+              }, {
+                "type" : "annotation_argument_list",
+                "startByte" : 2556,
+                "endByte" : 2574,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "string_literal",
+                  "startByte" : 2557,
+                  "endByte" : 2573,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "string_fragment",
+                    "startByte" : 2558,
+                    "endByte" : 2572,
+                    "named" : true,
+                    "text" : "/home/{taskId}",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          }, {
+            "type" : "generic_type",
+            "startByte" : 2586,
+            "endByte" : 2606,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "type_identifier",
+              "startByte" : 2586,
+              "endByte" : 2600,
+              "named" : true,
+              "text" : "ResponseEntity",
+              "children" : [ ]
+            }, {
+              "type" : "type_arguments",
+              "startByte" : 2600,
+              "endByte" : 2606,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "type_identifier",
+                "startByte" : 2601,
+                "endByte" : 2605,
+                "named" : true,
+                "text" : "Void",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 2607,
+            "endByte" : 2617,
+            "named" : true,
+            "text" : "deleteTask",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 2617,
+            "endByte" : 2644,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "formal_parameter",
+              "startByte" : 2618,
+              "endByte" : 2643,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "modifiers",
+                "startByte" : 2618,
+                "endByte" : 2631,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "marker_annotation",
+                  "startByte" : 2618,
+                  "endByte" : 2631,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 2619,
+                    "endByte" : 2631,
+                    "named" : true,
+                    "text" : "PathVariable",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "type_identifier",
+                "startByte" : 2632,
+                "endByte" : 2636,
+                "named" : true,
+                "text" : "Long",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 2637,
+                "endByte" : 2643,
+                "named" : true,
+                "text" : "taskId",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "block",
+            "startByte" : 2645,
+            "endByte" : 2736,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "expression_statement",
+              "startByte" : 2655,
+              "endByte" : 2686,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 2655,
+                "endByte" : 2685,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 2655,
+                  "endByte" : 2666,
+                  "named" : true,
+                  "text" : "taskService",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 2667,
+                  "endByte" : 2677,
+                  "named" : true,
+                  "text" : "deleteTask",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 2677,
+                  "endByte" : 2685,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 2678,
+                    "endByte" : 2684,
+                    "named" : true,
+                    "text" : "taskId",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            }, {
+              "type" : "return_statement",
+              "startByte" : 2695,
+              "endByte" : 2730,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 2702,
+                "endByte" : 2729,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "method_invocation",
+                  "startByte" : 2702,
+                  "endByte" : 2721,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 2702,
+                    "endByte" : 2716,
+                    "named" : true,
+                    "text" : "ResponseEntity",
+                    "children" : [ ]
+                  }, {
+                    "type" : "identifier",
+                    "startByte" : 2717,
+                    "endByte" : 2719,
+                    "named" : true,
+                    "text" : "ok",
+                    "children" : [ ]
+                  }, {
+                    "type" : "argument_list",
+                    "startByte" : 2719,
+                    "endByte" : 2721,
+                    "named" : true,
+                    "text" : "()",
+                    "children" : [ ]
+                  } ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 2722,
+                  "endByte" : 2727,
+                  "named" : true,
+                  "text" : "build",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 2727,
+                  "endByte" : 2729,
+                  "named" : true,
+                  "text" : "()",
+                  "children" : [ ]
+                } ]
+              } ]
+            } ]
+          } ]
+        } ]
+      } ]
+    } ]
+  }
+}

@@ -1,0 +1,356 @@
+{
+  "language" : "JAVA",
+  "sourceFile" : "src/main/java/com/todo/app/AppApplication.java",
+  "sourceCode" : "package com.todo.app;\n\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\n\n@SpringBootApplication\npublic class AppApplication {\n\tpublic static void main(String[] args) {\n        SpringApplication.run(AppApplication.class, args);\n\t}\n}",
+  "root" : {
+    "type" : "program",
+    "startByte" : 0,
+    "endByte" : 302,
+    "named" : true,
+    "text" : null,
+    "children" : [ {
+      "type" : "package_declaration",
+      "startByte" : 0,
+      "endByte" : 21,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 8,
+        "endByte" : 20,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 8,
+          "endByte" : 16,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "identifier",
+            "startByte" : 8,
+            "endByte" : 11,
+            "named" : true,
+            "text" : "com",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 12,
+            "endByte" : 16,
+            "named" : true,
+            "text" : "todo",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 17,
+          "endByte" : 20,
+          "named" : true,
+          "text" : "app",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 23,
+      "endByte" : 73,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 30,
+        "endByte" : 72,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 30,
+          "endByte" : 54,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 30,
+            "endByte" : 49,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "identifier",
+              "startByte" : 30,
+              "endByte" : 33,
+              "named" : true,
+              "text" : "org",
+              "children" : [ ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 34,
+              "endByte" : 49,
+              "named" : true,
+              "text" : "springframework",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 50,
+            "endByte" : 54,
+            "named" : true,
+            "text" : "boot",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 55,
+          "endByte" : 72,
+          "named" : true,
+          "text" : "SpringApplication",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 74,
+      "endByte" : 142,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 81,
+        "endByte" : 141,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 81,
+          "endByte" : 119,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 81,
+            "endByte" : 105,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 81,
+              "endByte" : 100,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 81,
+                "endByte" : 84,
+                "named" : true,
+                "text" : "org",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 85,
+                "endByte" : 100,
+                "named" : true,
+                "text" : "springframework",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 101,
+              "endByte" : 105,
+              "named" : true,
+              "text" : "boot",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 106,
+            "endByte" : 119,
+            "named" : true,
+            "text" : "autoconfigure",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 120,
+          "endByte" : 141,
+          "named" : true,
+          "text" : "SpringBootApplication",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "class_declaration",
+      "startByte" : 144,
+      "endByte" : 302,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "modifiers",
+        "startByte" : 144,
+        "endByte" : 173,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "marker_annotation",
+          "startByte" : 144,
+          "endByte" : 166,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "identifier",
+            "startByte" : 145,
+            "endByte" : 166,
+            "named" : true,
+            "text" : "SpringBootApplication",
+            "children" : [ ]
+          } ]
+        } ]
+      }, {
+        "type" : "identifier",
+        "startByte" : 180,
+        "endByte" : 194,
+        "named" : true,
+        "text" : "AppApplication",
+        "children" : [ ]
+      }, {
+        "type" : "class_body",
+        "startByte" : 195,
+        "endByte" : 302,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "method_declaration",
+          "startByte" : 198,
+          "endByte" : 300,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 198,
+            "endByte" : 211,
+            "named" : true,
+            "text" : "public static",
+            "children" : [ ]
+          }, {
+            "type" : "void_type",
+            "startByte" : 212,
+            "endByte" : 216,
+            "named" : true,
+            "text" : "void",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 217,
+            "endByte" : 221,
+            "named" : true,
+            "text" : "main",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 221,
+            "endByte" : 236,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "formal_parameter",
+              "startByte" : 222,
+              "endByte" : 235,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "array_type",
+                "startByte" : 222,
+                "endByte" : 230,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "type_identifier",
+                  "startByte" : 222,
+                  "endByte" : 228,
+                  "named" : true,
+                  "text" : "String",
+                  "children" : [ ]
+                }, {
+                  "type" : "dimensions",
+                  "startByte" : 228,
+                  "endByte" : 230,
+                  "named" : true,
+                  "text" : "[]",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 231,
+                "endByte" : 235,
+                "named" : true,
+                "text" : "args",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "block",
+            "startByte" : 237,
+            "endByte" : 300,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "expression_statement",
+              "startByte" : 247,
+              "endByte" : 297,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 247,
+                "endByte" : 296,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 247,
+                  "endByte" : 264,
+                  "named" : true,
+                  "text" : "SpringApplication",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 265,
+                  "endByte" : 268,
+                  "named" : true,
+                  "text" : "run",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 268,
+                  "endByte" : 296,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "class_literal",
+                    "startByte" : 269,
+                    "endByte" : 289,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "type_identifier",
+                      "startByte" : 269,
+                      "endByte" : 283,
+                      "named" : true,
+                      "text" : "AppApplication",
+                      "children" : [ ]
+                    } ]
+                  }, {
+                    "type" : "identifier",
+                    "startByte" : 291,
+                    "endByte" : 295,
+                    "named" : true,
+                    "text" : "args",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          } ]
+        } ]
+      } ]
+    } ]
+  }
+}

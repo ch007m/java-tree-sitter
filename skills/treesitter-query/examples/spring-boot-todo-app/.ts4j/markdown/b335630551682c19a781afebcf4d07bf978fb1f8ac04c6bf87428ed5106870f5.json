@@ -1,0 +1,2554 @@
+{
+  "language" : "MARKDOWN",
+  "sourceFile" : "README.md",
+  "sourceCode" : "# Awesome To-Do App\n\n## Overview\n\n**Awesome To-Do App** is a versatile task management application tailored to assist users in organizing tasks, managing deadlines, and prioritizing activities. The app offers an intuitive user interface complete with a spectrum of features including task creation, deletion, pagination, and advanced error handling.\n\nIn this README, you'll find a comprehensive guide that details your project, enumerates its key functionalities, lists the technologies employed, provides installation instructions, and articulates usage instructions.\n\n![Tasks Empty](https://github.com/adampeer/spring-boot-todo-app/assets/90769663/aed896df-0c77-4fe2-845a-e12460ea5b2b)\n\n![Tasks Full](https://github.com/adampeer/spring-boot-todo-app/assets/90769663/3bac6e08-6e5a-4c2c-a69a-520c5a8ff4ec)\n\n## Features\n\n### Task Management\n\n- Create and manage tasks with essential details such as titles, descriptions, and due dates.\n- Tasks are elegantly presented in card format, enhancing visibility and comprehension.\n- Effortlessly delete tasks with permanent removal from the application.\n\n### Pagination\n\n- Enhance user experience by paginating tasks, ensuring a clutter-free view.\n- Navigate seamlessly through the task list with \"Previous\" and \"Next\" buttons for effortless organization.\n\n### Error Handling\n\n- Robust error handling, encompassing gracefully displayed custom error pages and user-friendly messages.\n- Guard against requests that seek pages beyond the total available count, offering a polished and secure user experience.\n\n### Advanced Features\n\n- Responsive design adapting to diverse devices, guaranteeing a harmonious experience on any platform.\n- Intuitive pop-up modals for confirming task deletion, enriching user interaction.\n\n## Technologies Used\n\n**Frontend:**\n\n- HTML\n- Thymeleaf (for server-side rendering)\n- JavaScript\n- jQuery\n- Bootstrap (for styling and modals)\n\n**Backend:**\n\n- Spring Boot (Java-based framework)\n- Spring MVC\n- Spring Data JPA (for database access)\n- MySQL (as the database)\n\n## Installation\n\n1. **Clone the Repository:**\n\n   ```bash\n   git clone https://github.com/adampeer/spring-boot-todo-app.git\n   cd awesome-todo-app\n   ```\n\n2. **Database Configuration:**\n\n   - Install MySQL and create a database.\n   - Update the `application.properties` file with your database configuration such as username, password, database name and port number.\n\n   An alternative is to launch the MySQL as a container using docker or podman\n   ```bash\n   podman run --detach \\\n        --name mysql_todo_db \\\n        --publish 3306:3306 \\\n        --env MYSQL_ROOT_PASSWORD=root \\\n        --env MYSQL_DATABASE=todo \\\n        mysql:8.0\n   ```\n\n3. **Build and Run the Application:**\n\n   ```bash\n   ./mvnw clean package\n   java -jar target/awesome-todo-app-0.1.jar\n   ```\n\n4. **Access the Application:**\n\n   Open a web browser and go to `http://localhost:8080` or whatever port you've set in application.properties file.\n\n## Usage\n\n1. **Create a Task:**\n\n   - Fill out the task creation form, providing a title, description, and due date.\n   - Click the \"Create Task\" button.\n\n2. **Pagination:**\n\n   - Use the \"Previous\" and \"Next\" buttons to navigate through your task list.\n   - Each page typically displays 6 tasks.\n\n3. **Delete a Task:**\n\n   - Each task card includes a \"Delete\" button.\n   - Click the \"Delete\" button to trigger a confirmation modal.\n   - Confirm the task deletion by clicking \"Yes\" in the modal.\n\n4. **Error Handling:**\n\n   - Error pages and messages are displayed for various error scenarios.\n   - Friendly error messages are shown to users.\n\n5. **Advanced Features:**\n\n   - Responsive design ensures a seamless experience on different devices.\n   - Confirmation modal for task deletion adds a layer of user interaction.\n\n## Feedback and Support\n\nWe welcome your feedback and suggestions. If you encounter any issues or have ideas for improvements, please open an issue on our GitHub repository.\n\n## License\n\nThis project is licensed under the MIT License. Feel free to use it, modify it, and share it as you see fit.\n\n## Author\n\n- [Adam Peer](https://github.com/adampeer)\n\n---\n\nHere’s a concise section you can add to your README to set up the database using Podman:\n\n---\n\n## Running the MySQL Database\n\nThis project requires a MySQL database named `todo`.\nA Dockerfile is available at the root path of the project. \nYou can easily run it with Docker or Podman:\n\n### 1. Build the image\n\n```bash\ndocker build -f Dockerfile -t todo-mysql .\n```\n\n### 2. Start the container\n\n```bash\npodman run -d \\\n  --name todo-mysql \\\n  -p 3306:3306 \\\n  todo-mysql\n```\n\n\n\n",
+  "root" : {
+    "type" : "document",
+    "startByte" : 0,
+    "endByte" : 4616,
+    "named" : true,
+    "text" : null,
+    "children" : [ {
+      "type" : "section",
+      "startByte" : 0,
+      "endByte" : 4616,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "atx_heading",
+        "startByte" : 0,
+        "endByte" : 20,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "atx_h1_marker",
+          "startByte" : 0,
+          "endByte" : 1,
+          "named" : true,
+          "text" : "#",
+          "children" : [ ]
+        }, {
+          "type" : "inline",
+          "startByte" : 2,
+          "endByte" : 19,
+          "named" : true,
+          "text" : "Awesome To-Do App",
+          "children" : [ ]
+        } ]
+      }, {
+        "type" : "section",
+        "startByte" : 21,
+        "endByte" : 807,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "atx_heading",
+          "startByte" : 21,
+          "endByte" : 33,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_h2_marker",
+            "startByte" : 21,
+            "endByte" : 23,
+            "named" : true,
+            "text" : "##",
+            "children" : [ ]
+          }, {
+            "type" : "inline",
+            "startByte" : 24,
+            "endByte" : 32,
+            "named" : true,
+            "text" : "Overview",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "paragraph",
+          "startByte" : 34,
+          "endByte" : 350,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "inline",
+            "startByte" : 34,
+            "endByte" : 349,
+            "named" : true,
+            "text" : "**Awesome To-Do App** is a versatile task management application tailored to assist users in organizing tasks, managing deadlines, and prioritizing activities. The app offers an intuitive user interface complete with a spectrum of features including task creation, deletion, pagination, and advanced error handling.",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "paragraph",
+          "startByte" : 351,
+          "endByte" : 569,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "inline",
+            "startByte" : 351,
+            "endByte" : 568,
+            "named" : true,
+            "text" : "In this README, you'll find a comprehensive guide that details your project, enumerates its key functionalities, lists the technologies employed, provides installation instructions, and articulates usage instructions.",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "paragraph",
+          "startByte" : 570,
+          "endByte" : 688,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "inline",
+            "startByte" : 570,
+            "endByte" : 687,
+            "named" : true,
+            "text" : "![Tasks Empty](https://github.com/adampeer/spring-boot-todo-app/assets/90769663/aed896df-0c77-4fe2-845a-e12460ea5b2b)",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "paragraph",
+          "startByte" : 689,
+          "endByte" : 806,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "inline",
+            "startByte" : 689,
+            "endByte" : 805,
+            "named" : true,
+            "text" : "![Tasks Full](https://github.com/adampeer/spring-boot-todo-app/assets/90769663/3bac6e08-6e5a-4c2c-a69a-520c5a8ff4ec)",
+            "children" : [ ]
+          } ]
+        } ]
+      }, {
+        "type" : "section",
+        "startByte" : 807,
+        "endByte" : 1760,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "atx_heading",
+          "startByte" : 807,
+          "endByte" : 819,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_h2_marker",
+            "startByte" : 807,
+            "endByte" : 809,
+            "named" : true,
+            "text" : "##",
+            "children" : [ ]
+          }, {
+            "type" : "inline",
+            "startByte" : 810,
+            "endByte" : 818,
+            "named" : true,
+            "text" : "Features",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "section",
+          "startByte" : 820,
+          "endByte" : 1097,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_heading",
+            "startByte" : 820,
+            "endByte" : 840,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "atx_h3_marker",
+              "startByte" : 820,
+              "endByte" : 823,
+              "named" : true,
+              "text" : "###",
+              "children" : [ ]
+            }, {
+              "type" : "inline",
+              "startByte" : 824,
+              "endByte" : 839,
+              "named" : true,
+              "text" : "Task Management",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "list",
+            "startByte" : 841,
+            "endByte" : 1097,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_item",
+              "startByte" : 841,
+              "endByte" : 935,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_marker_minus",
+                "startByte" : 841,
+                "endByte" : 843,
+                "named" : true,
+                "text" : "- ",
+                "children" : [ ]
+              }, {
+                "type" : "paragraph",
+                "startByte" : 843,
+                "endByte" : 935,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "inline",
+                  "startByte" : 843,
+                  "endByte" : 934,
+                  "named" : true,
+                  "text" : "Create and manage tasks with essential details such as titles, descriptions, and due dates.",
+                  "children" : [ ]
+                } ]
+              } ]
+            }, {
+              "type" : "list_item",
+              "startByte" : 935,
+              "endByte" : 1023,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_marker_minus",
+                "startByte" : 935,
+                "endByte" : 937,
+                "named" : true,
+                "text" : "- ",
+                "children" : [ ]
+              }, {
+                "type" : "paragraph",
+                "startByte" : 937,
+                "endByte" : 1023,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "inline",
+                  "startByte" : 937,
+                  "endByte" : 1022,
+                  "named" : true,
+                  "text" : "Tasks are elegantly presented in card format, enhancing visibility and comprehension.",
+                  "children" : [ ]
+                } ]
+              } ]
+            }, {
+              "type" : "list_item",
+              "startByte" : 1023,
+              "endByte" : 1097,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_marker_minus",
+                "startByte" : 1023,
+                "endByte" : 1025,
+                "named" : true,
+                "text" : "- ",
+                "children" : [ ]
+              }, {
+                "type" : "paragraph",
+                "startByte" : 1025,
+                "endByte" : 1096,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "inline",
+                  "startByte" : 1025,
+                  "endByte" : 1095,
+                  "named" : true,
+                  "text" : "Effortlessly delete tasks with permanent removal from the application.",
+                  "children" : [ ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 1096,
+                  "endByte" : 1096,
+                  "named" : true,
+                  "text" : "",
+                  "children" : [ ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "section",
+          "startByte" : 1097,
+          "endByte" : 1299,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_heading",
+            "startByte" : 1097,
+            "endByte" : 1112,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "atx_h3_marker",
+              "startByte" : 1097,
+              "endByte" : 1100,
+              "named" : true,
+              "text" : "###",
+              "children" : [ ]
+            }, {
+              "type" : "inline",
+              "startByte" : 1101,
+              "endByte" : 1111,
+              "named" : true,
+              "text" : "Pagination",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "list",
+            "startByte" : 1113,
+            "endByte" : 1299,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_item",
+              "startByte" : 1113,
+              "endByte" : 1190,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_marker_minus",
+                "startByte" : 1113,
+                "endByte" : 1115,
+                "named" : true,
+                "text" : "- ",
+                "children" : [ ]
+              }, {
+                "type" : "paragraph",
+                "startByte" : 1115,
+                "endByte" : 1190,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "inline",
+                  "startByte" : 1115,
+                  "endByte" : 1189,
+                  "named" : true,
+                  "text" : "Enhance user experience by paginating tasks, ensuring a clutter-free view.",
+                  "children" : [ ]
+                } ]
+              } ]
+            }, {
+              "type" : "list_item",
+              "startByte" : 1190,
+              "endByte" : 1299,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_marker_minus",
+                "startByte" : 1190,
+                "endByte" : 1192,
+                "named" : true,
+                "text" : "- ",
+                "children" : [ ]
+              }, {
+                "type" : "paragraph",
+                "startByte" : 1192,
+                "endByte" : 1298,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "inline",
+                  "startByte" : 1192,
+                  "endByte" : 1297,
+                  "named" : true,
+                  "text" : "Navigate seamlessly through the task list with \"Previous\" and \"Next\" buttons for effortless organization.",
+                  "children" : [ ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 1298,
+                  "endByte" : 1298,
+                  "named" : true,
+                  "text" : "",
+                  "children" : [ ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "section",
+          "startByte" : 1299,
+          "endByte" : 1549,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_heading",
+            "startByte" : 1299,
+            "endByte" : 1318,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "atx_h3_marker",
+              "startByte" : 1299,
+              "endByte" : 1302,
+              "named" : true,
+              "text" : "###",
+              "children" : [ ]
+            }, {
+              "type" : "inline",
+              "startByte" : 1303,
+              "endByte" : 1317,
+              "named" : true,
+              "text" : "Error Handling",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "list",
+            "startByte" : 1319,
+            "endByte" : 1549,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_item",
+              "startByte" : 1319,
+              "endByte" : 1425,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_marker_minus",
+                "startByte" : 1319,
+                "endByte" : 1321,
+                "named" : true,
+                "text" : "- ",
+                "children" : [ ]
+              }, {
+                "type" : "paragraph",
+                "startByte" : 1321,
+                "endByte" : 1425,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "inline",
+                  "startByte" : 1321,
+                  "endByte" : 1424,
+                  "named" : true,
+                  "text" : "Robust error handling, encompassing gracefully displayed custom error pages and user-friendly messages.",
+                  "children" : [ ]
+                } ]
+              } ]
+            }, {
+              "type" : "list_item",
+              "startByte" : 1425,
+              "endByte" : 1549,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_marker_minus",
+                "startByte" : 1425,
+                "endByte" : 1427,
+                "named" : true,
+                "text" : "- ",
+                "children" : [ ]
+              }, {
+                "type" : "paragraph",
+                "startByte" : 1427,
+                "endByte" : 1548,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "inline",
+                  "startByte" : 1427,
+                  "endByte" : 1547,
+                  "named" : true,
+                  "text" : "Guard against requests that seek pages beyond the total available count, offering a polished and secure user experience.",
+                  "children" : [ ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 1548,
+                  "endByte" : 1548,
+                  "named" : true,
+                  "text" : "",
+                  "children" : [ ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "section",
+          "startByte" : 1549,
+          "endByte" : 1760,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_heading",
+            "startByte" : 1549,
+            "endByte" : 1571,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "atx_h3_marker",
+              "startByte" : 1549,
+              "endByte" : 1552,
+              "named" : true,
+              "text" : "###",
+              "children" : [ ]
+            }, {
+              "type" : "inline",
+              "startByte" : 1553,
+              "endByte" : 1570,
+              "named" : true,
+              "text" : "Advanced Features",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "list",
+            "startByte" : 1572,
+            "endByte" : 1760,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_item",
+              "startByte" : 1572,
+              "endByte" : 1675,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_marker_minus",
+                "startByte" : 1572,
+                "endByte" : 1574,
+                "named" : true,
+                "text" : "- ",
+                "children" : [ ]
+              }, {
+                "type" : "paragraph",
+                "startByte" : 1574,
+                "endByte" : 1675,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "inline",
+                  "startByte" : 1574,
+                  "endByte" : 1674,
+                  "named" : true,
+                  "text" : "Responsive design adapting to diverse devices, guaranteeing a harmonious experience on any platform.",
+                  "children" : [ ]
+                } ]
+              } ]
+            }, {
+              "type" : "list_item",
+              "startByte" : 1675,
+              "endByte" : 1760,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_marker_minus",
+                "startByte" : 1675,
+                "endByte" : 1677,
+                "named" : true,
+                "text" : "- ",
+                "children" : [ ]
+              }, {
+                "type" : "paragraph",
+                "startByte" : 1677,
+                "endByte" : 1759,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "inline",
+                  "startByte" : 1677,
+                  "endByte" : 1758,
+                  "named" : true,
+                  "text" : "Intuitive pop-up modals for confirming task deletion, enriching user interaction.",
+                  "children" : [ ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 1759,
+                  "endByte" : 1759,
+                  "named" : true,
+                  "text" : "",
+                  "children" : [ ]
+                } ]
+              } ]
+            } ]
+          } ]
+        } ]
+      }, {
+        "type" : "section",
+        "startByte" : 1760,
+        "endByte" : 2035,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "atx_heading",
+          "startByte" : 1760,
+          "endByte" : 1781,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_h2_marker",
+            "startByte" : 1760,
+            "endByte" : 1762,
+            "named" : true,
+            "text" : "##",
+            "children" : [ ]
+          }, {
+            "type" : "inline",
+            "startByte" : 1763,
+            "endByte" : 1780,
+            "named" : true,
+            "text" : "Technologies Used",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "paragraph",
+          "startByte" : 1782,
+          "endByte" : 1796,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "inline",
+            "startByte" : 1782,
+            "endByte" : 1795,
+            "named" : true,
+            "text" : "**Frontend:**",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "list",
+          "startByte" : 1797,
+          "endByte" : 1904,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "list_item",
+            "startByte" : 1797,
+            "endByte" : 1804,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_minus",
+              "startByte" : 1797,
+              "endByte" : 1799,
+              "named" : true,
+              "text" : "- ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 1799,
+              "endByte" : 1804,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 1799,
+                "endByte" : 1803,
+                "named" : true,
+                "text" : "HTML",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 1804,
+            "endByte" : 1844,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_minus",
+              "startByte" : 1804,
+              "endByte" : 1806,
+              "named" : true,
+              "text" : "- ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 1806,
+              "endByte" : 1844,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 1806,
+                "endByte" : 1843,
+                "named" : true,
+                "text" : "Thymeleaf (for server-side rendering)",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 1844,
+            "endByte" : 1857,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_minus",
+              "startByte" : 1844,
+              "endByte" : 1846,
+              "named" : true,
+              "text" : "- ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 1846,
+              "endByte" : 1857,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 1846,
+                "endByte" : 1856,
+                "named" : true,
+                "text" : "JavaScript",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 1857,
+            "endByte" : 1866,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_minus",
+              "startByte" : 1857,
+              "endByte" : 1859,
+              "named" : true,
+              "text" : "- ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 1859,
+              "endByte" : 1866,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 1859,
+                "endByte" : 1865,
+                "named" : true,
+                "text" : "jQuery",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 1866,
+            "endByte" : 1904,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_minus",
+              "startByte" : 1866,
+              "endByte" : 1868,
+              "named" : true,
+              "text" : "- ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 1868,
+              "endByte" : 1903,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 1868,
+                "endByte" : 1902,
+                "named" : true,
+                "text" : "Bootstrap (for styling and modals)",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 1903,
+                "endByte" : 1903,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "paragraph",
+          "startByte" : 1904,
+          "endByte" : 1917,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "inline",
+            "startByte" : 1904,
+            "endByte" : 1916,
+            "named" : true,
+            "text" : "**Backend:**",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "list",
+          "startByte" : 1918,
+          "endByte" : 2035,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "list_item",
+            "startByte" : 1918,
+            "endByte" : 1955,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_minus",
+              "startByte" : 1918,
+              "endByte" : 1920,
+              "named" : true,
+              "text" : "- ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 1920,
+              "endByte" : 1955,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 1920,
+                "endByte" : 1954,
+                "named" : true,
+                "text" : "Spring Boot (Java-based framework)",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 1955,
+            "endByte" : 1968,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_minus",
+              "startByte" : 1955,
+              "endByte" : 1957,
+              "named" : true,
+              "text" : "- ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 1957,
+              "endByte" : 1968,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 1957,
+                "endByte" : 1967,
+                "named" : true,
+                "text" : "Spring MVC",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 1968,
+            "endByte" : 2008,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_minus",
+              "startByte" : 1968,
+              "endByte" : 1970,
+              "named" : true,
+              "text" : "- ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 1970,
+              "endByte" : 2008,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 1970,
+                "endByte" : 2007,
+                "named" : true,
+                "text" : "Spring Data JPA (for database access)",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 2008,
+            "endByte" : 2035,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_minus",
+              "startByte" : 2008,
+              "endByte" : 2010,
+              "named" : true,
+              "text" : "- ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 2010,
+              "endByte" : 2034,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 2010,
+                "endByte" : 2033,
+                "named" : true,
+                "text" : "MySQL (as the database)",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2034,
+                "endByte" : 2034,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            } ]
+          } ]
+        } ]
+      }, {
+        "type" : "section",
+        "startByte" : 2035,
+        "endByte" : 2958,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "atx_heading",
+          "startByte" : 2035,
+          "endByte" : 2051,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_h2_marker",
+            "startByte" : 2035,
+            "endByte" : 2037,
+            "named" : true,
+            "text" : "##",
+            "children" : [ ]
+          }, {
+            "type" : "inline",
+            "startByte" : 2038,
+            "endByte" : 2050,
+            "named" : true,
+            "text" : "Installation",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "list",
+          "startByte" : 2052,
+          "endByte" : 2958,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "list_item",
+            "startByte" : 2052,
+            "endByte" : 2190,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_dot",
+              "startByte" : 2052,
+              "endByte" : 2055,
+              "named" : true,
+              "text" : "1. ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 2055,
+              "endByte" : 2081,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 2055,
+                "endByte" : 2080,
+                "named" : true,
+                "text" : "**Clone the Repository:**",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2081,
+                "endByte" : 2081,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "block_continuation",
+              "startByte" : 2082,
+              "endByte" : 2085,
+              "named" : true,
+              "text" : "   ",
+              "children" : [ ]
+            }, {
+              "type" : "fenced_code_block",
+              "startByte" : 2085,
+              "endByte" : 2189,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "fenced_code_block_delimiter",
+                "startByte" : 2085,
+                "endByte" : 2088,
+                "named" : true,
+                "text" : "```",
+                "children" : [ ]
+              }, {
+                "type" : "info_string",
+                "startByte" : 2088,
+                "endByte" : 2092,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "language",
+                  "startByte" : 2088,
+                  "endByte" : 2092,
+                  "named" : true,
+                  "text" : "bash",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2093,
+                "endByte" : 2096,
+                "named" : true,
+                "text" : "   ",
+                "children" : [ ]
+              }, {
+                "type" : "code_fence_content",
+                "startByte" : 2096,
+                "endByte" : 2185,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "block_continuation",
+                  "startByte" : 2159,
+                  "endByte" : 2162,
+                  "named" : true,
+                  "text" : "   ",
+                  "children" : [ ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 2182,
+                  "endByte" : 2185,
+                  "named" : true,
+                  "text" : "   ",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "fenced_code_block_delimiter",
+                "startByte" : 2185,
+                "endByte" : 2188,
+                "named" : true,
+                "text" : "```",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2189,
+                "endByte" : 2189,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 2190,
+            "endByte" : 2682,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_dot",
+              "startByte" : 2190,
+              "endByte" : 2193,
+              "named" : true,
+              "text" : "2. ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 2193,
+              "endByte" : 2221,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 2193,
+                "endByte" : 2220,
+                "named" : true,
+                "text" : "**Database Configuration:**",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2221,
+                "endByte" : 2221,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "block_continuation",
+              "startByte" : 2222,
+              "endByte" : 2225,
+              "named" : true,
+              "text" : "   ",
+              "children" : [ ]
+            }, {
+              "type" : "list",
+              "startByte" : 2225,
+              "endByte" : 2406,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_item",
+                "startByte" : 2225,
+                "endByte" : 2267,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 2225,
+                  "endByte" : 2227,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 2227,
+                  "endByte" : 2267,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 2227,
+                    "endByte" : 2263,
+                    "named" : true,
+                    "text" : "Install MySQL and create a database.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 2264,
+                    "endByte" : 2267,
+                    "named" : true,
+                    "text" : "   ",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "list_item",
+                "startByte" : 2267,
+                "endByte" : 2406,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 2267,
+                  "endByte" : 2269,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 2269,
+                  "endByte" : 2402,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 2269,
+                    "endByte" : 2401,
+                    "named" : true,
+                    "text" : "Update the `application.properties` file with your database configuration such as username, password, database name and port number.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 2402,
+                    "endByte" : 2402,
+                    "named" : true,
+                    "text" : "",
+                    "children" : [ ]
+                  } ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 2403,
+                  "endByte" : 2406,
+                  "named" : true,
+                  "text" : "   ",
+                  "children" : [ ]
+                } ]
+              } ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 2406,
+              "endByte" : 2485,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 2406,
+                "endByte" : 2481,
+                "named" : true,
+                "text" : "An alternative is to launch the MySQL as a container using docker or podman",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2482,
+                "endByte" : 2485,
+                "named" : true,
+                "text" : "   ",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "fenced_code_block",
+              "startByte" : 2485,
+              "endByte" : 2681,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "fenced_code_block_delimiter",
+                "startByte" : 2485,
+                "endByte" : 2488,
+                "named" : true,
+                "text" : "```",
+                "children" : [ ]
+              }, {
+                "type" : "info_string",
+                "startByte" : 2488,
+                "endByte" : 2492,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "language",
+                  "startByte" : 2488,
+                  "endByte" : 2492,
+                  "named" : true,
+                  "text" : "bash",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2493,
+                "endByte" : 2496,
+                "named" : true,
+                "text" : "   ",
+                "children" : [ ]
+              }, {
+                "type" : "code_fence_content",
+                "startByte" : 2496,
+                "endByte" : 2677,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "block_continuation",
+                  "startByte" : 2518,
+                  "endByte" : 2521,
+                  "named" : true,
+                  "text" : "   ",
+                  "children" : [ ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 2549,
+                  "endByte" : 2552,
+                  "named" : true,
+                  "text" : "   ",
+                  "children" : [ ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 2579,
+                  "endByte" : 2582,
+                  "named" : true,
+                  "text" : "   ",
+                  "children" : [ ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 2620,
+                  "endByte" : 2623,
+                  "named" : true,
+                  "text" : "   ",
+                  "children" : [ ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 2656,
+                  "endByte" : 2659,
+                  "named" : true,
+                  "text" : "   ",
+                  "children" : [ ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 2674,
+                  "endByte" : 2677,
+                  "named" : true,
+                  "text" : "   ",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "fenced_code_block_delimiter",
+                "startByte" : 2677,
+                "endByte" : 2680,
+                "named" : true,
+                "text" : "```",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2681,
+                "endByte" : 2681,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 2682,
+            "endByte" : 2809,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_dot",
+              "startByte" : 2682,
+              "endByte" : 2685,
+              "named" : true,
+              "text" : "3. ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 2685,
+              "endByte" : 2720,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 2685,
+                "endByte" : 2719,
+                "named" : true,
+                "text" : "**Build and Run the Application:**",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2720,
+                "endByte" : 2720,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "block_continuation",
+              "startByte" : 2721,
+              "endByte" : 2724,
+              "named" : true,
+              "text" : "   ",
+              "children" : [ ]
+            }, {
+              "type" : "fenced_code_block",
+              "startByte" : 2724,
+              "endByte" : 2808,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "fenced_code_block_delimiter",
+                "startByte" : 2724,
+                "endByte" : 2727,
+                "named" : true,
+                "text" : "```",
+                "children" : [ ]
+              }, {
+                "type" : "info_string",
+                "startByte" : 2727,
+                "endByte" : 2731,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "language",
+                  "startByte" : 2727,
+                  "endByte" : 2731,
+                  "named" : true,
+                  "text" : "bash",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2732,
+                "endByte" : 2735,
+                "named" : true,
+                "text" : "   ",
+                "children" : [ ]
+              }, {
+                "type" : "code_fence_content",
+                "startByte" : 2735,
+                "endByte" : 2804,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "block_continuation",
+                  "startByte" : 2756,
+                  "endByte" : 2759,
+                  "named" : true,
+                  "text" : "   ",
+                  "children" : [ ]
+                }, {
+                  "type" : "block_continuation",
+                  "startByte" : 2801,
+                  "endByte" : 2804,
+                  "named" : true,
+                  "text" : "   ",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "fenced_code_block_delimiter",
+                "startByte" : 2804,
+                "endByte" : 2807,
+                "named" : true,
+                "text" : "```",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2808,
+                "endByte" : 2808,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 2809,
+            "endByte" : 2958,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_dot",
+              "startByte" : 2809,
+              "endByte" : 2812,
+              "named" : true,
+              "text" : "4. ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 2812,
+              "endByte" : 2840,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 2812,
+                "endByte" : 2839,
+                "named" : true,
+                "text" : "**Access the Application:**",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2840,
+                "endByte" : 2840,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "block_continuation",
+              "startByte" : 2841,
+              "endByte" : 2844,
+              "named" : true,
+              "text" : "   ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 2844,
+              "endByte" : 2957,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 2844,
+                "endByte" : 2956,
+                "named" : true,
+                "text" : "Open a web browser and go to `http://localhost:8080` or whatever port you've set in application.properties file.",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2957,
+                "endByte" : 2957,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            } ]
+          } ]
+        } ]
+      }, {
+        "type" : "section",
+        "startByte" : 2958,
+        "endByte" : 3781,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "atx_heading",
+          "startByte" : 2958,
+          "endByte" : 2967,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_h2_marker",
+            "startByte" : 2958,
+            "endByte" : 2960,
+            "named" : true,
+            "text" : "##",
+            "children" : [ ]
+          }, {
+            "type" : "inline",
+            "startByte" : 2961,
+            "endByte" : 2966,
+            "named" : true,
+            "text" : "Usage",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "list",
+          "startByte" : 2968,
+          "endByte" : 3781,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "list_item",
+            "startByte" : 2968,
+            "endByte" : 3113,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_dot",
+              "startByte" : 2968,
+              "endByte" : 2971,
+              "named" : true,
+              "text" : "1. ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 2971,
+              "endByte" : 2990,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 2971,
+                "endByte" : 2989,
+                "named" : true,
+                "text" : "**Create a Task:**",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 2990,
+                "endByte" : 2990,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "block_continuation",
+              "startByte" : 2991,
+              "endByte" : 2994,
+              "named" : true,
+              "text" : "   ",
+              "children" : [ ]
+            }, {
+              "type" : "list",
+              "startByte" : 2994,
+              "endByte" : 3113,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_item",
+                "startByte" : 2994,
+                "endByte" : 3078,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 2994,
+                  "endByte" : 2996,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 2996,
+                  "endByte" : 3078,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 2996,
+                    "endByte" : 3074,
+                    "named" : true,
+                    "text" : "Fill out the task creation form, providing a title, description, and due date.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 3075,
+                    "endByte" : 3078,
+                    "named" : true,
+                    "text" : "   ",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "list_item",
+                "startByte" : 3078,
+                "endByte" : 3113,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 3078,
+                  "endByte" : 3080,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 3080,
+                  "endByte" : 3112,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 3080,
+                    "endByte" : 3111,
+                    "named" : true,
+                    "text" : "Click the \"Create Task\" button.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 3112,
+                    "endByte" : 3112,
+                    "named" : true,
+                    "text" : "",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 3113,
+            "endByte" : 3256,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_dot",
+              "startByte" : 3113,
+              "endByte" : 3116,
+              "named" : true,
+              "text" : "2. ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 3116,
+              "endByte" : 3132,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 3116,
+                "endByte" : 3131,
+                "named" : true,
+                "text" : "**Pagination:**",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 3132,
+                "endByte" : 3132,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "block_continuation",
+              "startByte" : 3133,
+              "endByte" : 3136,
+              "named" : true,
+              "text" : "   ",
+              "children" : [ ]
+            }, {
+              "type" : "list",
+              "startByte" : 3136,
+              "endByte" : 3256,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_item",
+                "startByte" : 3136,
+                "endByte" : 3215,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 3136,
+                  "endByte" : 3138,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 3138,
+                  "endByte" : 3215,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 3138,
+                    "endByte" : 3211,
+                    "named" : true,
+                    "text" : "Use the \"Previous\" and \"Next\" buttons to navigate through your task list.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 3212,
+                    "endByte" : 3215,
+                    "named" : true,
+                    "text" : "   ",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "list_item",
+                "startByte" : 3215,
+                "endByte" : 3256,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 3215,
+                  "endByte" : 3217,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 3217,
+                  "endByte" : 3255,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 3217,
+                    "endByte" : 3254,
+                    "named" : true,
+                    "text" : "Each page typically displays 6 tasks.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 3255,
+                    "endByte" : 3255,
+                    "named" : true,
+                    "text" : "",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 3256,
+            "endByte" : 3455,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_dot",
+              "startByte" : 3256,
+              "endByte" : 3259,
+              "named" : true,
+              "text" : "3. ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 3259,
+              "endByte" : 3278,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 3259,
+                "endByte" : 3277,
+                "named" : true,
+                "text" : "**Delete a Task:**",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 3278,
+                "endByte" : 3278,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "block_continuation",
+              "startByte" : 3279,
+              "endByte" : 3282,
+              "named" : true,
+              "text" : "   ",
+              "children" : [ ]
+            }, {
+              "type" : "list",
+              "startByte" : 3282,
+              "endByte" : 3455,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_item",
+                "startByte" : 3282,
+                "endByte" : 3330,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 3282,
+                  "endByte" : 3284,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 3284,
+                  "endByte" : 3330,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 3284,
+                    "endByte" : 3326,
+                    "named" : true,
+                    "text" : "Each task card includes a \"Delete\" button.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 3327,
+                    "endByte" : 3330,
+                    "named" : true,
+                    "text" : "   ",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "list_item",
+                "startByte" : 3330,
+                "endByte" : 3394,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 3330,
+                  "endByte" : 3332,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 3332,
+                  "endByte" : 3394,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 3332,
+                    "endByte" : 3390,
+                    "named" : true,
+                    "text" : "Click the \"Delete\" button to trigger a confirmation modal.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 3391,
+                    "endByte" : 3394,
+                    "named" : true,
+                    "text" : "   ",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "list_item",
+                "startByte" : 3394,
+                "endByte" : 3455,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 3394,
+                  "endByte" : 3396,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 3396,
+                  "endByte" : 3454,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 3396,
+                    "endByte" : 3453,
+                    "named" : true,
+                    "text" : "Confirm the task deletion by clicking \"Yes\" in the modal.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 3454,
+                    "endByte" : 3454,
+                    "named" : true,
+                    "text" : "",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 3455,
+            "endByte" : 3602,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_dot",
+              "startByte" : 3455,
+              "endByte" : 3458,
+              "named" : true,
+              "text" : "4. ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 3458,
+              "endByte" : 3478,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 3458,
+                "endByte" : 3477,
+                "named" : true,
+                "text" : "**Error Handling:**",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 3478,
+                "endByte" : 3478,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "block_continuation",
+              "startByte" : 3479,
+              "endByte" : 3482,
+              "named" : true,
+              "text" : "   ",
+              "children" : [ ]
+            }, {
+              "type" : "list",
+              "startByte" : 3482,
+              "endByte" : 3602,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_item",
+                "startByte" : 3482,
+                "endByte" : 3555,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 3482,
+                  "endByte" : 3484,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 3484,
+                  "endByte" : 3555,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 3484,
+                    "endByte" : 3551,
+                    "named" : true,
+                    "text" : "Error pages and messages are displayed for various error scenarios.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 3552,
+                    "endByte" : 3555,
+                    "named" : true,
+                    "text" : "   ",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "list_item",
+                "startByte" : 3555,
+                "endByte" : 3602,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 3555,
+                  "endByte" : 3557,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 3557,
+                  "endByte" : 3601,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 3557,
+                    "endByte" : 3600,
+                    "named" : true,
+                    "text" : "Friendly error messages are shown to users.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 3601,
+                    "endByte" : 3601,
+                    "named" : true,
+                    "text" : "",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          }, {
+            "type" : "list_item",
+            "startByte" : 3602,
+            "endByte" : 3781,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_dot",
+              "startByte" : 3602,
+              "endByte" : 3605,
+              "named" : true,
+              "text" : "5. ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 3605,
+              "endByte" : 3628,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 3605,
+                "endByte" : 3627,
+                "named" : true,
+                "text" : "**Advanced Features:**",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 3628,
+                "endByte" : 3628,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "block_continuation",
+              "startByte" : 3629,
+              "endByte" : 3632,
+              "named" : true,
+              "text" : "   ",
+              "children" : [ ]
+            }, {
+              "type" : "list",
+              "startByte" : 3632,
+              "endByte" : 3781,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "list_item",
+                "startByte" : 3632,
+                "endByte" : 3707,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 3632,
+                  "endByte" : 3634,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 3634,
+                  "endByte" : 3707,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 3634,
+                    "endByte" : 3703,
+                    "named" : true,
+                    "text" : "Responsive design ensures a seamless experience on different devices.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 3704,
+                    "endByte" : 3707,
+                    "named" : true,
+                    "text" : "   ",
+                    "children" : [ ]
+                  } ]
+                } ]
+              }, {
+                "type" : "list_item",
+                "startByte" : 3707,
+                "endByte" : 3781,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "list_marker_minus",
+                  "startByte" : 3707,
+                  "endByte" : 3709,
+                  "named" : true,
+                  "text" : "- ",
+                  "children" : [ ]
+                }, {
+                  "type" : "paragraph",
+                  "startByte" : 3709,
+                  "endByte" : 3780,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "inline",
+                    "startByte" : 3709,
+                    "endByte" : 3779,
+                    "named" : true,
+                    "text" : "Confirmation modal for task deletion adds a layer of user interaction.",
+                    "children" : [ ]
+                  }, {
+                    "type" : "block_continuation",
+                    "startByte" : 3780,
+                    "endByte" : 3780,
+                    "named" : true,
+                    "text" : "",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          } ]
+        } ]
+      }, {
+        "type" : "section",
+        "startByte" : 3781,
+        "endByte" : 3956,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "atx_heading",
+          "startByte" : 3781,
+          "endByte" : 3805,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_h2_marker",
+            "startByte" : 3781,
+            "endByte" : 3783,
+            "named" : true,
+            "text" : "##",
+            "children" : [ ]
+          }, {
+            "type" : "inline",
+            "startByte" : 3784,
+            "endByte" : 3804,
+            "named" : true,
+            "text" : "Feedback and Support",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "paragraph",
+          "startByte" : 3806,
+          "endByte" : 3955,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "inline",
+            "startByte" : 3806,
+            "endByte" : 3954,
+            "named" : true,
+            "text" : "We welcome your feedback and suggestions. If you encounter any issues or have ideas for improvements, please open an issue on our GitHub repository.",
+            "children" : [ ]
+          } ]
+        } ]
+      }, {
+        "type" : "section",
+        "startByte" : 3956,
+        "endByte" : 4078,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "atx_heading",
+          "startByte" : 3956,
+          "endByte" : 3967,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_h2_marker",
+            "startByte" : 3956,
+            "endByte" : 3958,
+            "named" : true,
+            "text" : "##",
+            "children" : [ ]
+          }, {
+            "type" : "inline",
+            "startByte" : 3959,
+            "endByte" : 3966,
+            "named" : true,
+            "text" : "License",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "paragraph",
+          "startByte" : 3968,
+          "endByte" : 4077,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "inline",
+            "startByte" : 3968,
+            "endByte" : 4076,
+            "named" : true,
+            "text" : "This project is licensed under the MIT License. Feel free to use it, modify it, and share it as you see fit.",
+            "children" : [ ]
+          } ]
+        } ]
+      }, {
+        "type" : "section",
+        "startByte" : 4078,
+        "endByte" : 4235,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "atx_heading",
+          "startByte" : 4078,
+          "endByte" : 4088,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_h2_marker",
+            "startByte" : 4078,
+            "endByte" : 4080,
+            "named" : true,
+            "text" : "##",
+            "children" : [ ]
+          }, {
+            "type" : "inline",
+            "startByte" : 4081,
+            "endByte" : 4087,
+            "named" : true,
+            "text" : "Author",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "list",
+          "startByte" : 4089,
+          "endByte" : 4133,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "list_item",
+            "startByte" : 4089,
+            "endByte" : 4133,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "list_marker_minus",
+              "startByte" : 4089,
+              "endByte" : 4091,
+              "named" : true,
+              "text" : "- ",
+              "children" : [ ]
+            }, {
+              "type" : "paragraph",
+              "startByte" : 4091,
+              "endByte" : 4132,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "inline",
+                "startByte" : 4091,
+                "endByte" : 4131,
+                "named" : true,
+                "text" : "[Adam Peer](https://github.com/adampeer)",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 4132,
+                "endByte" : 4132,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "thematic_break",
+          "startByte" : 4133,
+          "endByte" : 4137,
+          "named" : true,
+          "text" : "---\n",
+          "children" : [ ]
+        }, {
+          "type" : "paragraph",
+          "startByte" : 4138,
+          "endByte" : 4229,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "inline",
+            "startByte" : 4138,
+            "endByte" : 4228,
+            "named" : true,
+            "text" : "Here’s a concise section you can add to your README to set up the database using Podman:",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "thematic_break",
+          "startByte" : 4230,
+          "endByte" : 4234,
+          "named" : true,
+          "text" : "---\n",
+          "children" : [ ]
+        } ]
+      }, {
+        "type" : "section",
+        "startByte" : 4235,
+        "endByte" : 4616,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "atx_heading",
+          "startByte" : 4235,
+          "endByte" : 4265,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_h2_marker",
+            "startByte" : 4235,
+            "endByte" : 4237,
+            "named" : true,
+            "text" : "##",
+            "children" : [ ]
+          }, {
+            "type" : "inline",
+            "startByte" : 4238,
+            "endByte" : 4264,
+            "named" : true,
+            "text" : "Running the MySQL Database",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "paragraph",
+          "startByte" : 4266,
+          "endByte" : 4424,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "inline",
+            "startByte" : 4266,
+            "endByte" : 4423,
+            "named" : true,
+            "text" : "This project requires a MySQL database named `todo`.\nA Dockerfile is available at the root path of the project. \nYou can easily run it with Docker or Podman:",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "section",
+          "startByte" : 4425,
+          "endByte" : 4505,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_heading",
+            "startByte" : 4425,
+            "endByte" : 4448,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "atx_h3_marker",
+              "startByte" : 4425,
+              "endByte" : 4428,
+              "named" : true,
+              "text" : "###",
+              "children" : [ ]
+            }, {
+              "type" : "inline",
+              "startByte" : 4429,
+              "endByte" : 4447,
+              "named" : true,
+              "text" : "1. Build the image",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "fenced_code_block",
+            "startByte" : 4449,
+            "endByte" : 4504,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "fenced_code_block_delimiter",
+              "startByte" : 4449,
+              "endByte" : 4452,
+              "named" : true,
+              "text" : "```",
+              "children" : [ ]
+            }, {
+              "type" : "info_string",
+              "startByte" : 4452,
+              "endByte" : 4456,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "language",
+                "startByte" : 4452,
+                "endByte" : 4456,
+                "named" : true,
+                "text" : "bash",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "block_continuation",
+              "startByte" : 4457,
+              "endByte" : 4457,
+              "named" : true,
+              "text" : "",
+              "children" : [ ]
+            }, {
+              "type" : "code_fence_content",
+              "startByte" : 4457,
+              "endByte" : 4500,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "block_continuation",
+                "startByte" : 4500,
+                "endByte" : 4500,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "fenced_code_block_delimiter",
+              "startByte" : 4500,
+              "endByte" : 4503,
+              "named" : true,
+              "text" : "```",
+              "children" : [ ]
+            } ]
+          } ]
+        }, {
+          "type" : "section",
+          "startByte" : 4505,
+          "endByte" : 4616,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "atx_heading",
+            "startByte" : 4505,
+            "endByte" : 4532,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "atx_h3_marker",
+              "startByte" : 4505,
+              "endByte" : 4508,
+              "named" : true,
+              "text" : "###",
+              "children" : [ ]
+            }, {
+              "type" : "inline",
+              "startByte" : 4509,
+              "endByte" : 4531,
+              "named" : true,
+              "text" : "2. Start the container",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "fenced_code_block",
+            "startByte" : 4533,
+            "endByte" : 4613,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "fenced_code_block_delimiter",
+              "startByte" : 4533,
+              "endByte" : 4536,
+              "named" : true,
+              "text" : "```",
+              "children" : [ ]
+            }, {
+              "type" : "info_string",
+              "startByte" : 4536,
+              "endByte" : 4540,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "language",
+                "startByte" : 4536,
+                "endByte" : 4540,
+                "named" : true,
+                "text" : "bash",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "block_continuation",
+              "startByte" : 4541,
+              "endByte" : 4541,
+              "named" : true,
+              "text" : "",
+              "children" : [ ]
+            }, {
+              "type" : "code_fence_content",
+              "startByte" : 4541,
+              "endByte" : 4609,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "block_continuation",
+                "startByte" : 4557,
+                "endByte" : 4557,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 4579,
+                "endByte" : 4579,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 4596,
+                "endByte" : 4596,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              }, {
+                "type" : "block_continuation",
+                "startByte" : 4609,
+                "endByte" : 4609,
+                "named" : true,
+                "text" : "",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "fenced_code_block_delimiter",
+              "startByte" : 4609,
+              "endByte" : 4612,
+              "named" : true,
+              "text" : "```",
+              "children" : [ ]
+            } ]
+          } ]
+        } ]
+      } ]
+    } ]
+  }
+}

@@ -98,96 +98,15 @@ Using the grammar node types from `grammar.js` and the syntax rules above, produ
 
 ## Examples
 
-Below are real-world examples from this project to illustrate the expected output format and patterns.
+Real-world query examples are maintained as `.scm` files under the `examples/` directory. **Read the per-language markdown file** to browse available queries and understand what each one does, then **read the referenced `.scm` file** to see the actual S-Expression.
 
-### Java — Find a class by name
+| Language       | Examples index                                | `.scm` files directory  |
+|----------------|-----------------------------------------------|-------------------------|
+| **Java**       | [examples/java.md](examples/java.md)          | `examples/java/`        |
+| **Properties** | [examples/properties.md](examples/properties.md) | `examples/properties/` |
+| **XML**        | [examples/xml.md](examples/xml.md)            | `examples/xml/`         |
 
-```scheme
-; Search a class having as name: AppApplication
-(class_declaration
-  name: (identifier) @class.name
-  (#eq? @class.name "AppApplication"))
-```
-
-### Java — Find a class name starting with a prefix
-
-```scheme
-; Search a class name starting with "App"
-(class_declaration
-  name: (identifier) @class.name
-  (#match? @class.name "^App")
-) @Class.name
-```
-
-### Java — Find all class names and method names (combined)
-
-```scheme
-(class_declaration
-  name: (identifier) @class.name)
-
-(method_declaration
-  name: (identifier) @method.name)
-```
-
-### Java — Find an annotation by name
-
-```scheme
-; Search about Entity annotation => @Entity
-(marker_annotation
-  name: (identifier) @annotation.name
-  (#eq? @annotation.name "Entity")
-)
-```
-
-### Java — Find an import by fully-qualified name
-
-```scheme
-(import_declaration
-  (scoped_identifier) @import.fqn
-  (#eq? @import.fqn "org.springframework.ui.Model")
-) @fqn.import
-```
-
-### Properties — Find a specific property key and its value
-
-```scheme
-(property
-  (key) @key
-  (value) @value
-  (#eq? @key "spring.datasource.url"))
-```
-
-### Properties — Find all properties with a key prefix
-
-```scheme
-(property
-  (key) @key
-  (value) @value
-  (#match? @key "^spring\\.datasource"))
-```
-
-### XML — Find dependency elements with a specific groupId
-
-```scheme
-; Grammar used: https://github.com/panicinc/tree-sitter-xml
-; Search about Spring Boot dependencies
-((element
-   (start_tag (tag_name) @tag.dep (#eq? @tag.dep "dependency"))
-   (element
-     (start_tag (tag_name) @tag.g (#eq? @tag.g "groupId"))
-     (text) @group.id)
-   (element
-     (start_tag (tag_name) @tag.a (#eq? @tag.a "artifactId"))
-     (text) @artifact.id)
-
-   ;; Optional modifier (?) applied to the whole version element block
-   (element
-     (start_tag (tag_name) @tag.v (#eq? @tag.v "version"))
-     (text) @version.value)?
-   )
-  (#eq? @group.id "org.springframework.boot")
-  ) @target.dependency
-```
+When generating a new query, consult the `.scm` files for the target language to match the established patterns and capture-name conventions.
 
 ---
 

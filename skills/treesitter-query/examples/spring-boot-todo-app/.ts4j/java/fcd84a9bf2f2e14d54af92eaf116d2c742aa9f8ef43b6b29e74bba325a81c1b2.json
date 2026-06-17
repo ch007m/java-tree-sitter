@@ -1,0 +1,1567 @@
+{
+  "language" : "JAVA",
+  "sourceFile" : "src/main/java/com/todo/app/service/TaskServiceImpl.java",
+  "sourceCode" : "package com.todo.app.service;\n\nimport com.todo.app.entity.Task;\nimport com.todo.app.repository.TaskRepository;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.data.domain.Page;\nimport org.springframework.data.domain.PageRequest;\nimport org.springframework.data.domain.Pageable;\nimport org.springframework.stereotype.Service;\n\nimport java.util.List;\n\n@Service\npublic class TaskServiceImpl implements TaskService {\n\n  @Autowired\n  private TaskRepository taskRepository;\n\n  @Override\n  public void addTask(Task task) {\n    taskRepository.save(task);\n  }\n\n  @Override\n  public void deleteTaskById(Long id) {\n    taskRepository.deleteById(id);\n  }\n\n  @Override\n  public void updateTaskById(Long id, Task task) {\n    taskRepository.save(task);\n  }\n\n  @Override\n  public List<Task> getAllTasks() {\n    return taskRepository.findAll();\n  }\n\n  @Override\n  public void deleteTask(Long taskId) {\n    taskRepository.deleteById(taskId);\n  }\n\n  @Override\n  public Page<Task> getAllTasksPage(int pageNo, int pageSize) {\n    Pageable pageable = PageRequest.of(pageNo - 1, pageSize);\n    return taskRepository.findAll(pageable);\n  }\n\n}\n",
+  "root" : {
+    "type" : "program",
+    "startByte" : 0,
+    "endByte" : 1161,
+    "named" : true,
+    "text" : null,
+    "children" : [ {
+      "type" : "package_declaration",
+      "startByte" : 0,
+      "endByte" : 29,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 8,
+        "endByte" : 28,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 8,
+          "endByte" : 20,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 8,
+            "endByte" : 16,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "identifier",
+              "startByte" : 8,
+              "endByte" : 11,
+              "named" : true,
+              "text" : "com",
+              "children" : [ ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 12,
+              "endByte" : 16,
+              "named" : true,
+              "text" : "todo",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 17,
+            "endByte" : 20,
+            "named" : true,
+            "text" : "app",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 21,
+          "endByte" : 28,
+          "named" : true,
+          "text" : "service",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 31,
+      "endByte" : 63,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 38,
+        "endByte" : 62,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 38,
+          "endByte" : 57,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 38,
+            "endByte" : 50,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 38,
+              "endByte" : 46,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 38,
+                "endByte" : 41,
+                "named" : true,
+                "text" : "com",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 42,
+                "endByte" : 46,
+                "named" : true,
+                "text" : "todo",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 47,
+              "endByte" : 50,
+              "named" : true,
+              "text" : "app",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 51,
+            "endByte" : 57,
+            "named" : true,
+            "text" : "entity",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 58,
+          "endByte" : 62,
+          "named" : true,
+          "text" : "Task",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 64,
+      "endByte" : 110,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 71,
+        "endByte" : 109,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 71,
+          "endByte" : 94,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 71,
+            "endByte" : 83,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 71,
+              "endByte" : 79,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 71,
+                "endByte" : 74,
+                "named" : true,
+                "text" : "com",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 75,
+                "endByte" : 79,
+                "named" : true,
+                "text" : "todo",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 80,
+              "endByte" : 83,
+              "named" : true,
+              "text" : "app",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 84,
+            "endByte" : 94,
+            "named" : true,
+            "text" : "repository",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 95,
+          "endByte" : 109,
+          "named" : true,
+          "text" : "TaskRepository",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 111,
+      "endByte" : 173,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 118,
+        "endByte" : 172,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 118,
+          "endByte" : 162,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 118,
+            "endByte" : 151,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 118,
+              "endByte" : 143,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "scoped_identifier",
+                "startByte" : 118,
+                "endByte" : 137,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 118,
+                  "endByte" : 121,
+                  "named" : true,
+                  "text" : "org",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 122,
+                  "endByte" : 137,
+                  "named" : true,
+                  "text" : "springframework",
+                  "children" : [ ]
+                } ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 138,
+                "endByte" : 143,
+                "named" : true,
+                "text" : "beans",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 144,
+              "endByte" : 151,
+              "named" : true,
+              "text" : "factory",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 152,
+            "endByte" : 162,
+            "named" : true,
+            "text" : "annotation",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 163,
+          "endByte" : 172,
+          "named" : true,
+          "text" : "Autowired",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 174,
+      "endByte" : 218,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 181,
+        "endByte" : 217,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 181,
+          "endByte" : 212,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 181,
+            "endByte" : 205,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 181,
+              "endByte" : 200,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 181,
+                "endByte" : 184,
+                "named" : true,
+                "text" : "org",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 185,
+                "endByte" : 200,
+                "named" : true,
+                "text" : "springframework",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 201,
+              "endByte" : 205,
+              "named" : true,
+              "text" : "data",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 206,
+            "endByte" : 212,
+            "named" : true,
+            "text" : "domain",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 213,
+          "endByte" : 217,
+          "named" : true,
+          "text" : "Page",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 219,
+      "endByte" : 270,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 226,
+        "endByte" : 269,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 226,
+          "endByte" : 257,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 226,
+            "endByte" : 250,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 226,
+              "endByte" : 245,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 226,
+                "endByte" : 229,
+                "named" : true,
+                "text" : "org",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 230,
+                "endByte" : 245,
+                "named" : true,
+                "text" : "springframework",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 246,
+              "endByte" : 250,
+              "named" : true,
+              "text" : "data",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 251,
+            "endByte" : 257,
+            "named" : true,
+            "text" : "domain",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 258,
+          "endByte" : 269,
+          "named" : true,
+          "text" : "PageRequest",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 271,
+      "endByte" : 319,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 278,
+        "endByte" : 318,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 278,
+          "endByte" : 309,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 278,
+            "endByte" : 302,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "scoped_identifier",
+              "startByte" : 278,
+              "endByte" : 297,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 278,
+                "endByte" : 281,
+                "named" : true,
+                "text" : "org",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 282,
+                "endByte" : 297,
+                "named" : true,
+                "text" : "springframework",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 298,
+              "endByte" : 302,
+              "named" : true,
+              "text" : "data",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 303,
+            "endByte" : 309,
+            "named" : true,
+            "text" : "domain",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 310,
+          "endByte" : 318,
+          "named" : true,
+          "text" : "Pageable",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 320,
+      "endByte" : 366,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 327,
+        "endByte" : 365,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 327,
+          "endByte" : 357,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "scoped_identifier",
+            "startByte" : 327,
+            "endByte" : 346,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "identifier",
+              "startByte" : 327,
+              "endByte" : 330,
+              "named" : true,
+              "text" : "org",
+              "children" : [ ]
+            }, {
+              "type" : "identifier",
+              "startByte" : 331,
+              "endByte" : 346,
+              "named" : true,
+              "text" : "springframework",
+              "children" : [ ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 347,
+            "endByte" : 357,
+            "named" : true,
+            "text" : "stereotype",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 358,
+          "endByte" : 365,
+          "named" : true,
+          "text" : "Service",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "import_declaration",
+      "startByte" : 368,
+      "endByte" : 390,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "scoped_identifier",
+        "startByte" : 375,
+        "endByte" : 389,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "scoped_identifier",
+          "startByte" : 375,
+          "endByte" : 384,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "identifier",
+            "startByte" : 375,
+            "endByte" : 379,
+            "named" : true,
+            "text" : "java",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 380,
+            "endByte" : 384,
+            "named" : true,
+            "text" : "util",
+            "children" : [ ]
+          } ]
+        }, {
+          "type" : "identifier",
+          "startByte" : 385,
+          "endByte" : 389,
+          "named" : true,
+          "text" : "List",
+          "children" : [ ]
+        } ]
+      } ]
+    }, {
+      "type" : "class_declaration",
+      "startByte" : 392,
+      "endByte" : 1160,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "modifiers",
+        "startByte" : 392,
+        "endByte" : 407,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "marker_annotation",
+          "startByte" : 392,
+          "endByte" : 400,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "identifier",
+            "startByte" : 393,
+            "endByte" : 400,
+            "named" : true,
+            "text" : "Service",
+            "children" : [ ]
+          } ]
+        } ]
+      }, {
+        "type" : "identifier",
+        "startByte" : 414,
+        "endByte" : 429,
+        "named" : true,
+        "text" : "TaskServiceImpl",
+        "children" : [ ]
+      }, {
+        "type" : "super_interfaces",
+        "startByte" : 430,
+        "endByte" : 452,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "type_list",
+          "startByte" : 441,
+          "endByte" : 452,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "type_identifier",
+            "startByte" : 441,
+            "endByte" : 452,
+            "named" : true,
+            "text" : "TaskService",
+            "children" : [ ]
+          } ]
+        } ]
+      }, {
+        "type" : "class_body",
+        "startByte" : 453,
+        "endByte" : 1160,
+        "named" : true,
+        "text" : null,
+        "children" : [ {
+          "type" : "field_declaration",
+          "startByte" : 458,
+          "endByte" : 509,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 458,
+            "endByte" : 478,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "marker_annotation",
+              "startByte" : 458,
+              "endByte" : 468,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 459,
+                "endByte" : 468,
+                "named" : true,
+                "text" : "Autowired",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "type_identifier",
+            "startByte" : 479,
+            "endByte" : 493,
+            "named" : true,
+            "text" : "TaskRepository",
+            "children" : [ ]
+          }, {
+            "type" : "variable_declarator",
+            "startByte" : 494,
+            "endByte" : 508,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "identifier",
+              "startByte" : 494,
+              "endByte" : 508,
+              "named" : true,
+              "text" : "taskRepository",
+              "children" : [ ]
+            } ]
+          } ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 513,
+          "endByte" : 592,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 513,
+            "endByte" : 531,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "marker_annotation",
+              "startByte" : 513,
+              "endByte" : 522,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 514,
+                "endByte" : 522,
+                "named" : true,
+                "text" : "Override",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "void_type",
+            "startByte" : 532,
+            "endByte" : 536,
+            "named" : true,
+            "text" : "void",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 537,
+            "endByte" : 544,
+            "named" : true,
+            "text" : "addTask",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 544,
+            "endByte" : 555,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "formal_parameter",
+              "startByte" : 545,
+              "endByte" : 554,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "type_identifier",
+                "startByte" : 545,
+                "endByte" : 549,
+                "named" : true,
+                "text" : "Task",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 550,
+                "endByte" : 554,
+                "named" : true,
+                "text" : "task",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "block",
+            "startByte" : 556,
+            "endByte" : 592,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "expression_statement",
+              "startByte" : 562,
+              "endByte" : 588,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 562,
+                "endByte" : 587,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 562,
+                  "endByte" : 576,
+                  "named" : true,
+                  "text" : "taskRepository",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 577,
+                  "endByte" : 581,
+                  "named" : true,
+                  "text" : "save",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 581,
+                  "endByte" : 587,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 582,
+                    "endByte" : 586,
+                    "named" : true,
+                    "text" : "task",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 596,
+          "endByte" : 684,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 596,
+            "endByte" : 614,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "marker_annotation",
+              "startByte" : 596,
+              "endByte" : 605,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 597,
+                "endByte" : 605,
+                "named" : true,
+                "text" : "Override",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "void_type",
+            "startByte" : 615,
+            "endByte" : 619,
+            "named" : true,
+            "text" : "void",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 620,
+            "endByte" : 634,
+            "named" : true,
+            "text" : "deleteTaskById",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 634,
+            "endByte" : 643,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "formal_parameter",
+              "startByte" : 635,
+              "endByte" : 642,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "type_identifier",
+                "startByte" : 635,
+                "endByte" : 639,
+                "named" : true,
+                "text" : "Long",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 640,
+                "endByte" : 642,
+                "named" : true,
+                "text" : "id",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "block",
+            "startByte" : 644,
+            "endByte" : 684,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "expression_statement",
+              "startByte" : 650,
+              "endByte" : 680,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 650,
+                "endByte" : 679,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 650,
+                  "endByte" : 664,
+                  "named" : true,
+                  "text" : "taskRepository",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 665,
+                  "endByte" : 675,
+                  "named" : true,
+                  "text" : "deleteById",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 675,
+                  "endByte" : 679,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 676,
+                    "endByte" : 678,
+                    "named" : true,
+                    "text" : "id",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 688,
+          "endByte" : 783,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 688,
+            "endByte" : 706,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "marker_annotation",
+              "startByte" : 688,
+              "endByte" : 697,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 689,
+                "endByte" : 697,
+                "named" : true,
+                "text" : "Override",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "void_type",
+            "startByte" : 707,
+            "endByte" : 711,
+            "named" : true,
+            "text" : "void",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 712,
+            "endByte" : 726,
+            "named" : true,
+            "text" : "updateTaskById",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 726,
+            "endByte" : 746,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "formal_parameter",
+              "startByte" : 727,
+              "endByte" : 734,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "type_identifier",
+                "startByte" : 727,
+                "endByte" : 731,
+                "named" : true,
+                "text" : "Long",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 732,
+                "endByte" : 734,
+                "named" : true,
+                "text" : "id",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "formal_parameter",
+              "startByte" : 736,
+              "endByte" : 745,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "type_identifier",
+                "startByte" : 736,
+                "endByte" : 740,
+                "named" : true,
+                "text" : "Task",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 741,
+                "endByte" : 745,
+                "named" : true,
+                "text" : "task",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "block",
+            "startByte" : 747,
+            "endByte" : 783,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "expression_statement",
+              "startByte" : 753,
+              "endByte" : 779,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 753,
+                "endByte" : 778,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 753,
+                  "endByte" : 767,
+                  "named" : true,
+                  "text" : "taskRepository",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 768,
+                  "endByte" : 772,
+                  "named" : true,
+                  "text" : "save",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 772,
+                  "endByte" : 778,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 773,
+                    "endByte" : 777,
+                    "named" : true,
+                    "text" : "task",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 787,
+          "endByte" : 873,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 787,
+            "endByte" : 805,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "marker_annotation",
+              "startByte" : 787,
+              "endByte" : 796,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 788,
+                "endByte" : 796,
+                "named" : true,
+                "text" : "Override",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "generic_type",
+            "startByte" : 806,
+            "endByte" : 816,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "type_identifier",
+              "startByte" : 806,
+              "endByte" : 810,
+              "named" : true,
+              "text" : "List",
+              "children" : [ ]
+            }, {
+              "type" : "type_arguments",
+              "startByte" : 810,
+              "endByte" : 816,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "type_identifier",
+                "startByte" : 811,
+                "endByte" : 815,
+                "named" : true,
+                "text" : "Task",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 817,
+            "endByte" : 828,
+            "named" : true,
+            "text" : "getAllTasks",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 828,
+            "endByte" : 830,
+            "named" : true,
+            "text" : "()",
+            "children" : [ ]
+          }, {
+            "type" : "block",
+            "startByte" : 831,
+            "endByte" : 873,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "return_statement",
+              "startByte" : 837,
+              "endByte" : 869,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 844,
+                "endByte" : 868,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 844,
+                  "endByte" : 858,
+                  "named" : true,
+                  "text" : "taskRepository",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 859,
+                  "endByte" : 866,
+                  "named" : true,
+                  "text" : "findAll",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 866,
+                  "endByte" : 868,
+                  "named" : true,
+                  "text" : "()",
+                  "children" : [ ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 877,
+          "endByte" : 969,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 877,
+            "endByte" : 895,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "marker_annotation",
+              "startByte" : 877,
+              "endByte" : 886,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 878,
+                "endByte" : 886,
+                "named" : true,
+                "text" : "Override",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "void_type",
+            "startByte" : 896,
+            "endByte" : 900,
+            "named" : true,
+            "text" : "void",
+            "children" : [ ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 901,
+            "endByte" : 911,
+            "named" : true,
+            "text" : "deleteTask",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 911,
+            "endByte" : 924,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "formal_parameter",
+              "startByte" : 912,
+              "endByte" : 923,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "type_identifier",
+                "startByte" : 912,
+                "endByte" : 916,
+                "named" : true,
+                "text" : "Long",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 917,
+                "endByte" : 923,
+                "named" : true,
+                "text" : "taskId",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "block",
+            "startByte" : 925,
+            "endByte" : 969,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "expression_statement",
+              "startByte" : 931,
+              "endByte" : 965,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 931,
+                "endByte" : 964,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 931,
+                  "endByte" : 945,
+                  "named" : true,
+                  "text" : "taskRepository",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 946,
+                  "endByte" : 956,
+                  "named" : true,
+                  "text" : "deleteById",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 956,
+                  "endByte" : 964,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 957,
+                    "endByte" : 963,
+                    "named" : true,
+                    "text" : "taskId",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "type" : "method_declaration",
+          "startByte" : 973,
+          "endByte" : 1157,
+          "named" : true,
+          "text" : null,
+          "children" : [ {
+            "type" : "modifiers",
+            "startByte" : 973,
+            "endByte" : 991,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "marker_annotation",
+              "startByte" : 973,
+              "endByte" : 982,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "identifier",
+                "startByte" : 974,
+                "endByte" : 982,
+                "named" : true,
+                "text" : "Override",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "generic_type",
+            "startByte" : 992,
+            "endByte" : 1002,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "type_identifier",
+              "startByte" : 992,
+              "endByte" : 996,
+              "named" : true,
+              "text" : "Page",
+              "children" : [ ]
+            }, {
+              "type" : "type_arguments",
+              "startByte" : 996,
+              "endByte" : 1002,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "type_identifier",
+                "startByte" : 997,
+                "endByte" : 1001,
+                "named" : true,
+                "text" : "Task",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "identifier",
+            "startByte" : 1003,
+            "endByte" : 1018,
+            "named" : true,
+            "text" : "getAllTasksPage",
+            "children" : [ ]
+          }, {
+            "type" : "formal_parameters",
+            "startByte" : 1018,
+            "endByte" : 1044,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "formal_parameter",
+              "startByte" : 1019,
+              "endByte" : 1029,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "integral_type",
+                "startByte" : 1019,
+                "endByte" : 1022,
+                "named" : true,
+                "text" : "int",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 1023,
+                "endByte" : 1029,
+                "named" : true,
+                "text" : "pageNo",
+                "children" : [ ]
+              } ]
+            }, {
+              "type" : "formal_parameter",
+              "startByte" : 1031,
+              "endByte" : 1043,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "integral_type",
+                "startByte" : 1031,
+                "endByte" : 1034,
+                "named" : true,
+                "text" : "int",
+                "children" : [ ]
+              }, {
+                "type" : "identifier",
+                "startByte" : 1035,
+                "endByte" : 1043,
+                "named" : true,
+                "text" : "pageSize",
+                "children" : [ ]
+              } ]
+            } ]
+          }, {
+            "type" : "block",
+            "startByte" : 1045,
+            "endByte" : 1157,
+            "named" : true,
+            "text" : null,
+            "children" : [ {
+              "type" : "local_variable_declaration",
+              "startByte" : 1051,
+              "endByte" : 1108,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "type_identifier",
+                "startByte" : 1051,
+                "endByte" : 1059,
+                "named" : true,
+                "text" : "Pageable",
+                "children" : [ ]
+              }, {
+                "type" : "variable_declarator",
+                "startByte" : 1060,
+                "endByte" : 1107,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 1060,
+                  "endByte" : 1068,
+                  "named" : true,
+                  "text" : "pageable",
+                  "children" : [ ]
+                }, {
+                  "type" : "method_invocation",
+                  "startByte" : 1071,
+                  "endByte" : 1107,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 1071,
+                    "endByte" : 1082,
+                    "named" : true,
+                    "text" : "PageRequest",
+                    "children" : [ ]
+                  }, {
+                    "type" : "identifier",
+                    "startByte" : 1083,
+                    "endByte" : 1085,
+                    "named" : true,
+                    "text" : "of",
+                    "children" : [ ]
+                  }, {
+                    "type" : "argument_list",
+                    "startByte" : 1085,
+                    "endByte" : 1107,
+                    "named" : true,
+                    "text" : null,
+                    "children" : [ {
+                      "type" : "binary_expression",
+                      "startByte" : 1086,
+                      "endByte" : 1096,
+                      "named" : true,
+                      "text" : null,
+                      "children" : [ {
+                        "type" : "identifier",
+                        "startByte" : 1086,
+                        "endByte" : 1092,
+                        "named" : true,
+                        "text" : "pageNo",
+                        "children" : [ ]
+                      }, {
+                        "type" : "decimal_integer_literal",
+                        "startByte" : 1095,
+                        "endByte" : 1096,
+                        "named" : true,
+                        "text" : "1",
+                        "children" : [ ]
+                      } ]
+                    }, {
+                      "type" : "identifier",
+                      "startByte" : 1098,
+                      "endByte" : 1106,
+                      "named" : true,
+                      "text" : "pageSize",
+                      "children" : [ ]
+                    } ]
+                  } ]
+                } ]
+              } ]
+            }, {
+              "type" : "return_statement",
+              "startByte" : 1113,
+              "endByte" : 1153,
+              "named" : true,
+              "text" : null,
+              "children" : [ {
+                "type" : "method_invocation",
+                "startByte" : 1120,
+                "endByte" : 1152,
+                "named" : true,
+                "text" : null,
+                "children" : [ {
+                  "type" : "identifier",
+                  "startByte" : 1120,
+                  "endByte" : 1134,
+                  "named" : true,
+                  "text" : "taskRepository",
+                  "children" : [ ]
+                }, {
+                  "type" : "identifier",
+                  "startByte" : 1135,
+                  "endByte" : 1142,
+                  "named" : true,
+                  "text" : "findAll",
+                  "children" : [ ]
+                }, {
+                  "type" : "argument_list",
+                  "startByte" : 1142,
+                  "endByte" : 1152,
+                  "named" : true,
+                  "text" : null,
+                  "children" : [ {
+                    "type" : "identifier",
+                    "startByte" : 1143,
+                    "endByte" : 1151,
+                    "named" : true,
+                    "text" : "pageable",
+                    "children" : [ ]
+                  } ]
+                } ]
+              } ]
+            } ]
+          } ]
+        } ]
+      } ]
+    } ]
+  }
+}

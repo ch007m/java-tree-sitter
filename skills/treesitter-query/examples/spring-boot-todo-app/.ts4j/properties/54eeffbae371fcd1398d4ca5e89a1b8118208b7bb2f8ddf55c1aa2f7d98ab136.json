@@ -1,0 +1,202 @@
+{
+  "language" : "PROPERTIES",
+  "sourceFile" : "src/main/resources/application.properties",
+  "sourceCode" : "# Change port to 8081\nserver.port=8081\n\n# MySQL datasource configuration\nspring.datasource.url=jdbc:mysql://127.0.0.1:3306/todo\nspring.datasource.username=root\nspring.datasource.password=root\nspring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver\n\n# Hibernate configuration\nspring.jpa.hibernate.ddl-auto=update\nspring.jpa.show-sql=true\nspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect",
+  "root" : {
+    "type" : "file",
+    "startByte" : 0,
+    "endByte" : 417,
+    "named" : true,
+    "text" : null,
+    "children" : [ {
+      "type" : "comment",
+      "startByte" : 0,
+      "endByte" : 21,
+      "named" : true,
+      "text" : "# Change port to 8081",
+      "children" : [ ]
+    }, {
+      "type" : "property",
+      "startByte" : 22,
+      "endByte" : 38,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "key",
+        "startByte" : 22,
+        "endByte" : 33,
+        "named" : true,
+        "text" : "server.port",
+        "children" : [ ]
+      }, {
+        "type" : "value",
+        "startByte" : 34,
+        "endByte" : 38,
+        "named" : true,
+        "text" : "8081",
+        "children" : [ ]
+      } ]
+    }, {
+      "type" : "comment",
+      "startByte" : 40,
+      "endByte" : 72,
+      "named" : true,
+      "text" : "# MySQL datasource configuration",
+      "children" : [ ]
+    }, {
+      "type" : "property",
+      "startByte" : 73,
+      "endByte" : 127,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "key",
+        "startByte" : 73,
+        "endByte" : 94,
+        "named" : true,
+        "text" : "spring.datasource.url",
+        "children" : [ ]
+      }, {
+        "type" : "value",
+        "startByte" : 95,
+        "endByte" : 127,
+        "named" : true,
+        "text" : "jdbc:mysql://127.0.0.1:3306/todo",
+        "children" : [ ]
+      } ]
+    }, {
+      "type" : "property",
+      "startByte" : 128,
+      "endByte" : 159,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "key",
+        "startByte" : 128,
+        "endByte" : 154,
+        "named" : true,
+        "text" : "spring.datasource.username",
+        "children" : [ ]
+      }, {
+        "type" : "value",
+        "startByte" : 155,
+        "endByte" : 159,
+        "named" : true,
+        "text" : "root",
+        "children" : [ ]
+      } ]
+    }, {
+      "type" : "property",
+      "startByte" : 160,
+      "endByte" : 191,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "key",
+        "startByte" : 160,
+        "endByte" : 186,
+        "named" : true,
+        "text" : "spring.datasource.password",
+        "children" : [ ]
+      }, {
+        "type" : "value",
+        "startByte" : 187,
+        "endByte" : 191,
+        "named" : true,
+        "text" : "root",
+        "children" : [ ]
+      } ]
+    }, {
+      "type" : "property",
+      "startByte" : 192,
+      "endByte" : 252,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "key",
+        "startByte" : 192,
+        "endByte" : 227,
+        "named" : true,
+        "text" : "spring.datasource.driver-class-name",
+        "children" : [ ]
+      }, {
+        "type" : "value",
+        "startByte" : 228,
+        "endByte" : 252,
+        "named" : true,
+        "text" : "com.mysql.cj.jdbc.Driver",
+        "children" : [ ]
+      } ]
+    }, {
+      "type" : "comment",
+      "startByte" : 254,
+      "endByte" : 279,
+      "named" : true,
+      "text" : "# Hibernate configuration",
+      "children" : [ ]
+    }, {
+      "type" : "property",
+      "startByte" : 280,
+      "endByte" : 316,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "key",
+        "startByte" : 280,
+        "endByte" : 309,
+        "named" : true,
+        "text" : "spring.jpa.hibernate.ddl-auto",
+        "children" : [ ]
+      }, {
+        "type" : "value",
+        "startByte" : 310,
+        "endByte" : 316,
+        "named" : true,
+        "text" : "update",
+        "children" : [ ]
+      } ]
+    }, {
+      "type" : "property",
+      "startByte" : 317,
+      "endByte" : 341,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "key",
+        "startByte" : 317,
+        "endByte" : 336,
+        "named" : true,
+        "text" : "spring.jpa.show-sql",
+        "children" : [ ]
+      }, {
+        "type" : "value",
+        "startByte" : 337,
+        "endByte" : 341,
+        "named" : true,
+        "text" : "true",
+        "children" : [ ]
+      } ]
+    }, {
+      "type" : "property",
+      "startByte" : 342,
+      "endByte" : 417,
+      "named" : true,
+      "text" : null,
+      "children" : [ {
+        "type" : "key",
+        "startByte" : 342,
+        "endByte" : 381,
+        "named" : true,
+        "text" : "spring.jpa.properties.hibernate.dialect",
+        "children" : [ ]
+      }, {
+        "type" : "value",
+        "startByte" : 382,
+        "endByte" : 417,
+        "named" : true,
+        "text" : "org.hibernate.dialect.MySQL8Dialect",
+        "children" : [ ]
+      } ]
+    } ]
+  }
+}
