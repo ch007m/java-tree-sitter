@@ -28,8 +28,6 @@
         <tree-sitter-language-pack.version>1.9.0-rc.18</tree-sitter-language-pack.version>
         <treesitter4j.version>999-SNAPSHOT</treesitter4j.version>
 
-        <chicory.version>1.7.5</chicory.version>
-
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
     </properties>
@@ -40,14 +38,6 @@
                 <groupId>io.quarkus.platform</groupId>
                 <artifactId>quarkus-bom</artifactId>
                 <version>${quarkus.platform.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.dylibso.chicory</groupId>
-                <artifactId>bom</artifactId>
-                <version>${chicory.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -113,11 +103,6 @@
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-maven-plugin</artifactId>
                     <version>${quarkus.platform.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>com.dylibso.chicory</groupId>
-                    <artifactId>chicory-compiler-maven-plugin</artifactId>
-                    <version>${chicory.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
