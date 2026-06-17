@@ -33,15 +33,15 @@ Before writing the S-Expression, you **must** read the `grammar.js` file for the
 
 ### Supported grammars
 
-| Grammar      | Repository                                                        | `grammar.js` URL (raw)                                                                                              |
-|--------------|-------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| **java**     | [tree-sitter-java](https://github.com/tree-sitter/tree-sitter-java) | https://raw.githubusercontent.com/tree-sitter/tree-sitter-java/master/grammar.js                                     |
-| **properties** | [tree-sitter-properties](https://github.com/tree-sitter-grammars/tree-sitter-properties) | https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-properties/master/grammar.js                      |
-| **xml**      | [tree-sitter-xml (panicinc)](https://github.com/panicinc/tree-sitter-xml) | https://raw.githubusercontent.com/panicinc/tree-sitter-xml/main/tree-sitter-xml/grammar.js                           |
-| **html**     | [tree-sitter-html](https://github.com/tree-sitter/tree-sitter-html) | https://raw.githubusercontent.com/tree-sitter/tree-sitter-html/master/grammar.js                                     |
-| **json**     | [tree-sitter-json](https://github.com/tree-sitter/tree-sitter-json) | https://raw.githubusercontent.com/tree-sitter/tree-sitter-json/master/grammar.js                                     |
-| **yaml**     | [tree-sitter-yaml](https://github.com/tree-sitter-grammars/tree-sitter-yaml) | https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-yaml/master/grammar.js                            |
-| **markdown** | [tree-sitter-markdown](https://github.com/tree-sitter-grammars/tree-sitter-markdown) | https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-markdown/split_parser/tree-sitter-markdown/grammar.js |
+| Grammar        | Repository                                                                               | `grammar.js` URL (raw)                                                                                                   |
+|----------------|------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| **java**       | [tree-sitter-java](https://github.com/tree-sitter/tree-sitter-java)                      | https://raw.githubusercontent.com/tree-sitter/tree-sitter-java/master/grammar.js                                         |
+| **properties** | [tree-sitter-properties](https://github.com/tree-sitter-grammars/tree-sitter-properties) | https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-properties/master/grammar.js                          |
+| **xml**        | [tree-sitter-xml](https://github.com/tree-sitter-grammars/tree-sitter-xml)               | https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-xml/refs/heads/master/xml/grammar.js                  |
+| **html**       | [tree-sitter-html](https://github.com/tree-sitter/tree-sitter-html)                      | https://raw.githubusercontent.com/tree-sitter/tree-sitter-html/master/grammar.js                                         |
+| **json**       | [tree-sitter-json](https://github.com/tree-sitter/tree-sitter-json)                      | https://raw.githubusercontent.com/tree-sitter/tree-sitter-json/master/grammar.js                                         |
+| **yaml**       | [tree-sitter-yaml](https://github.com/tree-sitter-grammars/tree-sitter-yaml)             | https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-yaml/master/grammar.js                                |
+| **markdown**   | [tree-sitter-markdown](https://github.com/tree-sitter-grammars/tree-sitter-markdown)     | https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-markdown/split_parser/tree-sitter-markdown/grammar.js |
 
 ---
 
