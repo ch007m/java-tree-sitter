@@ -6,6 +6,7 @@ import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryInfo;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.ParsedQuery;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.QueryMatch;
 import io.roastedroot.treesitter.Language;
+import io.roastedroot.treesitter.TreeSitterQueryResult;
 import io.roastedroot.treesitter.ast.ASTTree;
 import org.aesh.command.Command;
 import org.aesh.command.CommandDefinition;
@@ -17,22 +18,16 @@ import org.aesh.command.option.Option;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-@CommandDefinition(name = "query", description = "Query AST nodes by type, file, or text")
+@CommandDefinition(name = "query", description = "Query TreeSitter AST nodes")
 public class QueryCommand implements Command<CommandInvocation> {
 
-    @Arguments(description = "Query expression: <type> [= | contains <value>]  (e.g., class, 'class = MyApp', 'annotation contains Entity')")
-    private List<String> queryArgs;
+    @Arguments(description = "User query: <type> [= | contains <value>]  (e.g., class, 'class = MyApp', 'annotation contains Entity')")
+    private List<String> userQuery;
 
-    @Option(name = "file", shortName = 'f', description = "Filter results by file path substring", hasValue = true)
-    private String fileFilter;
-
-    @Option(name = "text", shortName = 't', description = "Filter by node text (case-insensitive contains)", hasValue = true)
-    private String textFilter;
+    @Option(name = "scm", shortName = 's', description = "Path to a scm file containing a raw tree-sitter S-expression query", hasValue = true)
+    private String scmFile;
 
     @Option(name = "app", shortName = 'a', description = "Path to the application directory (full or relative, defaults to current directory)", hasValue = true)
     private String appPath;
@@ -50,34 +45,37 @@ public class QueryCommand implements Command<CommandInvocation> {
         ASTQueryUtil queryUtil = new ASTQueryUtil();
         ASTParserUtil parserUtil = new ASTParserUtil();
 
-        if (queryArgs == null || queryArgs.isEmpty()) {
-            printUsage(invocation, queryUtil.getAliases());
-            return CommandResult.FAILURE;
-        }
+        Language languageSelected;
+        ParsedQuery parsed;
 
-        // Parse syntax expression
-        String rawQuery = String.join(" ", queryArgs);
-        ParsedQuery parsed = queryUtil.parseQuery(rawQuery);
-
-        // Apply --text as a "contains" filter when the expression has no inline operator
-        if (textFilter != null && !textFilter.isBlank() && parsed.operator() == null) {
-            parsed = new ParsedQuery(parsed.syntax(), "contains", textFilter, parsed.queryInfo());
-        }
-
-        // Resolve language override
-        Set<Language> langOverride = null;
-        if (languageOption != null) {
-            if ("all".equalsIgnoreCase(languageOption)) {
-                langOverride = EnumSet.allOf(Language.class);
-            } else {
-                try {
-                    langOverride = EnumSet.of(Language.valueOf(languageOption.toUpperCase()));
-                } catch (IllegalArgumentException e) {
-                    invocation.println("Unknown language: " + languageOption
-                            + ". Valid values: java, yaml, json, xml, html, properties, markdown, all");
-                    return CommandResult.FAILURE;
-                }
+        if (scmFile != null && !scmFile.isBlank()) {
+            Path scmPath = Path.of(scmFile);
+            if (!Files.isRegularFile(scmPath)) {
+                invocation.println("Error: SCM file not found: " + scmFile);
+                return CommandResult.FAILURE;
             }
+            try {
+                String scmContent = Files.readString(scmPath);
+                parsed = new ParsedQuery(scmContent, null, null, new QueryInfo("","",Language.XML));
+            } catch (IOException e) {
+                invocation.println("Error reading SCM file: " + e.getMessage());
+                return CommandResult.FAILURE;
+            }
+        } else {
+            if (userQuery == null || userQuery.isEmpty()) {
+                printUsage(invocation, queryUtil.getAliases());
+                return CommandResult.FAILURE;
+            }
+            parsed = queryUtil.parseQuery(String.join(" ", userQuery));
+        }
+
+        // Resolve language
+        try {
+            languageSelected = Language.valueOf(languageOption.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            invocation.println("Unknown language: " + languageOption
+                    + ". Valid values: java, yaml, json, xml, html, properties, markdown, all");
+            return CommandResult.FAILURE;
         }
 
         Path rootDir = parserUtil.resolveAppDir(appPath);
@@ -123,15 +121,15 @@ public class QueryCommand implements Command<CommandInvocation> {
         }
 
         // Execute syntax
-        List<QueryMatch> matches = queryUtil.execute(parsed, trees, fileFilter, langOverride);
-
-        for (QueryMatch match : matches) {
-            invocation.println("  " + match.sourceFile() + ":" + match.line()
-                    + "  [" + match.alias() + "] = " + truncate(match.matchedText(), 120));
-        }
+        List<TreeSitterQueryResult> results = queryUtil.execute(parsed, trees, languageSelected);
+        results.forEach(r -> {
+            invocation.println("Node name: " + r.name());
+            invocation.println("Value: " + r.source().substring(
+                    r.node().startByte(), r.node().endByte()));
+        });
 
         long elapsedMs = (System.nanoTime() - startTime) / 1_000_000;
-        invocation.println(matches.size() + " match(es). Elapsed: " + elapsedMs + " ms");
+        invocation.println(results.size() + " captured. Elapsed: " + elapsedMs + " ms");
 
         return CommandResult.SUCCESS;
     }

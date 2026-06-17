@@ -143,46 +143,28 @@ public final class ASTQueryUtil {
      *
      * @param query the parsed syntax expression
      * @param trees AST trees to search (from store or freshly parsed)
-     * @param fileFilter optional file-path substring filter (may be {@code null})
-     * @param languageOverride if non-null, overrides the automatic language detection. Pass
-     * {@code EnumSet.allOf(Language.class)} to search all languages.
+     * @param languageSelected {@code EnumSet.allOf(Language.class)} to search all languages.
      * @return list of matches
      */
-    public List<QueryMatch> execute(ParsedQuery query, List<ASTTree> trees,
-            String fileFilter, Set<Language> languageOverride) {
-        List<QueryMatch> matches = new ArrayList<>();
-
-        // Determine syntax pattern and target languages
+    public List<TreeSitterQueryResult> execute(ParsedQuery query, List<ASTTree> trees, Language languageSelected) {
+        List<TreeSitterQueryResult> results = new ArrayList<>();
         String queryPattern;
-        Set<Language> targetLanguages;
 
-        if (query.queryInfo() != null) {
-            // Known syntax — use its pattern and language
-            queryPattern = query.queryInfo().queryPattern();
-            targetLanguages = EnumSet.of(query.queryInfo().language());
-        } else {
-            // Raw node type — generic pattern, auto-detect language from trees
-            queryPattern = query.syntax();
-            Map<String, Set<Language>> typeLanguageMap = buildTypeLanguageMap(trees);
-            Set<Language> fromMap = typeLanguageMap.get(query.syntax());
-            targetLanguages = fromMap != null ? EnumSet.copyOf(fromMap) : EnumSet.allOf(Language.class);
-        }
+        // TODO: ADd case where user is passing their query
 
-        // Apply explicit language override
-        if (languageOverride != null) {
-            targetLanguages = languageOverride;
-        }
+        // Raw node type — generic pattern, auto-detect language from trees
+        queryPattern = query.syntax();
+        // TODO: Find a better way to discover the language from the types of the scm file !
+        //Map<String, Set<Language>> typeLanguageMap = buildTypeLanguageMap(trees);
+        //Set<Language> fromMap = typeLanguageMap.get(query.syntax());
+        // targetLanguages = fromMap != null ? EnumSet.copyOf(fromMap) : EnumSet.allOf(Language.class);
 
         // Group trees by language, applying file filter
         Map<Language, List<ASTTree>> treesByLang = new LinkedHashMap<>();
         for (ASTTree tree : trees) {
             Language lang = resolveLanguage(tree);
-            if (lang == null || !targetLanguages.contains(lang))
+            if (!languageSelected.equals(lang))
                 continue;
-            if (fileFilter != null && !fileFilter.isBlank()
-                    && (tree.getSourceFile() == null || !tree.getSourceFile().contains(fileFilter))) {
-                continue;
-            }
             treesByLang.computeIfAbsent(lang, k -> new ArrayList<>()).add(tree);
         }
 
@@ -190,19 +172,20 @@ public final class ASTQueryUtil {
         for (var entry : treesByLang.entrySet()) {
             Language lang = entry.getKey();
             TreeSitterParser parser = TreeSitterRuntime.getParser(lang);
-            if (parser == null) continue;
+            if (parser == null)
+                continue;
 
-            TreeSitterQuery tsQuery;
+            TreeSitterQuery tsQuery = null;
             try {
                 //TODO Log in debug mode the syntax
                 System.out.println("syntax : " + queryPattern);
                 tsQuery = ts.newQuery(lang, queryPattern);
             } catch (TreeSitterException e) {
-                // Pattern not valid for this language — skip entire group
-                continue;
+                e.printStackTrace();
             }
 
             try {
+                // Iterate through the list of the sources, parse it
                 for (ASTTree astTree : entry.getValue()) {
                     String source = astTree.getSourceCode();
                     if (source == null || source.isEmpty())
@@ -212,51 +195,16 @@ public final class ASTQueryUtil {
                         if (tree == null)
                             continue;
 
-                        List<TreeSitterQueryResult> results = tsQuery.exec(tree.rootNode(), source);
-
-                        for (TreeSitterQueryResult result : results) {
-
-                            results.forEach(r -> {
-                                System.out.println("Query Result for language : " + astTree.getLanguage() + ", and file : " + astTree.getSourceFile());
-                                System.out.println("node name : " + r.name());
-                                System.out.println("node type : " + r.node().type());
-                            });
-
-                            if (!"name".equals(result.name()))
-                                continue;
-
-                            String text = source.substring(
-                                    result.node().startByte(), result.node().endByte());
-
-                            // Apply value composer if present (e.g. GAV composition for POM aliases)
-                            if (query.queryInfo() != null && query.queryInfo().composer() != null) {
-                                text = query.queryInfo().composer().compose(text);
-                                if (text == null)
-                                    continue;
-                            }
-
-                            // Match the result against the syntax value
-                            if (!matchesFilter(text, query.operator(), query.value()))
-                                continue;
-
-                            System.out.println("Text searched : " + text);
-                            System.out.println("Operator : " + query.operator());
-                            System.out.println("value : " + query.value);
-                            System.out.println("===================================");
-
-                            int line = byteToLine(source, result.node().startByte());
-                            matches.add(new QueryMatch(
-                                    astTree.getSourceFile() != null ? astTree.getSourceFile() : "<unknown>",
-                                    line, query.syntax(), text));
-                        }
+                        // Execute the query against the tree nodes
+                        assert tsQuery != null;
+                        return tsQuery.exec(tree.rootNode(), source);
                     }
                 }
             } finally {
                 tsQuery.close();
             }
         }
-
-        return matches;
+        return results;
     }
 
     // ---------------------------------------------------------------------------
