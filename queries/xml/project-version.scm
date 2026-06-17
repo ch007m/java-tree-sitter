@@ -1,18 +1,20 @@
-; Grammar used: https://github.com/panicinc/tree-sitter-xml
+; Grammar used: https://github.com/tree-sitter-grammars/tree-sitter-xml
 ; Search about Spring Boot parent OR dependency version having as groupId: org.springframework.boot
 ((element
-   (start_tag (tag_name) @tag.el (#match? @tag.el "^(parent|dependency)$"))
-   (element
-     (start_tag (tag_name) @tag.g (#eq? @tag.g "groupId"))
-     (text) @group.id)
-   (element
-     (start_tag (tag_name) @tag.a (#eq? @tag.a "artifactId"))
-     (text) @artifact.id)
+   (STag . (Name) @tag.el (#match? @tag.el "^(parent|dependency)$"))
+   (content
+     (element
+       (STag . (Name) @tag.g (#eq? @tag.g "groupId"))
+       (content . (CharData) @group.id))
+     (element
+       (STag . (Name) @tag.a (#eq? @tag.a "artifactId"))
+       (content . (CharData) @artifact.id))
 
-   ;; Optional: parent always has a version, dependency may inherit it
-   (element
-     (start_tag (tag_name) @tag.v (#eq? @tag.v "version"))
-     (text) @version.value)?
+     ;; Optional: version tag
+     (element
+       (STag . (Name) @tag.v (#eq? @tag.v "version"))
+       (content . (CharData) @application.version.value))?
+     )
    )
   (#eq? @group.id "org.springframework.boot")
   ) @target.element
