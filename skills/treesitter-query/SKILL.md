@@ -1,4 +1,4 @@
-Can # Tree-sitter S-Expression Query Generator
+# Tree-sitter S-Expression Query Generator
 
 ## Trigger
 
