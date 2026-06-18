@@ -1,5 +1,6 @@
-package dev.snowdrop.treesitter4j.util;
+package dev.snowdrop.treesitter4j.query;
 
+import dev.snowdrop.treesitter4j.util.ASTQueryUtil;
 import dev.snowdrop.treesitter4j.util.ASTQueryUtil.ParsedQuery;
 import io.roastedroot.treesitter.Language;
 import org.junit.jupiter.api.Test;
@@ -9,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Tests for {@link ASTQueryUtil#parseQuery(String)}.
  */
-class ASTQueryUtilParseTest {
+class ParseQueryTest {
 
     final ASTQueryUtil queryUtil = new ASTQueryUtil();
 
